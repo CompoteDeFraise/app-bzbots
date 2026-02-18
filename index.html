@@ -1,0 +1,1715 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <!-- OPTIMISATION MOBILE: Viewport et Status Bar -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#0a0a0a">
+    
+    <title>BZBots - Suite Enterprise AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* --- DESIGN SYSTEM BZ BOTS --- */
+        :root {
+            --bz-black: #0a0a0a;
+            --bz-dark-card: #141414;
+            --bz-light-text: #e5e5e5;
+            --bz-accent: #ffffff;
+            --bz-border: #333333;
+        }
+
+        body { 
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+            background-color: var(--bz-black); 
+            color: var(--bz-light-text);
+            overflow-x: hidden;
+            /* OPTIMISATION MOBILE: Empêcher la sélection de texte et le highlight bleu au tap */
+            -webkit-user-select: none;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Réactiver la sélection de texte pour les champs de formulaire */
+        input, textarea {
+            -webkit-user-select: text;
+            user-select: text;
+        }
+
+        /* Utilitaire de Vues (SPA) */
+        .view-section {
+            display: none;
+            animation: fadeIn 0.4s ease-in-out;
+            /* Padding pour éviter que le contenu soit caché par l'encoche (notch) sur iPhone */
+            padding-top: env(safe-area-inset-top);
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+        .view-section.active {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Input Styles Global */
+        .input-bz {
+            background-color: #000;
+            border: 1px solid #444;
+            color: white;
+            transition: border-color 0.3s;
+            width: 100%;
+            padding: 12px;
+            border-radius: 4px;
+            /* Empêcher le zoom automatique sur iOS lors du focus */
+            font-size: 16px; 
+        }
+        .input-bz:focus {
+            border-color: white;
+            outline: none;
+        }
+
+        /* Boutons avec feedback tactile */
+        .btn-bz-primary { 
+            background-color: white; 
+            color: black; 
+            font-weight: 800; 
+            text-transform: uppercase; 
+            letter-spacing: 1px;
+            transition: 0.2s; 
+            border: 1px solid white;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            width: 100%;
+            display: block;
+        }
+        .btn-bz-primary:hover { 
+            background-color: transparent; 
+            color: white; 
+        }
+        .btn-bz-primary:active {
+            transform: scale(0.98);
+        }
+
+        .card-menu {
+            background: var(--bz-dark-card);
+            border: 1px solid var(--bz-border);
+            transition: transform 0.2s, border-color 0.2s;
+            cursor: pointer;
+        }
+        .card-menu:hover {
+            transform: translateY(-2px);
+            border-color: white;
+        }
+        .card-menu:active {
+            transform: scale(0.98);
+            background-color: #1a1a1a;
+        }
+
+        /* Lang Button & Settings Button */
+        .top-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--bz-border);
+            color: var(--bz-light-text);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .top-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: white;
+        }
+
+        .top-actions {
+            position: absolute;
+            top: max(1rem, env(safe-area-inset-top)); /* Respecter la zone sûre */
+            right: 1rem;
+            display: flex;
+            gap: 0.5rem;
+            z-index: 50;
+        }
+
+        /* Logo SVG CSS */
+        .logo-svg text { font-family: Arial, sans-serif; }
+
+        /* Animation Pompe */
+        @keyframes pumpPulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.02); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        /* Chat Styles */
+        .chat-bubble {
+            max-width: 80%;
+            padding: 10px 15px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+        .chat-user {
+            background-color: #333;
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 2px;
+        }
+        .chat-ai {
+            background-color: #e5e5e5;
+            color: black;
+            align-self: flex-start;
+            border-bottom-left-radius: 2px;
+        }
+        .typing-indicator span {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            background-color: #555;
+            border-radius: 50%;
+            animation: typing 1.4s infinite ease-in-out both;
+            margin: 0 1px;
+        }
+        .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
+        .typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes typing { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #000; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+
+        /* AI Gradient Animation */
+        .ai-border {
+            position: relative;
+            background: #141414;
+            border-radius: 8px;
+            z-index: 1;
+        }
+        .ai-border::before {
+            content: "";
+            position: absolute;
+            inset: -2px;
+            border-radius: 10px;
+            background: linear-gradient(45deg, #a855f7, #3b82f6);
+            z-index: -1;
+            opacity: 0.7;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ========================================== -->
+    <!-- VUE 1: LOGIN (Page 2 & 7 du PDF) -->
+    <!-- ========================================== -->
+    <section id="view-login" class="view-section active justify-center items-center p-6 relative">
+        <div class="top-actions">
+            <button onclick="openSettingsModal()" class="top-btn" title="Paramètres API">
+                <i class="fas fa-cog"></i>
+            </button>
+            <button onclick="toggleLanguage()" class="top-btn">
+                <i class="fas fa-globe"></i> <span class="lang-text">FR</span>
+            </button>
+        </div>
+
+        <div class="max-w-sm w-full space-y-8">
+            <div class="flex flex-col items-center">
+                <!-- LOGO -->
+                <svg width="100" height="100" viewBox="0 0 100 100" fill="none" class="mb-4">
+                    <text x="50" y="52" text-anchor="middle" font-weight="900" font-size="48" fill="white" letter-spacing="-2">BZ</text>
+                    <rect x="15" y="58" width="70" height="4" fill="white"/>
+                    <text x="50" y="82" text-anchor="middle" font-weight="bold" font-size="16" fill="white" letter-spacing="4" style="text-transform: lowercase;">bots</text>
+                </svg>
+                <h2 class="text-center text-xl font-bold tracking-widest text-gray-400 uppercase" data-i18n="loginTitle">Connexion</h2>
+            </div>
+            
+            <!-- FORMULAIRE ACTIF -->
+            <form onsubmit="event.preventDefault(); handleLogin();" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1" data-i18n="accountName">Nom de compte</label>
+                    <input type="text" class="input-bz" placeholder="Utilisateur" value="Opérateur">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1" data-i18n="password">Mot de passe</label>
+                    <input type="password" class="input-bz" placeholder="••••••••" value="123456">
+                </div>
+
+                <button type="submit" id="loginBtn" class="btn-bz-primary flex items-center justify-center gap-2">
+                    <span data-i18n="loginBtn">ME CONNECTER</span>
+                </button>
+            </form>
+            
+            <!-- Lien vers la page d'inscription -->
+            <div onclick="nav('view-register')" class="text-center text-xs text-gray-500 mt-4 cursor-pointer hover:text-white" data-i18n="createAccount">
+                Créer un compte
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- VUE 1-BIS: CRÉER UN COMPTE (Page 7 du PDF) -->
+    <!-- ========================================== -->
+    <section id="view-register" class="view-section justify-center items-center p-6 relative">
+        <div class="top-actions">
+            <button onclick="toggleLanguage()" class="top-btn">
+                <i class="fas fa-globe"></i> <span class="lang-text">FR</span>
+            </button>
+        </div>
+
+        <div class="max-w-sm w-full space-y-6">
+            <div class="flex flex-col items-center">
+                <!-- LOGO SIMPLIFIÉ -->
+                <svg width="60" height="60" viewBox="0 0 100 100" fill="none" class="mb-2">
+                    <text x="50" y="52" text-anchor="middle" font-weight="900" font-size="48" fill="white" letter-spacing="-2">BZ</text>
+                    <rect x="15" y="58" width="70" height="4" fill="white"/>
+                </svg>
+                <h2 class="text-center text-xl font-bold tracking-widest text-gray-400 uppercase" data-i18n="registerTitle">Créer un compte</h2>
+            </div>
+            
+            <form onsubmit="event.preventDefault(); handleRegister();" class="space-y-3">
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-[0.65rem] font-bold text-gray-500 uppercase mb-1" data-i18n="lastName">Nom</label>
+                        <input type="text" id="regLastName" class="input-bz" placeholder="Dupont" required>
+                    </div>
+                    <div>
+                        <label class="block text-[0.65rem] font-bold text-gray-500 uppercase mb-1" data-i18n="firstName">Prénom</label>
+                        <input type="text" id="regFirstName" class="input-bz" placeholder="Jean" required>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-[0.65rem] font-bold text-gray-500 uppercase mb-1" data-i18n="email">Adresse mail</label>
+                    <input type="email" id="regEmail" class="input-bz" placeholder="jean.dupont@email.com" required>
+                </div>
+                <div>
+                    <label class="block text-[0.65rem] font-bold text-gray-500 uppercase mb-1" data-i18n="password">Mot de passe</label>
+                    <input type="password" class="input-bz" placeholder="••••••••" required>
+                </div>
+                <div>
+                    <label class="block text-[0.65rem] font-bold text-gray-500 uppercase mb-1" data-i18n="confirmPassword">Confirmation de mot de passe</label>
+                    <input type="password" class="input-bz" placeholder="••••••••" required>
+                </div>
+
+                <button type="submit" id="registerBtn" class="btn-bz-primary flex items-center justify-center gap-2 mt-4">
+                    <span data-i18n="registerBtn">CRÉER MON COMPTE</span>
+                </button>
+            </form>
+            
+            <div onclick="nav('view-login')" class="text-center text-xs text-gray-500 mt-4 cursor-pointer hover:text-white" data-i18n="alreadyAccount">
+                Déjà un compte ? Se connecter
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- VUE 2: DASHBOARD ACCUEIL (Page 3 du PDF) -->
+    <!-- ========================================== -->
+    <section id="view-home" class="view-section relative">
+        <header class="p-6 flex justify-between items-center border-b border-gray-800">
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 bg-white text-black font-bold flex items-center justify-center rounded-full text-xs" id="userAvatarInitials">T</div>
+                <span class="font-bold"><span data-i18n="hello">Bonjour</span>, <span id="userNameDisplay">Tanguy</span></span>
+            </div>
+            <div class="flex items-center gap-2">
+                 <button onclick="openSettingsModal()" class="text-xs font-bold text-gray-400 hover:text-white border border-gray-700 px-2 py-1 rounded">
+                    <i class="fas fa-cog"></i>
+                </button>
+                <button onclick="toggleLanguage()" class="text-xs font-bold text-gray-400 hover:text-white border border-gray-700 px-2 py-1 rounded">
+                    <i class="fas fa-globe"></i> <span class="lang-text">FR</span>
+                </button>
+                <i class="fas fa-bars text-xl cursor-pointer ml-2"></i>
+            </div>
+        </header>
+
+        <div class="flex-1 overflow-auto p-6 space-y-8">
+            
+            <!-- SECTION DÉCOUVREZ NOTRE GAMME -->
+            <div>
+                <h3 class="text-sm font-bold text-gray-400 mb-4 uppercase tracking-widest pl-1 border-l-2 border-white" data-i18n="discoverRange">Découvrez notre gamme</h3>
+                
+                <div class="flex overflow-x-auto gap-4 pb-4 snap-x hide-scrollbar">
+                    
+                    <!-- Card 1: BzLight (Image IMG_6062.png) -->
+                    <div class="snap-center shrink-0 w-72 bg-[#141414] border border-gray-800 rounded p-5 flex flex-col relative group hover:border-yellow-600 transition-colors">
+                        <div class="w-full h-48 bg-black rounded mb-4 overflow-hidden flex items-center justify-center border border-gray-800">
+                             <!-- Placeholder image pour GitHub Pages (à remplacer par vos images) -->
+                             <img src="IMG_6062.png" onerror="this.src='https://placehold.co/400x300/black/white?text=BzLight'" alt="BzLight" class="w-full h-full object-contain hover:scale-105 transition-transform duration-500">
+                        </div>
+                        
+                        <h4 class="text-xl font-bold text-white mb-1" data-i18n="bzLightProduct">BzLight</h4>
+                        <p class="text-xs text-yellow-500 mb-5 font-mono tracking-wide" data-i18n="bzLightDesc">Robot de fraisage</p>
+                        
+                        <div class="space-y-3 mb-6">
+                            <div class="text-xs text-gray-400 bg-black p-2 rounded border border-gray-900 flex items-center gap-3">
+                                <i class="fas fa-cogs text-yellow-600"></i><span data-i18n="highPower">Haute Puissance</span>
+                            </div>
+                            <div class="text-xs text-gray-400 bg-black p-2 rounded border border-gray-900 flex items-center gap-3">
+                                <i class="fas fa-camera text-yellow-600"></i><span data-i18n="hdCamera">Caméra Inspection HD</span>
+                            </div>
+                            <div class="text-xs text-gray-400 bg-black p-2 rounded border border-gray-900 flex items-center gap-3">
+                                <i class="fas fa-gamepad text-yellow-600"></i><span data-i18n="preciseControl">Pilotage Précis</span>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-auto flex gap-2">
+                            <button onclick="openInfoModal('bzLightProduct')" class="flex-1 py-2 border border-gray-600 text-[0.65rem] font-bold uppercase text-white hover:bg-white hover:text-black transition rounded" data-i18n="docBtn">Documentation</button>
+                            <button onclick="nav('view-bzlight')" class="flex-1 py-2 bg-yellow-600 text-[0.65rem] font-bold uppercase text-black hover:bg-yellow-500 transition rounded" data-i18n="details">Détails</button>
+                        </div>
+                    </div>
+
+                    <!-- Card 2: Tracter (Image IMG_6059.png) -->
+                    <div class="snap-center shrink-0 w-72 bg-[#141414] border border-gray-800 rounded p-5 flex flex-col relative group hover:border-blue-600 transition-colors">
+                        <div class="w-full h-48 bg-black rounded mb-4 overflow-hidden flex items-center justify-center border border-gray-800">
+                             <img src="IMG_6059.png" onerror="this.src='https://placehold.co/400x300/black/white?text=Tracter'" alt="Tracter" class="w-full h-full object-contain hover:scale-105 transition-transform duration-500">
+                        </div>
+
+                        <h4 class="text-xl font-bold text-white mb-1" data-i18n="tractorProduct">TRACTEUR</h4>
+                        <p class="text-xs text-blue-500 mb-5 font-mono tracking-wide" data-i18n="tractorProduct">Tracter</p>
+                        
+                        <div class="space-y-3 mb-6">
+                            <div class="text-xs text-gray-400 bg-black p-2 rounded border border-gray-900 flex items-center gap-3">
+                                <i class="fas fa-cogs text-blue-600"></i><span data-i18n="portable">Facilement transportable</span>
+                            </div>
+                            <div class="text-xs text-gray-400 bg-black p-2 rounded border border-gray-900 flex items-center gap-3">
+                                <i class="fas fa-camera text-blue-600"></i><span data-i18n="antiTMS">Anti-TMS</span>
+                            </div>
+                            <div class="text-xs text-gray-400 bg-black p-2 rounded border border-gray-900 flex items-center gap-3">
+                                <i class="fas fa-gamepad text-blue-600"></i><span data-i18n="ergonomic">Ergonomique</span>
+                            </div>
+                        </div>
+                        <div class="mt-auto flex gap-2">
+                            <button onclick="openInfoModal('tractorProduct')" class="flex-1 py-2 border border-gray-600 text-[0.65rem] font-bold uppercase text-white hover:bg-white hover:text-black transition rounded" data-i18n="techSheet">Fiche Tech</button>
+                            <button class="flex-1 py-2 bg-blue-600 text-[0.65rem] font-bold uppercase text-white hover:bg-blue-500 transition rounded" onclick="openInfoModal('devInProgress')" data-i18n="configure">Configurer</button>
+                        </div>
+                    </div>
+
+                    <!-- Card 3: La Pompe -->
+                    <div class="snap-center shrink-0 w-72 bg-[#141414] border border-gray-800 rounded p-5 flex flex-col relative group hover:border-green-600 transition-colors">
+                         <div class="w-full h-48 bg-black rounded mb-4 overflow-hidden flex items-center justify-center border border-gray-800 relative">
+                             <i class="fas fa-flask text-8xl text-green-600 opacity-80"></i>
+                             <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                        </div>
+
+                        <h4 class="text-xl font-bold text-white mb-1" data-i18n="pumpProduct">La Pompe</h4>
+                        <p class="text-xs text-green-500 mb-5 font-mono tracking-wide" data-i18n="pumpDesc">SYSTÈME D'INJECTION</p>
+                         <div class="space-y-3 mb-6">
+                            <div class="text-xs text-gray-400 bg-black p-2 rounded border border-gray-900 flex items-center gap-3">
+                                <i class="fas fa-calculator text-green-600"></i><span data-i18n="autoCalc">Calculateur Automatique</span>
+                            </div>
+                             <div class="text-xs text-gray-400 bg-black p-2 rounded border border-gray-900 flex items-center gap-3">
+                                <i class="fab fa-bluetooth-b text-green-600"></i><span data-i18n="btConn">Connexion Bluetooth</span>
+                            </div>
+                            <div class="text-xs text-gray-400 bg-black p-2 rounded border border-gray-900 flex items-center gap-3">
+                                <i class="fas fa-thermometer-half text-green-600"></i><span data-i18n="tempTrack">Suivi Température</span>
+                            </div>
+                        </div>
+                        <div class="mt-auto w-full">
+                            <button onclick="nav('view-pump')" class="w-full py-3 bg-white text-black text-xs font-bold uppercase hover:bg-gray-200 transition rounded flex items-center justify-center gap-2">
+                                <i class="fas fa-play"></i> <span data-i18n="launchApp">Lancer l'app</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Grille Menu Rapide -->
+            <div>
+                <h3 class="text-sm font-bold text-gray-400 mb-4 uppercase tracking-widest pl-1 border-l-2 border-gray-600" data-i18n="quickAccess">Accès Rapide</h3>
+                <div class="grid grid-cols-2 gap-4">
+                    <div onclick="nav('view-products')" class="card-menu p-6 rounded flex flex-col items-center justify-center aspect-video hover:bg-gray-900">
+                        <i class="fas fa-boxes text-2xl mb-2 text-white"></i>
+                        <span class="text-[0.65rem] font-bold uppercase tracking-wider text-center" data-i18n="catalog">Catalogue</span>
+                    </div>
+                    <!-- Clic vers profil -->
+                    <div onclick="nav('view-profile')" class="card-menu p-6 rounded flex flex-col items-center justify-center aspect-video hover:bg-gray-900 cursor-pointer group">
+                        <i class="fas fa-user-circle text-2xl mb-2 text-gray-500 group-hover:text-white transition-colors"></i>
+                        <span class="text-[0.65rem] font-bold uppercase tracking-wider text-center text-gray-500 group-hover:text-white transition-colors" data-i18n="profile">Profil</span>
+                    </div>
+                    <div class="card-menu p-6 rounded flex flex-col items-center justify-center aspect-video hover:bg-gray-900">
+                        <i class="fas fa-file-pdf text-2xl mb-2 text-gray-500"></i>
+                        <span class="text-[0.65rem] font-bold uppercase tracking-wider text-center text-gray-500" data-i18n="documents">Documents</span>
+                    </div>
+                    <!-- BOUTON SUPPORT IA -->
+                    <div onclick="nav('view-ai-chat')" class="card-menu p-6 rounded flex flex-col items-center justify-center aspect-video hover:bg-gray-900 border-purple-500 border-opacity-50 group">
+                        <div class="relative">
+                            <i class="fas fa-sparkles text-2xl mb-2 text-purple-400 group-hover:scale-110 transition-transform"></i>
+                            <div class="absolute -top-1 -right-1 w-2 h-2 bg-purple-500 rounded-full animate-pulse"></div>
+                        </div>
+                        <span class="text-[0.65rem] font-bold uppercase tracking-wider text-center text-purple-400" data-i18n="aiAssistant">Assistant IA</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Floating Action Button for AI -->
+        <button onclick="nav('view-ai-chat')" class="absolute bottom-16 right-6 w-14 h-14 bg-gradient-to-br from-purple-600 to-blue-600 rounded-full shadow-lg flex items-center justify-center text-white hover:scale-110 transition-transform z-30">
+            <i class="fas fa-comment-dots text-xl"></i>
+        </button>
+
+        <!-- FOOTER CGU -->
+        <footer class="p-3 text-center border-t border-gray-900 bg-[#0a0a0a] z-20">
+            <button onclick="openInfoModal('wipMessage')" class="text-[0.6rem] text-gray-600 hover:text-gray-400 underline uppercase tracking-widest transition-colors" data-i18n="legalMentions">
+                Conditions Générales d'Utilisation
+            </button>
+        </footer>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- VUE 7: PROFIL UTILISATEUR -->
+    <!-- ========================================== -->
+    <section id="view-profile" class="view-section h-screen">
+        <header class="p-4 flex items-center border-b border-gray-800 bg-black">
+            <button onclick="nav('view-home')" class="text-gray-400 hover:text-white mr-4">
+                <i class="fas fa-arrow-left text-xl"></i>
+            </button>
+            <h2 class="font-bold text-lg uppercase tracking-wider" data-i18n="myProfile">Mon Profil</h2>
+        </header>
+
+        <div class="flex-1 p-6 flex flex-col items-center">
+            
+            <!-- Avatar -->
+            <div class="w-24 h-24 bg-gradient-to-br from-gray-700 to-gray-900 rounded-full flex items-center justify-center border-2 border-gray-600 mb-6 shadow-xl relative group">
+                <span class="text-3xl font-bold text-white" id="profileInitials">TD</span>
+                <div class="absolute bottom-0 right-0 w-8 h-8 bg-green-500 rounded-full border-4 border-black flex items-center justify-center">
+                    <i class="fas fa-check text-xs text-black"></i>
+                </div>
+            </div>
+
+            <!-- Infos Carte -->
+            <div class="w-full max-w-md bg-[#141414] border border-gray-800 rounded p-6 space-y-5">
+                <h3 class="text-xs font-bold text-gray-500 uppercase tracking-widest border-b border-gray-800 pb-2 mb-4" data-i18n="personalInfo">Informations Personnelles</h3>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-[0.6rem] font-bold text-gray-600 uppercase mb-1" data-i18n="firstName">Prénom</label>
+                        <div class="text-white font-medium" id="profFirstName">Tanguy</div>
+                    </div>
+                    <div>
+                        <label class="block text-[0.6rem] font-bold text-gray-600 uppercase mb-1" data-i18n="lastName">Nom</label>
+                        <div class="text-white font-medium" id="profLastName">Demo</div>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-[0.6rem] font-bold text-gray-600 uppercase mb-1" data-i18n="email">Email</label>
+                    <div class="text-white font-medium flex items-center gap-2">
+                        <i class="far fa-envelope text-gray-500"></i> <span id="profEmail">tanguy@bzbots.com</span>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-[0.6rem] font-bold text-gray-600 uppercase mb-1" data-i18n="role">Rôle</label>
+                    <div class="inline-flex items-center gap-2 px-3 py-1 bg-blue-900/30 border border-blue-800 rounded text-blue-400 text-xs font-bold uppercase tracking-wide">
+                        <i class="fas fa-certificate"></i> <span id="profRole">Opérateur Certifié</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="w-full max-w-md mt-6 space-y-3">
+                <button class="w-full py-3 border border-gray-700 text-gray-400 hover:text-white hover:border-white transition rounded uppercase text-xs font-bold flex items-center justify-center gap-2">
+                    <i class="fas fa-pen"></i> <span data-i18n="editProfile">Modifier mes informations</span>
+                </button>
+                
+                <button onclick="handleLogout()" class="w-full py-3 bg-red-900/20 border border-red-900 text-red-500 hover:bg-red-900 hover:text-white transition rounded uppercase text-xs font-bold flex items-center justify-center gap-2 group">
+                    <i class="fas fa-sign-out-alt group-hover:rotate-180 transition-transform"></i> <span data-i18n="logout">Se Déconnecter</span>
+                </button>
+            </div>
+
+            <div class="mt-auto text-[0.6rem] text-gray-700 uppercase tracking-widest pt-8">
+                BZ-ID: <span class="font-mono text-gray-600">884-299-XJ</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- VUE 3: LISTE PRODUITS (Sélecteur) -->
+    <!-- ========================================== -->
+    <section id="view-products" class="view-section">
+        <header class="p-4 flex items-center border-b border-gray-800">
+            <button onclick="nav('view-home')" class="text-gray-400 hover:text-white mr-4">
+                <i class="fas fa-arrow-left text-xl"></i>
+            </button>
+            <h2 class="font-bold text-lg uppercase tracking-wider" data-i18n="myProducts">Mes Produits</h2>
+        </header>
+
+        <div class="flex-1 overflow-auto p-6 space-y-4">
+            <!-- Produit 1: La Pompe (Actif) -->
+            <div onclick="nav('view-pump')" class="card-menu p-4 rounded flex items-center gap-4 group">
+                <div class="w-16 h-16 bg-gray-900 rounded flex items-center justify-center border border-gray-700 group-hover:border-white">
+                    <i class="fas fa-flask text-2xl text-white"></i>
+                </div>
+                <div>
+                    <h3 class="font-bold text-lg" data-i18n="pumpProduct">La Pompe</h3>
+                    <p class="text-xs text-gray-500" data-i18n="pumpDesc">Injection & Réhabilitation</p>
+                </div>
+                <i class="fas fa-chevron-right ml-auto text-gray-600"></i>
+            </div>
+            
+            <!-- Produit 2: BzLight (Image) - MODIFIÉ: Lien vers page config -->
+            <div onclick="nav('view-bzlight')" class="card-menu p-4 rounded flex items-center gap-4 opacity-70 hover:opacity-100 transition-opacity cursor-pointer">
+                <div class="w-16 h-16 bg-black rounded flex items-center justify-center border border-gray-700 overflow-hidden">
+                     <!-- Placeholder image pour GitHub Pages (à remplacer par vos images) -->
+                     <img src="IMG_6062.png" onerror="this.src='https://placehold.co/400x300/black/white?text=BzLight'" alt="BzLight" class="w-full h-full object-contain">
+                </div>
+                <div>
+                    <h3 class="font-bold text-lg text-gray-300" data-i18n="bzLightProduct">BzLight</h3>
+                    <p class="text-xs text-gray-500" data-i18n="bzLightDesc">Robot de fraisage</p>
+                </div>
+                <span class="ml-auto text-xs bg-gray-800 px-2 py-1 rounded text-gray-400"><i class="fas fa-chevron-right mr-1"></i> Config</span>
+            </div>
+
+            <!-- Produit 3: Tracter (Image) - MODIFIÉ: Cliquable + Pop-up -->
+            <div onclick="openInfoModal('devInProgress')" class="card-menu p-4 rounded flex items-center gap-4 opacity-70 hover:opacity-100 transition-opacity cursor-pointer">
+                <div class="w-16 h-16 bg-black rounded flex items-center justify-center border border-gray-700 overflow-hidden">
+                     <img src="IMG_6059.png" onerror="this.src='https://placehold.co/400x300/black/white?text=Tracter'" alt="Tracter" class="w-full h-full object-contain">
+                </div>
+                <div>
+                    <h3 class="font-bold text-lg text-gray-300" data-i18n="tractorProduct">Tracter</h3>
+                    <p class="text-xs text-gray-500" data-i18n="tractorProduct">Fraisage & Inspection</p>
+                </div>
+                <span class="ml-auto text-xs bg-gray-800 px-2 py-1 rounded text-gray-400"><i class="fas fa-lock mr-1"></i> Info</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- VUE 6: CONFIGURATION BZLIGHT -->
+    <!-- ========================================== -->
+    <section id="view-bzlight" class="view-section h-screen">
+        <header class="p-3 border-b border-gray-800 flex justify-between items-center bg-black z-20 shadow-md">
+            <div class="flex items-center gap-3">
+                <button onclick="nav('view-home')" class="text-gray-400 hover:text-white px-2">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <i class="fas fa-lightbulb text-yellow-500 text-xl"></i>
+                <div class="h-6 w-px bg-gray-800 mx-1"></div>
+                <span class="font-bold tracking-wide uppercase text-sm" data-i18n="bzLightConfig">Configuration BzLight</span>
+            </div>
+            <div class="text-xs font-bold text-gray-500">BZ-SYSTEM V2</div>
+        </header>
+
+        <div class="flex-1 p-6 flex flex-col items-center justify-center relative overflow-hidden overflow-y-auto">
+            <!-- Background element -->
+            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-yellow-600/10 rounded-full blur-[100px] pointer-events-none"></div>
+
+            <div class="max-w-md w-full space-y-6 relative z-10">
+                
+                <!-- CARTE SPECS -->
+                <div class="bg-[#141414] border border-gray-800 rounded p-8 shadow-2xl">
+                    <div class="text-center mb-8">
+                        <div class="w-20 h-20 bg-black rounded-full mx-auto mb-4 border border-yellow-900/50 flex items-center justify-center">
+                            <i class="fas fa-robot text-4xl text-yellow-500"></i>
+                        </div>
+                        <h2 class="text-xl font-bold text-white mb-2" data-i18n="robotSpecs">Spécifications Robot</h2>
+                        <p class="text-xs text-gray-500" data-i18n="enterSerial">Entrez le numéro de série pour voir les données</p>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1" data-i18n="robotSerial">Numéro de Série Robot</label>
+                            <div class="relative">
+                                <input type="text" id="robotSerial" class="input-bz pl-10 border-yellow-900/30 focus:border-yellow-600" placeholder="Ex: BZ-2024-X8">
+                                <i class="fas fa-barcode absolute left-3 top-3.5 text-gray-600"></i>
+                            </div>
+                        </div>
+                        <button onclick="calculateBzLightSpecs()" class="w-full py-3 bg-yellow-600 text-black font-bold uppercase hover:bg-yellow-500 transition rounded flex items-center justify-center gap-2">
+                            <i class="fas fa-search"></i> <span data-i18n="check">Vérifier</span>
+                        </button>
+                    </div>
+
+                    <!-- Résultats Specs -->
+                    <div id="bzLightResults" class="mt-8 pt-6 border-t border-gray-800 hidden animation-fade-in">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="bg-black p-4 rounded border border-gray-800 text-center">
+                                <div class="text-xs text-gray-500 uppercase mb-1" data-i18n="armPressure">Pression Levée Bras</div>
+                                <div class="text-2xl font-mono font-bold text-white"><span id="bzResPressure">0.0</span> <span class="text-sm text-yellow-600" data-i18n="bar">bar</span></div>
+                            </div>
+                            <div class="bg-black p-4 rounded border border-gray-800 text-center">
+                                <div class="text-xs text-gray-500 uppercase mb-1" data-i18n="consumption">Consommation</div>
+                                <div class="text-2xl font-mono font-bold text-white"><span id="bzResConsum">0.0</span> <span class="text-sm text-yellow-600" data-i18n="ampere">A</span></div>
+                            </div>
+                        </div>
+                        <div class="mt-4 p-3 bg-yellow-900/20 border border-yellow-900/30 rounded text-[0.65rem] text-yellow-500 flex gap-2 items-start">
+                            <i class="fas fa-info-circle mt-0.5"></i>
+                            <span>Ces valeurs sont calibrées pour une utilisation standard. </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CARTE DIAGNOSTIC IA (NOUVEAU) -->
+                <div class="ai-border p-[2px] rounded-lg">
+                    <div class="bg-[#141414] rounded-lg p-6">
+                        <h3 class="flex items-center gap-2 text-white font-bold uppercase tracking-wider text-sm mb-4">
+                            <i class="fas fa-sparkles text-purple-400"></i> Diagnostic Intelligent
+                        </h3>
+                        <p class="text-xs text-gray-400 mb-3">Décrivez un problème technique, l'IA générera une procédure de dépannage.</p>
+                        <textarea id="diagInput" class="input-bz mb-3 h-24 resize-none" placeholder="Ex: Vibrations anormales sur le bras de fraisage lors de la montée en charge..."></textarea>
+                        <button onclick="runBzDiagnostic()" class="w-full py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold uppercase rounded hover:opacity-90 transition text-xs">
+                            <i class="fas fa-magic mr-2"></i> Lancer Diagnostic IA
+                        </button>
+                        
+                        <!-- Résultat Diagnostic -->
+                        <div id="diagResult" class="mt-4 hidden p-4 bg-black rounded border border-gray-800 text-xs text-gray-300 font-mono leading-relaxed"></div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- VUE 4: L'APPLICATION POMPE -->
+    <!-- ========================================== -->
+    <section id="view-pump" class="view-section h-screen">
+        <!-- Header Spécifique Pompe -->
+        <header class="p-3 border-b border-gray-800 flex justify-between items-center bg-black z-20 shadow-md">
+            <div class="flex items-center gap-3">
+                <button onclick="nav('view-products')" class="text-gray-400 hover:text-white px-2">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <svg width="40" height="40" viewBox="0 0 100 100" fill="none">
+                    <text x="50" y="52" text-anchor="middle" font-weight="900" font-size="48" fill="white" letter-spacing="-2">BZ</text>
+                    <rect x="15" y="58" width="70" height="4" fill="white"/>
+                    <text x="50" y="82" text-anchor="middle" font-weight="bold" font-size="16" fill="white" letter-spacing="4" style="text-transform: lowercase;">bots</text>
+                </svg>
+                <div class="h-6 w-px bg-gray-800 mx-1"></div>
+                <span class="font-bold tracking-wide uppercase text-sm" data-i18n="pumpControl">Contrôle Pompe</span>
+            </div>
+            <button id="bleBtn" onclick="toggleBluetooth()" class="px-2 py-1 rounded border border-gray-800 bg-gray-900 text-gray-500 hover:border-gray-500 flex items-center gap-2 group transition-all">
+                <i id="bleIcon" class="fab fa-bluetooth-b text-sm"></i>
+                <span id="bleStatus" class="text-[0.6rem] font-bold uppercase tracking-wider hidden sm:inline" data-i18n="connect">Connect</span>
+            </button>
+        </header>
+
+        <!-- CONTENU DE L'APP POMPE -->
+        <div class="flex-1 p-4 overflow-auto relative" id="pump-config-ui">
+            <div class="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
+
+            <div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Panneau Gauche -->
+                <div class="lg:col-span-4 space-y-6">
+                    <div class="card p-5 border border-gray-800 bg-[#141414] rounded">
+                        <h2 class="text-sm font-bold text-white mb-4 uppercase tracking-widest border-b border-gray-800 pb-2" data-i18n="fluidParams">Paramètres Fluides</h2>
+                        <div class="space-y-4">
+                            <div><label class="text-[0.65rem] font-bold text-gray-500 uppercase" data-i18n="nbCols">1.1 Nb Colonnes</label><input type="number" id="nbCols" value="1" min="1" class="input-bz mt-1" onchange="renderColumns()"></div>
+                            <div>
+                                <label class="text-[0.65rem] font-bold text-gray-500 uppercase" data-i18n="resinType">1.2 Type de résine</label>
+                                <div class="relative mt-1">
+                                    <select id="resinType" class="input-bz appearance-none" onchange="calculate()">
+                                        <option value="epoxy_fast" data-speed="100" data-layer="1.5" data-i18n="resinEpoxyFast">BZ-Epoxy Fast (ref 1.5mm)</option>
+                                        <option value="epoxy_struct" data-speed="60" data-layer="3.0" data-i18n="resinEpoxyStruct">BZ-Structural (ref 3.0mm)</option>
+                                        <option value="pu_flex" data-speed="80" data-layer="1.0" data-i18n="resinPuFlex">BZ-Flex PU (ref 1.0mm)</option>
+                                    </select>
+                                    <i class="fas fa-chevron-down absolute right-3 top-4 text-xs pointer-events-none"></i>
+                                </div>
+                            </div>
+                            <div><label class="text-[0.65rem] font-bold text-gray-500 uppercase" data-i18n="targetThickness">2. Épaisseur Cible (mm)</label><input type="number" id="targetThickness" value="3.0" step="0.1" class="input-bz mt-1" oninput="calculate()"></div>
+                            <div><label class="text-[0.65rem] font-bold text-gray-500 uppercase" data-i18n="temperature">Température (°C)</label><input type="number" id="resinTemp" value="20" class="input-bz mt-1"></div>
+                        </div>
+                    </div>
+                    <div class="card p-5 border border-gray-800 bg-[#141414] rounded flex flex-col gap-2">
+                         <div class="flex justify-between items-center"><span class="text-xs text-gray-500 uppercase" data-i18n="totalPasses">Passes Totales</span><span id="calcPassesDisplay" class="text-2xl font-mono font-bold text-white">0</span></div>
+                         <div class="flex justify-between items-center"><span class="text-xs text-gray-500 uppercase" data-i18n="recSpeed">Vitesse Rec.</span><span id="maxSpeedDisplay" class="text-lg font-mono font-bold text-blue-400">0%</span></div>
+                    </div>
+                    
+                    <div class="flex gap-2">
+                         <!-- BOUTON IA ANALYSE (NOUVEAU) -->
+                        <button onclick="analyzePumpParams()" class="flex-1 py-3 border border-purple-500/50 bg-purple-900/20 text-purple-300 font-bold uppercase hover:bg-purple-900/40 transition rounded text-xs flex items-center justify-center gap-2">
+                            <i class="fas fa-sparkles"></i> Analyser Config
+                        </button>
+                        <button onclick="openPreCheckModal()" class="flex-1 btn-bz-primary text-xs" data-i18n="initJob">INITIALISER CHANTIER</button>
+                    </div>
+                </div>
+
+                <!-- Panneau Droit -->
+                <div class="lg:col-span-8">
+                    <div class="card p-5 border border-gray-800 bg-[#141414] rounded h-full flex flex-col">
+                        <div class="flex justify-between items-center mb-4 border-b border-gray-800 pb-2">
+                            <h2 class="text-sm font-bold text-white uppercase tracking-widest" data-i18n="dimensioning">Dimensionnement</h2>
+                            <div class="flex gap-4">
+                                <label class="flex items-center text-xs text-gray-400 cursor-pointer"><input type="checkbox" id="sameLength" checked class="mr-2 accent-white" onchange="renderColumns()"> <span data-i18n="sameLength">Long. Uniq.</span></label>
+                                <label class="flex items-center text-xs text-gray-400 cursor-pointer"><input type="checkbox" id="sameDia" checked class="mr-2 accent-white" onchange="renderColumns()"> <span data-i18n="sameDia">Dia. Uniq.</span></label>
+                            </div>
+                        </div>
+                        <div id="globalInputs" class="grid grid-cols-2 gap-4 mb-4 bg-black p-3 rounded border border-gray-800">
+                            <div><label class="text-[0.6rem] font-bold text-gray-500 uppercase" data-i18n="stdLength">Long. Std (m)</label><input type="number" id="globalLengthVal" value="10" class="input-bz py-1 mt-1 text-sm" onchange="calculate()"></div>
+                            <div><label class="text-[0.6rem] font-bold text-gray-500 uppercase" data-i18n="stdDia">Diam. Std (mm)</label><input type="number" id="globalDiaVal" value="100" class="input-bz py-1 mt-1 text-sm" onchange="calculate()"></div>
+                        </div>
+                        <div class="flex-1 overflow-auto bg-black rounded border border-gray-800">
+                            <table class="w-full text-xs text-left text-gray-400">
+                                <thead class="text-[0.6rem] uppercase bg-gray-900 sticky top-0 text-gray-500">
+                                    <tr>
+                                        <th class="px-4 py-2" data-i18n="colHeaderPos">#</th>
+                                        <th class="px-4 py-2" data-i18n="colHeaderLen">Long.</th>
+                                        <th class="px-4 py-2" data-i18n="colHeaderDia">Diam.</th>
+                                        <th class="px-4 py-2" data-i18n="colHeaderPass">Passes</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="columnsContainer" class="divide-y divide-gray-800"></tbody>
+                            </table>
+                        </div>
+                        <div class="mt-3 flex justify-between items-center pt-2 border-t border-gray-800">
+                            <span class="text-xs text-gray-500 uppercase" data-i18n="totalLinear">Total Linéaire</span>
+                            <span class="text-xl font-mono font-bold text-white"><span id="totalLinearMeters">0.00</span>m</span>
+                        </div>
+                        <input type="hidden" id="finalPasses" value="0">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- VUE 5: CHAT IA (BzIA Assistant) -->
+    <!-- ========================================== -->
+    <section id="view-ai-chat" class="view-section h-screen bg-[#0a0a0a]">
+        <header class="p-4 flex items-center border-b border-gray-800 bg-gray-900">
+            <button onclick="nav('view-home')" class="text-gray-400 hover:text-white mr-4">
+                <i class="fas fa-arrow-left text-xl"></i>
+            </button>
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-white">
+                    <i class="fas fa-sparkles"></i>
+                </div>
+                <div>
+                    <h2 class="font-bold text-white" data-i18n="aiExpert">BzIA Expert</h2>
+                    <p class="text-xs text-green-400 flex items-center gap-1"><span class="w-2 h-2 bg-green-500 rounded-full"></span> <span data-i18n="online">En ligne</span></p>
+                </div>
+            </div>
+        </header>
+        
+        <div id="chat-container" class="flex-1 overflow-y-auto p-4 flex flex-col gap-2">
+            <!-- Intro Message will be injected via JS to handle translation -->
+        </div>
+
+        <div class="p-4 bg-gray-900 border-t border-gray-800">
+            <div class="flex gap-2 relative">
+                <input type="text" id="chat-input" class="flex-1 bg-black border border-gray-700 rounded-full px-4 py-3 text-white focus:border-purple-500 outline-none" placeholder="Posez votre question technique..." data-i18n="typeQuestion" onkeypress="if(event.key === 'Enter') sendMessage()">
+                <button onclick="sendMessage()" class="bg-purple-600 text-white rounded-full w-12 h-12 flex items-center justify-center hover:bg-purple-500 transition shadow-lg">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- OVERLAY: ECRAN D'OPÉRATION (Mode Chantier) -->
+    <!-- ========================================== -->
+    <div id="operationPanel" class="hidden fixed inset-0 bg-black z-50 flex flex-col">
+        <div class="p-6 border-b border-gray-800 flex justify-between items-center bg-gray-900">
+            <div>
+                <h2 id="opStatusTitle" class="text-2xl font-black text-white tracking-tighter uppercase" data-i18n="appRunning">APPLICATION EN COURS</h2>
+                <div class="flex items-center gap-4 mt-1 text-sm text-gray-400">
+                    <span><i class="fas fa-flask mr-2"></i><span id="opResinName"></span></span>
+                    <span><i class="fas fa-thermometer-half mr-2"></i><span id="opTemp"></span>°C</span>
+                </div>
+            </div>
+            <div class="text-right">
+                <div class="text-xs text-gray-500 uppercase tracking-widest mb-1" data-i18n="pumpPressure">Pression Pompe</div>
+                <div class="text-3xl font-mono font-bold text-white" id="opPumpSpeed">0%</div>
+            </div>
+        </div>
+
+        <div class="flex-1 flex flex-col justify-center items-center p-8 relative overflow-hidden">
+            <div class="absolute inset-0 flex items-center justify-center opacity-10 pointer-events-none">
+                <svg width="600" height="600" viewBox="0 0 100 100" fill="none">
+                     <path d="M10 20 H50 L20 50 H50" stroke="white" stroke-width="2"/>
+                     <path d="M60 20 H90 L60 50 H90" stroke="white" stroke-width="2"/>
+                </svg>
+            </div>
+
+            <div class="w-full max-w-4xl z-10">
+                <div class="flex justify-center mb-12">
+                    <div class="text-center">
+                        <h3 class="text-gray-500 text-sm uppercase tracking-[0.2em] mb-4" data-i18n="remainingDist">Distance Restante</h3>
+                        <div class="text-9xl font-black text-white font-mono tracking-tighter" id="opRemainingMeters">00.00</div>
+                        <div class="text-gray-600 mt-2 font-mono" data-i18n="linearMeters">MÈTRES LINÉAIRES (CUMULÉS)</div>
+                    </div>
+                </div>
+
+                <div class="relative w-full h-2 bg-gray-800 rounded-full mb-12 overflow-hidden">
+                    <div id="progressBar" class="absolute top-0 left-0 h-full bg-white shadow-[0_0_15px_rgba(255,255,255,0.5)] transition-all duration-200" style="width: 0%"></div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-6 max-w-2xl mx-auto">
+                    <button id="btnStop" onclick="stopJob(false)" class="col-span-2 bg-red-600 hover:bg-red-700 text-white font-bold py-6 px-4 rounded border-0 shadow-[0_0_20px_rgba(220,38,38,0.4)] transition active:scale-95 uppercase tracking-widest flex items-center justify-center gap-3">
+                        <i class="fas fa-stop-circle text-2xl"></i> <span data-i18n="emergencyStop">Arrêt d'urgence</span>
+                    </button>
+                    
+                    <button id="btnReport" onclick="generateReport()" class="hidden col-span-1 bg-gradient-to-r from-purple-600 to-blue-600 hover:opacity-90 text-white font-bold py-4 px-4 rounded transition uppercase tracking-widest flex items-center justify-center gap-2">
+                        <i class="fas fa-magic"></i> <span data-i18n="aiReport">Rapport IA</span>
+                    </button>
+                    <button id="btnReset" onclick="resetApp()" class="hidden col-span-1 bg-gray-800 hover:bg-gray-700 text-white font-bold py-4 px-4 rounded border border-gray-600 transition uppercase tracking-widest">
+                        <i class="fas fa-undo mr-2"></i> <span data-i18n="backConfig">Retour Config</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="p-4 bg-gray-900 border-t border-gray-800 flex justify-between items-center text-xs text-gray-500">
+            <span>BZ BOTS SYSTEMS</span>
+            <span id="pumpStatusText" class="font-bold text-white"><i class="fas fa-cog fa-spin mr-2"></i> <span data-i18n="pumpActive">POMPE ACTIVE</span></span>
+        </div>
+    </div>
+
+    <!-- MODAL DE SÉCURITÉ -->
+    <div id="safetyModal" class="fixed inset-0 bg-black/95 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-gray-900 border border-gray-700 w-full max-w-md p-0 shadow-2xl relative">
+            <div class="h-2 w-full" style="background: repeating-linear-gradient(45deg, #fbbf24, #fbbf24 10px, #000 10px, #000 20px);"></div>
+            <div class="p-8 text-center">
+                <i class="fas fa-exclamation-triangle text-5xl text-yellow-500 mb-6"></i>
+                <h2 class="text-2xl font-bold text-white mb-2 uppercase" data-i18n="safetyCheck">Vérification Requise</h2>
+                <div class="text-left bg-black border border-gray-800 p-4 mb-6 text-sm text-gray-300 space-y-3">
+                    <label class="flex items-start gap-3 cursor-pointer"><input type="checkbox" class="mt-1 accent-white"><span data-i18n="tanksFull">Réservoirs pleins</span></label>
+                    <label class="flex items-start gap-3 cursor-pointer"><input type="checkbox" class="mt-1 accent-white"><span data-i18n="nozzlesConnected">Buses connectées</span></label>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <button onclick="closeSafetyModal()" class="py-3 px-4 bg-transparent border border-gray-600 text-white hover:bg-gray-800 transition uppercase text-xs font-bold" data-i18n="cancel">Annuler</button>
+                    <button onclick="startJob()" class="py-3 px-4 bg-white text-black hover:bg-gray-200 transition uppercase text-xs font-bold" data-i18n="start">Démarrer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL RAPPORT IA -->
+    <div id="reportModal" class="fixed inset-0 bg-black/90 z-[60] hidden flex items-center justify-center p-4 backdrop-blur-md">
+        <div class="bg-gray-900 border border-purple-500 w-full max-w-2xl shadow-2xl rounded-lg overflow-hidden flex flex-col max-h-[80vh]">
+            <div class="p-4 bg-gradient-to-r from-purple-900 to-gray-900 border-b border-gray-700 flex justify-between items-center">
+                <h3 class="text-white font-bold flex items-center gap-2"><i class="fas fa-file-alt text-purple-400"></i> <span data-i18n="generatedReport">Rapport de Chantier Généré</span></h3>
+                <button onclick="closeReportModal()" class="text-gray-400 hover:text-white"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="p-6 overflow-y-auto bg-black font-mono text-sm text-gray-300 leading-relaxed" id="reportContent">
+                <div class="flex justify-center items-center py-10 text-purple-400">
+                    <i class="fas fa-circle-notch fa-spin mr-3"></i> Génération du rapport en cours...
+                </div>
+            </div>
+            <div class="p-4 border-t border-gray-800 flex justify-end gap-3 bg-gray-900">
+                <button onclick="closeReportModal()" class="px-4 py-2 text-gray-400 hover:text-white text-sm" data-i18n="close">Fermer</button>
+                <button class="px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white text-sm font-bold rounded flex items-center gap-2">
+                    <i class="fas fa-envelope"></i> <span data-i18n="send">Envoyer</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- NOUVEAU: MODAL ANALYSE IA (POMPE) -->
+    <div id="aiAnalysisModal" class="fixed inset-0 bg-black/90 z-[70] hidden flex items-center justify-center p-4 backdrop-blur-md">
+        <div class="bg-gray-900 border border-purple-500/50 w-full max-w-lg shadow-2xl rounded-lg overflow-hidden flex flex-col relative">
+            <div class="absolute inset-0 bg-purple-900/10 pointer-events-none"></div>
+            <div class="p-4 border-b border-gray-800 flex justify-between items-center relative z-10">
+                <h3 class="text-white font-bold flex items-center gap-2"><i class="fas fa-sparkles text-purple-400"></i> Analyse de Configuration</h3>
+                <button onclick="document.getElementById('aiAnalysisModal').classList.add('hidden')" class="text-gray-400 hover:text-white"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="p-6 bg-black/80 font-mono text-xs text-gray-300 leading-relaxed min-h-[150px]" id="aiAnalysisContent">
+                <!-- Content injected via JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL INFO GÉNÉRIQUE -->
+    <div id="infoModal" class="fixed inset-0 bg-black/90 z-[70] hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-gray-900 border border-gray-700 w-full max-w-sm shadow-xl rounded overflow-hidden">
+            <div class="p-4 border-b border-gray-800 flex justify-between items-center bg-black">
+                <h3 class="text-white font-bold uppercase tracking-widest text-sm" data-i18n="productInfo">Information Produit</h3>
+                <button onclick="closeInfoModal()" class="text-gray-500 hover:text-white"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="p-8 text-center">
+                <p id="infoModalText" class="text-white text-lg font-bold"></p>
+                <p class="text-gray-500 text-xs mt-2 italic" data-i18n="fullDefs">Définitions complètes à venir...</p>
+            </div>
+            <div class="p-4 bg-black border-t border-gray-800 text-center">
+                <button onclick="closeInfoModal()" class="px-6 py-2 bg-white text-black text-xs font-bold uppercase rounded hover:bg-gray-200" data-i18n="close">Fermer</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL PARAMÈTRES API (NOUVEAU) -->
+    <div id="settingsModal" class="fixed inset-0 bg-black/95 z-[80] hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-gray-900 border border-gray-700 w-full max-w-md shadow-2xl rounded-lg overflow-hidden">
+            <div class="p-4 border-b border-gray-800 flex justify-between items-center bg-black">
+                <h3 class="text-white font-bold uppercase tracking-widest text-sm">Paramètres API</h3>
+                <button onclick="closeSettingsModal()" class="text-gray-500 hover:text-white"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="p-6">
+                <p class="text-xs text-gray-400 mb-4">Pour utiliser l'Assistant IA et la génération de rapports, veuillez entrer votre clé API Google Gemini ci-dessous.</p>
+                
+                <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Clé API Google (Gemini)</label>
+                <div class="relative">
+                    <input type="password" id="userApiKeyInput" class="input-bz pl-10" placeholder="AIzaSy..." onchange="saveSettings()">
+                    <i class="fas fa-key absolute left-3 top-3.5 text-gray-600"></i>
+                </div>
+                <p class="text-[0.6rem] text-gray-600 mt-2 italic">La clé est stockée uniquement dans votre navigateur pour cette session.</p>
+            </div>
+            <div class="p-4 bg-black border-t border-gray-800 flex justify-end gap-3">
+                <button onclick="closeSettingsModal()" class="px-4 py-2 text-gray-400 text-xs font-bold uppercase hover:text-white">Annuler</button>
+                <button onclick="saveSettings(); closeSettingsModal()" class="px-4 py-2 bg-white text-black text-xs font-bold uppercase rounded hover:bg-gray-200">Enregistrer</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const apiKey = ""; // La clé par défaut reste vide
+        let userApiKey = ""; // Variable pour stocker la clé utilisateur
+        let currentLang = 'fr';
+
+        const translations = {
+            fr: {
+                loginTitle: "Connexion",
+                accountName: "Nom de compte",
+                password: "Mot de passe",
+                loginBtn: "ME CONNECTER",
+                createAccount: "Créer un compte",
+                hello: "Bonjour",
+                discoverRange: "Découvrez notre gamme",
+                quickAccess: "Accès Rapide",
+                catalog: "Catalogue",
+                profile: "Profil",
+                documents: "Documents",
+                aiAssistant: "Assistant IA",
+                pumpProduct: "La Pompe",
+                pumpDesc: "SYSTÈME D'INJECTION",
+                bzLightProduct: "BzLight",
+                bzLightDesc: "Robot de fraisage",
+                tractorProduct: "Tracter",
+                tractorDesc: "FRAISAGE & INSPECTION",
+                techSheet: "Fiche Technique",
+                videoManual: "Tuto Vidéo & Manuel",
+                maintenanceGuide: "Guide d'entretien",
+                highPower: "Haute Puissance",
+                hdCamera: "Caméra Inspection HD",
+                preciseControl: "Pilotage Précis",
+                details: "Détails",
+                configure: "Configurer",
+                launchApp: "Lancer l'app",
+                fluidParams: "Paramètres Fluides",
+                nbCols: "1.1 Nb Colonnes",
+                resinType: "1.2 Type de résine",
+                targetThickness: "2. Épaisseur Cible (mm)",
+                temperature: "Température (°C)",
+                totalPasses: "Passes Totales",
+                recSpeed: "Vitesse Rec.",
+                initJob: "INITIALISER CHANTIER",
+                dimensioning: "Dimensionnement",
+                sameLength: "Long. Uniq.",
+                sameDia: "Dia. Uniq.",
+                stdLength: "Long. Std (m)",
+                stdDia: "Diam. Std (mm)",
+                colHeaderPos: "#",
+                colHeaderLen: "Long.",
+                colHeaderDia: "Diam.",
+                colHeaderPass: "Passes",
+                totalLinear: "Total Linéaire",
+                pumpControl: "Contrôle Pompe",
+                connect: "Connect",
+                scan: "Scan...",
+                linked: "Linked",
+                appRunning: "APPLICATION EN COURS",
+                pumpPressure: "Pression Pompe",
+                remainingDist: "Distance Restante",
+                linearMeters: "MÈTRES LINÉAIRES (CUMULÉS)",
+                emergencyStop: "Arrêt d'urgence",
+                aiReport: "Rapport IA",
+                backConfig: "Retour Config",
+                pumpActive: "POMPE ACTIVE",
+                safetyCheck: "Vérification Requise",
+                tanksFull: "Réservoirs pleins",
+                nozzlesConnected: "Buses connectées",
+                cancel: "Annuler",
+                start: "Démarrer",
+                generatedReport: "Rapport de Chantier Généré",
+                close: "Fermer",
+                send: "Envoyer",
+                productInfo: "Information Produit",
+                fullDefs: "Définitions complètes à venir...",
+                myProducts: "Mes Produits",
+                aiExpert: "BzIA Expert",
+                online: "En ligne",
+                typeQuestion: "Posez votre question technique...",
+                aiIntro: "Bonjour ! Je suis l'assistant technique intelligent de BZBots. Je peux vous aider avec :",
+                aiList1: "Les réglages de la Pompe",
+                aiList2: "L'entretien du BzLight",
+                aiList3: "Les procédures de sécurité",
+                aiQuestion: "Quelle est votre question ?",
+                docBtn: "Documentation",
+                portable: "Facilement transportable",
+                antiTMS: "Anti-TMS",
+                ergonomic: "Ergonomique",
+                autoCalc: "Calculateur Automatique",
+                btConn: "Connexion Bluetooth",
+                tempTrack: "Suivi Température",
+                resinEpoxyFast: "BZ-Epoxy Fast (ref 1.5mm)",
+                resinEpoxyStruct: "BZ-Structural (ref 3.0mm)",
+                resinPuFlex: "BZ-Flex PU (ref 1.0mm)",
+                devInProgress: "Module en cours de développement 🚧",
+                bzLightConfig: "Configuration BzLight",
+                robotSpecs: "Spécifications Robot",
+                enterSerial: "Entrez le numéro de série pour voir les données",
+                robotSerial: "Numéro de Série Robot",
+                check: "Vérifier",
+                armPressure: "Pression Levée Bras",
+                bar: "bar",
+                consumption: "Consommation",
+                ampere: "A",
+                legalMentions: "Conditions Générales d'Utilisation & Mentions Légales",
+                wipMessage: "Document juridique en cours de rédaction ✍️",
+                // NOUVELLES TRADUCTIONS REGISTER
+                registerTitle: "Créer un compte",
+                lastName: "Nom",
+                firstName: "Prénom",
+                email: "Adresse mail",
+                confirmPassword: "Confirmation de mot de passe",
+                registerBtn: "CRÉER MON COMPTE",
+                alreadyAccount: "Déjà un compte ? Se connecter",
+                registrationSuccess: "Compte créé avec succès !",
+                // NOUVELLES TRADUCTIONS PROFIL
+                myProfile: "Mon Profil",
+                personalInfo: "Informations Personnelles",
+                role: "Rôle",
+                editProfile: "Modifier mes informations",
+                logout: "Se Déconnecter",
+                logoutSuccess: "Vous avez été déconnecté."
+            },
+            en: {
+                loginTitle: "Login",
+                accountName: "Account Name",
+                password: "Password",
+                loginBtn: "LOGIN",
+                createAccount: "Create an account",
+                hello: "Hello",
+                discoverRange: "Discover our range",
+                quickAccess: "Quick Access",
+                catalog: "Catalog",
+                profile: "Profile",
+                documents: "Documents",
+                aiAssistant: "AI Assistant",
+                pumpProduct: "The Pump",
+                pumpDesc: "INJECTION SYSTEM",
+                bzLightProduct: "BzLight",
+                bzLightDesc: "Milling Robot",
+                tractorProduct: "Tracter",
+                tractorDesc: "MILLING & INSPECTION",
+                techSheet: "Tech Sheet",
+                videoManual: "Video Tuto & Manual",
+                maintenanceGuide: "Maintenance Guide",
+                highPower: "High Power",
+                hdCamera: "HD Inspection Camera",
+                preciseControl: "Precise Control",
+                details: "Details",
+                configure: "Configure",
+                launchApp: "Launch App",
+                fluidParams: "Fluid Parameters",
+                nbCols: "1.1 Nb Columns",
+                resinType: "1.2 Resin Type",
+                targetThickness: "2. Target Thickness (mm)",
+                temperature: "Temperature (°C)",
+                totalPasses: "Total Passes",
+                recSpeed: "Rec. Speed",
+                initJob: "INITIALIZE JOB",
+                dimensioning: "Dimensioning",
+                sameLength: "Uniq. Len.",
+                sameDia: "Uniq. Dia.",
+                stdLength: "Std Len (m)",
+                stdDia: "Std Dia (mm)",
+                colHeaderPos: "#",
+                colHeaderLen: "Len.",
+                colHeaderDia: "Dia.",
+                colHeaderPass: "Passes",
+                totalLinear: "Total Linear",
+                pumpControl: "Pump Control",
+                connect: "Connect",
+                scan: "Scan...",
+                linked: "Linked",
+                appRunning: "APPLICATION RUNNING",
+                pumpPressure: "Pump Pressure",
+                remainingDist: "Remaining Distance",
+                linearMeters: "LINEAR METERS (CUMULATIVE)",
+                emergencyStop: "Emergency Stop",
+                aiReport: "AI Report",
+                backConfig: "Back Config",
+                pumpActive: "PUMP ACTIVE",
+                safetyCheck: "Safety Check",
+                tanksFull: "Tanks full",
+                nozzlesConnected: "Nozzles connected",
+                cancel: "Cancel",
+                start: "Start",
+                generatedReport: "Generated Site Report",
+                close: "Close",
+                send: "Send",
+                productInfo: "Product Information",
+                fullDefs: "Full definitions coming soon...",
+                myProducts: "My Products",
+                aiExpert: "BzIA Expert",
+                online: "Online",
+                typeQuestion: "Ask your technical question...",
+                aiIntro: "Hello! I am the BZBots intelligent technical assistant. I can help you with:",
+                aiList1: "Pump settings",
+                aiList2: "BzLight maintenance",
+                aiList3: "Safety procedures",
+                aiQuestion: "What is your question?",
+                docBtn: "Documentation",
+                portable: "Easily transportable",
+                antiTMS: "Anti-RSI",
+                ergonomic: "Ergonomic",
+                autoCalc: "Automatic Calculator",
+                btConn: "Bluetooth Connection",
+                tempTrack: "Temperature Tracking",
+                resinEpoxyFast: "BZ-Epoxy Fast (ref 1.5mm)",
+                resinEpoxyStruct: "BZ-Structural (ref 3.0mm)",
+                resinPuFlex: "BZ-Flex PU (ref 1.0mm)",
+                devInProgress: "Module under development 🚧",
+                bzLightConfig: "BzLight Configuration",
+                robotSpecs: "Robot Specs",
+                enterSerial: "Enter serial number to see data",
+                robotSerial: "Robot Serial Number",
+                check: "Check",
+                armPressure: "Arm Lift Pressure",
+                bar: "bar",
+                consumption: "Consumption",
+                ampere: "A",
+                legalMentions: "Terms of Service & Legal Notice",
+                wipMessage: "Legal document currently being written ✍️",
+                // NEW TRANSLATIONS REGISTER
+                registerTitle: "Create Account",
+                lastName: "Last Name",
+                firstName: "First Name",
+                email: "Email Address",
+                confirmPassword: "Confirm Password",
+                registerBtn: "CREATE ACCOUNT",
+                alreadyAccount: "Already have an account? Login",
+                registrationSuccess: "Account created successfully!",
+                // NEW TRANSLATIONS PROFILE
+                myProfile: "My Profile",
+                personalInfo: "Personal Information",
+                role: "Role",
+                editProfile: "Edit Information",
+                logout: "Log Out",
+                logoutSuccess: "You have been logged out."
+            }
+        };
+
+        // --- ÉTAT UTILISATEUR ---
+        let currentUser = {
+            firstName: "Tanguy",
+            lastName: "Demo",
+            email: "tanguy@bzbots.com",
+            role: "Opérateur Certifié"
+        };
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'fr' ? 'en' : 'fr';
+            updateInterfaceLanguage();
+            document.querySelectorAll('.lang-text').forEach(el => el.innerText = currentLang.toUpperCase());
+        }
+
+        function updateInterfaceLanguage() {
+            const texts = translations[currentLang];
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (texts[key]) {
+                    if (el.tagName === 'INPUT' && el.getAttribute('placeholder')) {
+                        el.placeholder = texts[key];
+                    } else {
+                        el.innerText = texts[key];
+                    }
+                }
+            });
+            updateAiIntro();
+        }
+
+        function updateAiIntro() {
+            const container = document.getElementById('chat-container');
+            if (container && container.children.length <= 1) { 
+                 container.innerHTML = `
+                    <div class="chat-bubble chat-ai">
+                        ${translations[currentLang].aiIntro}
+                        <ul class="list-disc pl-5 mt-2">
+                            <li>${translations[currentLang].aiList1}</li>
+                            <li>${translations[currentLang].aiList2}</li>
+                            <li>${translations[currentLang].aiList3}</li>
+                        </ul>
+                        ${translations[currentLang].aiQuestion}
+                    </div>
+                `;
+            }
+        }
+
+        // --- NAVIGATION SYSTEM ---
+        function nav(viewId) {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+            document.getElementById(viewId).classList.add('active');
+            if(viewId === 'view-pump') { renderColumns(); calculate(); }
+            if(viewId === 'view-ai-chat') { updateAiIntro(); }
+            if(viewId === 'view-profile') { updateProfileView(); } // Mise à jour du profil à l'ouverture
+        }
+
+        // Met à jour l'affichage du profil avec les données actuelles
+        function updateProfileView() {
+            document.getElementById('profFirstName').innerText = currentUser.firstName;
+            document.getElementById('profLastName').innerText = currentUser.lastName;
+            document.getElementById('profEmail').innerText = currentUser.email;
+            document.getElementById('profRole').innerText = currentUser.role || "Utilisateur";
+            
+            const initials = (currentUser.firstName[0] + currentUser.lastName[0]).toUpperCase();
+            document.getElementById('profileInitials').innerText = initials;
+        }
+
+        function handleLogin() {
+            const btn = document.getElementById('loginBtn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i><span>...</span>';
+            btn.disabled = true;
+            btn.classList.add('opacity-80', 'cursor-wait');
+
+            // Set default user if generic login
+            if(currentUser.firstName === "") {
+                 currentUser = { firstName: "Opérateur", lastName: "BZ", email: "operateur@bzbots.com", role: "Opérateur" };
+            }
+            updateHeaderUser();
+
+            setTimeout(() => {
+                nav('view-home');
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                    btn.classList.remove('opacity-80', 'cursor-wait');
+                }, 500);
+            }, 500);
+        }
+
+        function updateHeaderUser() {
+             document.getElementById('userNameDisplay').innerText = currentUser.firstName;
+             const initials = (currentUser.firstName[0] + (currentUser.lastName[0] || "")).toUpperCase();
+             document.getElementById('userAvatarInitials').innerText = initials;
+        }
+
+        // --- NOUVEAU: GESTION INSCRIPTION ---
+        function handleRegister() {
+            const btn = document.getElementById('registerBtn');
+            const originalText = btn.innerHTML;
+            
+            // Récupération des données
+            const fName = document.getElementById('regFirstName').value;
+            const lName = document.getElementById('regLastName').value;
+            const email = document.getElementById('regEmail').value;
+
+            // Animation chargement
+            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i>';
+            btn.disabled = true;
+            btn.classList.add('opacity-80', 'cursor-wait');
+
+            // Simulation délai serveur
+            setTimeout(() => {
+                // Mise à jour de l'état utilisateur
+                currentUser = {
+                    firstName: fName,
+                    lastName: lName,
+                    email: email,
+                    role: "Nouveau Compte"
+                };
+                updateHeaderUser();
+
+                // Succès
+                alert(translations[currentLang].registrationSuccess);
+                nav('view-login'); // Retour au login
+                
+                // Reset bouton
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                    btn.classList.remove('opacity-80', 'cursor-wait');
+                    document.querySelector('#view-register form').reset();
+                }, 500);
+            }, 1000);
+        }
+
+        // --- NOUVEAU: DÉCONNEXION ---
+        function handleLogout() {
+            if(confirm("Voulez-vous vraiment vous déconnecter ?")) {
+                currentUser = { firstName: "", lastName: "", email: "", role: "" }; // Clear user
+                nav('view-login');
+                alert(translations[currentLang].logoutSuccess);
+            }
+        }
+
+        // --- GESTION INFO MODAL ---
+        function openInfoModal(keyOrText) {
+            let text = keyOrText;
+            if(translations[currentLang][keyOrText]) {
+                text = translations[currentLang][keyOrText];
+            } else if (keyOrText === 'Robot de fraisage' && currentLang === 'en') {
+                 text = "Milling Robot";
+            } else if (keyOrText === 'Tracteur' && currentLang === 'en') {
+                 text = "Tractor";
+            }
+            
+            document.getElementById('infoModalText').innerText = text;
+            document.getElementById('infoModal').classList.remove('hidden');
+        }
+
+        function closeInfoModal() {
+            document.getElementById('infoModal').classList.add('hidden');
+        }
+
+        // --- GESTION SETTINGS MODAL ---
+        function openSettingsModal() {
+            document.getElementById('userApiKeyInput').value = userApiKey;
+            document.getElementById('settingsModal').classList.remove('hidden');
+        }
+
+        function closeSettingsModal() {
+            document.getElementById('settingsModal').classList.add('hidden');
+        }
+
+        function saveSettings() {
+            userApiKey = document.getElementById('userApiKeyInput').value.trim();
+        }
+
+        // --- LOGIQUE BZLIGHT ---
+        function calculateBzLightSpecs() {
+            const id = document.getElementById('robotSerial').value;
+            if(!id) return;
+            
+            let seed = 0;
+            for(let i=0; i<id.length; i++) seed += id.charCodeAt(i);
+            
+            const pressure = (3.5 + (seed % 30) / 10).toFixed(1); 
+            const consumption = (4 + (seed % 50) / 10).toFixed(1); 
+            
+            document.getElementById('bzResPressure').innerText = pressure;
+            document.getElementById('bzResConsum').innerText = consumption;
+            document.getElementById('bzLightResults').classList.remove('hidden');
+        }
+
+        // --- LOGIQUE METIER POMPE ---
+        let jobState = { totalMetersToProcess: 0, currentMetersLeft: 0, speed: 0, timer: null };
+        let isBleConnected = false;
+
+        function toggleBluetooth() {
+            const btn = document.getElementById('bleBtn');
+            const icon = document.getElementById('bleIcon');
+            const status = document.getElementById('bleStatus');
+            if (isBleConnected) {
+                isBleConnected = false;
+                btn.className = "px-2 py-1 rounded border border-gray-800 bg-gray-900 text-gray-500 hover:border-gray-500 flex items-center gap-2 group transition-all";
+                icon.className = "fab fa-bluetooth-b text-sm";
+                status.innerText = translations[currentLang].connect; 
+                status.className = "text-[0.6rem] font-bold uppercase tracking-wider hidden sm:inline";
+            } else {
+                status.innerText = translations[currentLang].scan; 
+                icon.className = "fab fa-bluetooth-b text-sm text-blue-400 fa-fade";
+                setTimeout(() => {
+                    isBleConnected = true;
+                    btn.className = "px-2 py-1 rounded border border-blue-500 bg-blue-900/30 text-white flex items-center gap-2 transition-all";
+                    icon.className = "fab fa-bluetooth-b text-sm text-blue-400";
+                    icon.classList.remove('fa-fade');
+                    status.innerText = translations[currentLang].linked; 
+                    status.className = "text-[0.6rem] font-bold uppercase tracking-wider hidden sm:inline text-blue-400";
+                }, 1500);
+            }
+        }
+
+        function renderColumns() {
+            const nb = parseInt(document.getElementById('nbCols').value) || 1;
+            const sameLength = document.getElementById('sameLength').checked;
+            const sameDia = document.getElementById('sameDia').checked;
+            const container = document.getElementById('columnsContainer');
+            const globalInputs = document.getElementById('globalInputs');
+
+            if (sameLength && sameDia) globalInputs.classList.remove('hidden');
+            else if (!sameLength && !sameDia) globalInputs.classList.add('hidden');
+
+            let html = '';
+            for(let i = 1; i <= nb; i++) {
+                html += `<tr class="group hover:bg-gray-900" id="row-${i}">
+                    <td class="px-4 py-2 font-mono text-white">#${i}</td>
+                    <td class="px-4 py-2">${sameLength ? `<span class="italic text-gray-600">Std</span>` : `<input type="number" class="col-len bg-black border border-gray-700 text-white w-16 p-1 text-center" value="10" onchange="calculate()">`}</td>
+                    <td class="px-4 py-2">${sameDia ? `<span class="italic text-gray-600">Std</span>` : `<input type="number" class="col-dia bg-black border border-gray-700 text-white w-16 p-1 text-center" value="100" onchange="calculate()">`}</td>
+                    <td class="px-4 py-2 font-mono font-bold text-blue-400 pass-cell">-</td>
+                </tr>`;
+            }
+            container.innerHTML = html;
+            calculate();
+        }
+
+        function calculate() {
+            const nb = parseInt(document.getElementById('nbCols').value) || 1;
+            const sameLength = document.getElementById('sameLength').checked;
+            const sameDia = document.getElementById('sameDia').checked;
+            const targetThickness = parseFloat(document.getElementById('targetThickness').value) || 0;
+            const selectResin = document.getElementById('resinType');
+            const selectedOption = selectResin.options[selectResin.selectedIndex];
+            
+            const baseLayer = parseFloat(selectedOption.getAttribute('data-layer'));
+            const maxSpeed = selectedOption.getAttribute('data-speed');
+            
+            let grandTotalPasses = 0;
+            let grandTotalDistance = 0;
+
+            for (let i = 1; i <= nb; i++) {
+                let length, dia;
+                if (sameLength) length = parseFloat(document.getElementById('globalLengthVal').value) || 0;
+                else length = parseFloat(document.querySelector(`#row-${i} .col-len`)?.value) || 0;
+
+                if (sameDia) dia = parseFloat(document.getElementById('globalDiaVal').value) || 100;
+                else dia = parseFloat(document.querySelector(`#row-${i} .col-dia`)?.value) || 100;
+
+                let effectiveLayer = baseLayer * (100 / (dia || 100)); 
+                let passesForCol = Math.ceil(targetThickness / (effectiveLayer || 1));
+                
+                const row = document.getElementById(`row-${i}`);
+                if(row) row.querySelector('.pass-cell').innerText = passesForCol;
+
+                grandTotalPasses += passesForCol;
+                grandTotalDistance += (length * passesForCol);
+            }
+
+            document.getElementById('calcPassesDisplay').innerText = grandTotalPasses;
+            document.getElementById('finalPasses').value = grandTotalPasses;
+            document.getElementById('maxSpeedDisplay').innerText = maxSpeed + '%';
+            document.getElementById('totalLinearMeters').innerText = grandTotalDistance.toFixed(2);
+            jobState.totalMetersToProcess = grandTotalDistance;
+        }
+
+        // --- GESTION JOB ---
+        function openPreCheckModal() { document.getElementById('safetyModal').classList.remove('hidden'); }
+        function closeSafetyModal() { document.getElementById('safetyModal').classList.add('hidden'); }
+
+        function startJob() {
+            closeSafetyModal();
+            const selectResin = document.getElementById('resinType');
+            const maxSpeed = selectResin.options[selectResin.selectedIndex].getAttribute('data-speed');
+            const resinName = selectResin.options[selectResin.selectedIndex].text; 
+            const temp = document.getElementById('resinTemp').value;
+
+            jobState.currentMetersLeft = jobState.totalMetersToProcess;
+            jobState.speed = maxSpeed;
+
+            // Setup UI Opération
+            document.getElementById('opStatusTitle').innerText = translations[currentLang].appRunning;
+            document.getElementById('opStatusTitle').className = "text-2xl font-black text-white tracking-tighter uppercase";
+            document.getElementById('btnStop').classList.remove('hidden');
+            document.getElementById('btnReset').classList.add('hidden');
+            document.getElementById('btnReport').classList.add('hidden');
+            document.getElementById('pumpStatusText').innerHTML = `<i class="fas fa-cog fa-spin mr-2"></i> ${translations[currentLang].pumpActive}`;
+            document.getElementById('pumpStatusText').className = "font-bold text-white";
+            
+            document.getElementById('operationPanel').classList.remove('hidden');
+            document.getElementById('opResinName').innerText = resinName.split('(')[0];
+            document.getElementById('opTemp').innerText = temp;
+            document.getElementById('opPumpSpeed').innerText = maxSpeed + '%';
+            updateDashboard();
+
+            if(jobState.timer) clearInterval(jobState.timer);
+            jobState.timer = setInterval(machineLoop, 100);
+        }
+
+        function machineLoop() {
+            const speedFactor = 0.5; 
+            jobState.currentMetersLeft -= speedFactor;
+            if (jobState.currentMetersLeft <= 0) {
+                jobState.currentMetersLeft = 0;
+                stopJob(true);
+            } else {
+                updateDashboard();
+            }
+        }
+
+        function updateDashboard() {
+            document.getElementById('opRemainingMeters').innerText = jobState.currentMetersLeft.toFixed(2);
+            const percent = ((jobState.totalMetersToProcess - jobState.currentMetersLeft) / jobState.totalMetersToProcess) * 100;
+            document.getElementById('progressBar').style.width = percent + '%';
+        }
+
+        function stopJob(finished = false) {
+            if(jobState.timer) clearInterval(jobState.timer);
+            jobState.timer = null;
+            document.getElementById('btnStop').classList.add('hidden');
+            
+            const title = document.getElementById('opStatusTitle');
+            const pumpStatus = document.getElementById('pumpStatusText');
+
+            if (finished) {
+                document.getElementById('opPumpSpeed').innerText = "0%";
+                title.innerText = "CHANTIER TERMINÉ"; 
+                title.className = "text-2xl font-black text-green-500 tracking-tighter uppercase";
+                pumpStatus.innerHTML = 'CYCLE COMPLET';
+                pumpStatus.className = "font-bold text-green-500";
+                
+                document.getElementById('btnReset').className = "col-span-1 bg-gray-800 hover:bg-gray-700 text-white font-bold py-4 px-4 rounded border border-gray-600 transition uppercase tracking-widest";
+                document.getElementById('btnReset').classList.remove('hidden');
+                document.getElementById('btnReport').classList.remove('hidden');
+            } else {
+                document.getElementById('opPumpSpeed').innerText = "OFF";
+                title.innerText = translations[currentLang].emergencyStop.toUpperCase();
+                title.className = "text-2xl font-black text-red-600 tracking-tighter uppercase animate-pulse";
+                pumpStatus.innerHTML = 'STOP';
+                pumpStatus.className = "font-bold text-red-600";
+                
+                document.getElementById('btnReset').className = "col-span-2 bg-gray-800 hover:bg-gray-700 text-white font-bold py-4 px-4 rounded border border-gray-600 transition uppercase tracking-widest";
+                document.getElementById('btnReset').classList.remove('hidden');
+                document.getElementById('btnReport').classList.add('hidden');
+            }
+        }
+
+        function resetApp() {
+            document.getElementById('operationPanel').classList.add('hidden');
+            document.getElementById('progressBar').style.width = '0%';
+        }
+
+        // --- GEMINI API INTEGRATION ---
+        async function callGemini(userPrompt, systemInstruction) {
+            const finalKey = apiKey || userApiKey;
+            
+            if (!finalKey) {
+                console.warn("API Key is empty. AI features will not work.");
+                return "Clé API manquante. Veuillez la configurer via l'icône d'engrenage.";
+            }
+            try {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${finalKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: userPrompt }] }],
+                        systemInstruction: { parts: [{ text: systemInstruction }] }
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                return data.candidates?.[0]?.content?.parts?.[0]?.text || "Erreur de génération.";
+            } catch (e) {
+                console.error("Gemini API Error:", e);
+                return "Erreur de connexion à l'IA. Vérifiez votre clé ou votre connexion.";
+            }
+        }
+
+        // 1. CHATBOT IA
+        async function sendMessage() {
+            const input = document.getElementById('chat-input');
+            const container = document.getElementById('chat-container');
+            const msg = input.value.trim();
+            if(!msg) return;
+
+            container.innerHTML += `<div class="chat-bubble chat-user">${msg}</div>`;
+            input.value = "";
+            container.scrollTop = container.scrollHeight;
+
+            const loadingId = 'loading-' + Date.now();
+            container.innerHTML += `<div id="${loadingId}" class="chat-bubble chat-ai typing-indicator"><span></span><span></span><span></span></div>`;
+            container.scrollTop = container.scrollHeight;
+
+            const langInstruction = currentLang === 'en' ? "Answer in English." : "Réponds en Français.";
+            const sysPrompt = `Tu es l'expert technique IA de BZBots. Tu réponds aux techniciens sur les chantiers de réhabilitation de canalisation. Tu connais les produits : Pompe d'injection, BzLight (robot UV), Tracter (fraisage). Sois concis, technique, poli et utile. Utilise des emojis si pertinent. ${langInstruction}`;
+            const responseText = await callGemini(msg, sysPrompt);
+
+            document.getElementById(loadingId).remove();
+            container.innerHTML += `<div class="chat-bubble chat-ai">${responseText.replace(/\n/g, '<br>')}</div>`;
+            container.scrollTop = container.scrollHeight;
+        }
+
+        // 2. GÉNÉRATEUR RAPPORT IA
+        async function generateReport() {
+            document.getElementById('reportModal').classList.remove('hidden');
+            
+            const resin = document.getElementById('resinType').options[document.getElementById('resinType').selectedIndex].text;
+            const thickness = document.getElementById('targetThickness').value;
+            const temp = document.getElementById('resinTemp').value;
+            const totalMeters = document.getElementById('totalLinearMeters').innerText;
+            const date = new Date().toLocaleDateString(currentLang === 'en' ? 'en-US' : 'fr-FR');
+            
+            const prompt = `Generate a short technical site report for BZBots.
+            Language: ${currentLang === 'en' ? 'English' : 'French'}
+            Date: ${date}
+            Resin: ${resin}
+            Target Thickness: ${thickness} mm
+            Resin Temp: ${temp} °C
+            Total Linear Processed: ${totalMeters} m
+            
+            Structure:
+            1. Header (Rehabilitation Job)
+            2. Tech Params Summary
+            3. Confirmation of Execution
+            4. Drying Recommendations (invent logical ones)
+            Signature: BZBots System v2.2`;
+
+            const sysPrompt = "You are an automated industrial report generator.";
+
+            const reportText = await callGemini(prompt, sysPrompt);
+            document.getElementById('reportContent').innerHTML = reportText.replace(/\n/g, '<br>');
+        }
+
+        // 3. ANALYSE CONFIG POMPE IA (NOUVEAU)
+        async function analyzePumpParams() {
+             document.getElementById('aiAnalysisModal').classList.remove('hidden');
+             document.getElementById('aiAnalysisContent').innerHTML = '<div class="flex flex-col items-center justify-center h-24 text-purple-400 gap-2"><i class="fas fa-circle-notch fa-spin text-2xl"></i><span class="animate-pulse">Analyse Gemini en cours...</span></div>';
+
+             const resin = document.getElementById('resinType').options[document.getElementById('resinType').selectedIndex].text;
+             const thickness = document.getElementById('targetThickness').value;
+             const temp = document.getElementById('resinTemp').value;
+             const cols = document.getElementById('nbCols').value;
+
+             const prompt = `Analyze these injection parameters for a rehabilitation job:
+             Resin: ${resin}
+             Target Thickness: ${thickness} mm
+             Ambient Temp: ${temp} °C
+             Number of pipes: ${cols}
+             
+             Task:
+             1. Identify any risks (e.g. overheating if temp > 25°C, thickness issues).
+             2. Give 2 optimization tips.
+             3. Rate the config safety (Low/Medium/High Risk).
+             Format: HTML with <strong> for warnings. Keep it short (max 100 words).
+             Language: ${currentLang === 'en' ? 'English' : 'French'}`;
+
+             const sysPrompt = "You are an expert chemical engineer specializing in epoxy resin injection.";
+             
+             const response = await callGemini(prompt, sysPrompt);
+             document.getElementById('aiAnalysisContent').innerHTML = response;
+        }
+
+        // 4. DIAGNOSTIC BZLIGHT IA (NOUVEAU)
+        async function runBzDiagnostic() {
+            const input = document.getElementById('diagInput').value;
+            if(!input) return;
+            
+            const resultDiv = document.getElementById('diagResult');
+            resultDiv.classList.remove('hidden');
+            resultDiv.innerHTML = '<div class="text-purple-400"><i class="fas fa-circle-notch fa-spin mr-2"></i> Diagnostic en cours...</div>';
+
+            const prompt = `The user is a technician having an issue with the BzLight Milling Robot.
+            Problem description: "${input}"
+            
+            Task: Provide a concise 3-step troubleshooting guide.
+            Style: Technical, direct, helpful.
+            Language: ${currentLang === 'en' ? 'English' : 'French'}`;
+
+            const sysPrompt = "You are a senior robotics maintenance expert.";
+
+            const response = await callGemini(prompt, sysPrompt);
+            resultDiv.innerHTML = response.replace(/\n/g, '<br>');
+        }
+
+        function closeReportModal() {
+            document.getElementById('reportModal').classList.add('hidden');
+            document.getElementById('reportContent').innerHTML = '<div class="flex justify-center items-center py-10 text-purple-400"><i class="fas fa-circle-notch fa-spin mr-3"></i> ...</div>';
+        }
+        
+        updateAiIntro();
+    </script>
+</body>
+</html>
