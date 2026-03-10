@@ -715,7 +715,7 @@
     </section>
 
     <!-- ========================================== -->
-    <!-- VUE POMPE — MODIFICATION CLÉE ICI -->
+    <!-- VUE POMPE -->
     <!-- ========================================== -->
     <section id="view-pump" class="view-section">
         <header class="p-4 border-b border-white/10 flex flex-wrap justify-between items-center gap-4 bg-black/40 backdrop-blur-xl sticky top-0 z-40">
@@ -757,10 +757,17 @@
                         <div class="glass-panel rounded-3xl p-6 md:p-8 flex-1">
                             <div class="flex justify-between items-center mb-6 md:mb-8 border-b border-white/10 pb-3 md:pb-4">
                                 <h2 class="text-[0.6rem] md:text-[0.65rem] font-black text-white uppercase tracking-[0.3em] flex items-center gap-2"><i class="fas fa-sliders-h"></i> <span data-i18n="fluidParams">Données chantier</span></h2>
-                                <!-- ✅ MODIFICATION 1: "hidden" retiré — le bouton Nouveau est maintenant visible -->
                                 <button onclick="resetJobData()" class="bg-white/5 hover:bg-red-500/20 text-gray-400 hover:text-red-400 border border-white/10 hover:border-red-500/30 px-3 py-1.5 rounded-lg text-[0.55rem] font-black uppercase tracking-widest transition-all" data-i18n="newJob"><i class="fas fa-plus mr-1"></i> Nouveau</button>
                             </div>
                             <div class="space-y-4 md:space-y-6">
+                                
+                                <!-- NOUVEAU CHAMP DATE -->
+                                <div class="space-y-1.5 md:space-y-2">
+                                    <label class="text-[0.55rem] md:text-[0.6rem] font-bold text-white uppercase tracking-widest">Date du jour</label>
+                                    <input type="date" id="jobDate" class="input-bz py-2.5 md:py-3.5 transition-colors" style="color-scheme: dark;">
+                                </div>
+                                <!-- FIN NOUVEAU CHAMP DATE -->
+
                                 <div class="space-y-1.5 md:space-y-2">
                                     <label class="text-[0.55rem] md:text-[0.6rem] font-bold text-white uppercase tracking-widest" data-i18n="jobName">Nom du chantier</label>
                                     <input type="text" id="jobName" class="input-bz py-2.5 md:py-3.5 transition-colors" placeholder="Ex: Réhabilitation réseau centre-ville">
@@ -1353,31 +1360,24 @@
             container.innerHTML = html;
         }
 
-        // ✅ MODIFICATION 2: loadJobIntoForm réinitialisé + retour étape 1 automatique
         function loadJobIntoForm(name, city, street, building) {
-            // Charger les données du chantier sélectionné dans le formulaire
             document.getElementById('jobName').value = name;
             document.getElementById('jobCity').value = city;
             document.getElementById('jobStreet').value = street;
             document.getElementById('jobBuilding').value = building;
 
-            // Réinitialiser le tableau et les statuts pour repartir sur une base propre
             rowCompletedStatuses = [];
             currentRowIndex = -1;
             document.getElementById('nbCols').value = "1";
             document.getElementById('btnFinalReportContainer').classList.add('hidden');
 
-            // Réinitialiser résine et épaisseur aux valeurs par défaut
             const resinSelect = document.getElementById('resinType');
             resinSelect.value = "spraycoat_plus";
             resetThickness();
 
             renderColumns();
-
-            // Retour à l'étape 1 (formulaire de données chantier)
             goToPumpStep1();
 
-            // Animation flash visuel pour confirmer le chargement
             ['jobName', 'jobCity', 'jobStreet', 'jobBuilding'].forEach(id => {
                 const el = document.getElementById(id);
                 if(el) {
