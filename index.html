@@ -1463,6 +1463,7 @@
             document.getElementById('pumpStep2').classList.add('hidden');
             document.getElementById('pumpStep2').classList.remove('flex');
             document.getElementById('pumpStep1').classList.remove('hidden');
+            loadJobHistory(); // <-- Mise à jour automatique de la liste de l'historique quand on revient
             window.scrollTo(0,0);
         }
 
@@ -1506,8 +1507,8 @@
             const step1Input = document.getElementById(step1Id);
             if(step1Input) {
                 step1Input.value = step2Input.value;
-                // Sauvegarde silencieusement sans forcer la mise à jour visuelle du panneau historique
-                saveJobToHistory(false);
+                // Sauvegarde ET mise à jour de l'historique visuel directement
+                saveJobToHistory(true); 
             }
         }
 
@@ -1606,8 +1607,10 @@
             
             // Cas particuliers d'initialisation de vues
             if(viewId === 'view-pump') { 
-                renderColumns(); 
-                goToPumpStep1(); 
+                // Ne génère le tableau que s'il est vide pour éviter d'écraser la sauvegarde en cours
+                if (document.getElementById('columnsContainer').innerHTML.trim() === '') {
+                    renderColumns(); 
+                }
                 loadJobHistory(); 
             }
             if(viewId === 'view-archives') {
