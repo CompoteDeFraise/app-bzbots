@@ -794,64 +794,23 @@
             <div class="w-full relative">
                 
                 <!-- ETAPE 1 : Données Chantier (Création et Historique) -->
-                <div id="pumpStep1" class="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6">
-                    
-                    <!-- Colonne de création d'un nouveau chantier -->
-                    <div class="lg:col-span-7 flex flex-col space-y-4 md:space-y-6">
-                        <div class="glass-panel rounded-3xl p-6 md:p-8 flex-1">
-                            <div class="flex justify-between items-center mb-6 md:mb-8 border-b border-white/10 pb-3 md:pb-4">
-                                <h2 class="text-[0.6rem] md:text-[0.65rem] font-black text-white uppercase tracking-[0.3em] flex items-center gap-2"><i class="fas fa-sliders-h"></i> <span data-i18n="fluidParams">Données chantier</span></h2>
-                            </div>
-                            
-                            <!-- Formulaire de création -->
-                            <div class="space-y-4 md:space-y-6">
-                                <div class="space-y-1.5 md:space-y-2">
-                                    <label class="text-[0.55rem] md:text-[0.6rem] font-bold text-white uppercase tracking-widest">Date du jour</label>
-                                    <input type="date" id="jobDate" class="input-bz py-2.5 md:py-3.5 transition-colors" style="color-scheme: dark;">
-                                </div>
-
-                                <div class="space-y-1.5 md:space-y-2">
-                                    <label class="text-[0.55rem] md:text-[0.6rem] font-bold text-white uppercase tracking-widest" data-i18n="jobName">Nom du chantier</label>
-                                    <input type="text" id="jobName" class="input-bz py-2.5 md:py-3.5 transition-colors" placeholder="Ex: Réhabilitation réseau centre-ville">
-                                </div>
-                                <div class="space-y-1.5 md:space-y-2">
-                                    <label class="text-[0.55rem] md:text-[0.6rem] font-bold text-white uppercase tracking-widest" data-i18n="city">Ville</label>
-                                    <input type="text" id="jobCity" class="input-bz py-2.5 md:py-3.5 transition-colors" placeholder="Ex: Rennes">
-                                </div>
-                                <div class="space-y-1.5 md:space-y-2">
-                                    <label class="text-[0.55rem] md:text-[0.6rem] font-bold text-white uppercase tracking-widest" data-i18n="street">Rue</label>
-                                    <input type="text" id="jobStreet" class="input-bz py-2.5 md:py-3.5 transition-colors" placeholder="Ex: Rue de la République">
-                                </div>
-                                <div class="grid grid-cols-1 gap-4">
-                                    <div class="space-y-1.5 md:space-y-2">
-                                        <label class="text-[0.55rem] md:text-[0.6rem] font-bold text-white uppercase tracking-widest" data-i18n="buildingNum">N° de bâtiment</label>
-                                        <input type="text" id="jobBuilding" class="input-bz py-2.5 md:py-3.5 transition-colors" placeholder="Ex: 12B">
-                                    </div>
-                                    <!-- Entrée cachée pour gérer le nombre de colonnes du tableau étape 2 -->
-                                    <input type="hidden" id="nbCols" value="1">
-                                </div>
-                                <!-- Valeur par défaut pour le débit, masquée car paramétrable plus tard -->
-                                <div class="space-y-1.5 md:space-y-2 hidden">
-                                    <label class="text-[0.55rem] md:text-[0.6rem] font-bold text-white uppercase tracking-widest">Débit Pompe Q (L/min)</label>
-                                    <input type="number" id="jobFlowRate" value="0.5" step="0.01" class="input-bz py-2.5 md:py-3.5 border-cyan-500/30" oninput="calculate()">
-                                </div>
-                            </div>
+                <div id="pumpStep1" class="max-w-5xl mx-auto flex flex-col gap-6">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                        <h2 class="text-xs md:text-sm font-black text-white uppercase tracking-[0.2em] flex items-center gap-2 md:gap-3 shrink-0">
+                            <i class="fas fa-history text-cyan-400"></i> <span data-i18n="jobHistory">Historique chantiers</span>
+                        </h2>
+                        <div class="relative flex-1 w-full max-w-sm mx-0 sm:mx-4">
+                            <input type="text" id="jobSearchInput" placeholder="Rechercher un chantier..." class="input-bz py-2.5 pl-10 w-full text-xs font-bold transition-colors" oninput="filterJobHistory()">
+                            <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
                         </div>
-                        
-                        <!-- Bouton de validation pour créer le chantier et le mettre dans l'historique -->
-                        <button onclick="createNewJobEntry()" class="btn-bz-primary py-4 md:py-5 rounded-xl md:rounded-2xl bg-white text-black font-black uppercase tracking-widest text-[0.65rem] md:text-[0.75rem] shadow-[0_10px_30px_rgba(255,255,255,0.2)] flex items-center justify-center gap-2 md:gap-3 w-full transition-all shrink-0">
-                            <span>Créer chantier</span> <i class="fas fa-check"></i>
+                        <button onclick="openNewJobModal()" class="btn-bz-primary py-3 md:py-4 px-6 md:px-8 rounded-xl md:rounded-2xl bg-white text-black font-black uppercase tracking-widest text-[0.65rem] md:text-[0.75rem] shadow-[0_10px_30px_rgba(255,255,255,0.2)] flex items-center justify-center gap-2 md:gap-3 transition-all shrink-0 w-full sm:w-auto">
+                            <i class="fas fa-plus"></i> <span data-i18n="newJob">Créer chantier</span>
                         </button>
                     </div>
 
-                    <!-- Colonne Droite : Liste Historique -->
-                    <div class="lg:col-span-5 glass-panel rounded-3xl p-6 md:p-8 flex flex-col max-h-[500px] lg:max-h-none overflow-hidden border border-cyan-500/20 shadow-[0_0_30px_rgba(34,211,238,0.05)]">
-                        <div class="flex justify-between items-center mb-6 border-b border-white/10 pb-3 md:pb-4 shrink-0">
-                            <h2 class="text-[0.6rem] md:text-[0.65rem] font-black text-white uppercase tracking-[0.3em] flex items-center gap-2">
-                                <i class="fas fa-history text-cyan-400"></i> <span data-i18n="jobHistory">Historique chantiers</span>
-                            </h2>
-                        </div>
-                        <div id="jobHistoryList" class="flex-1 overflow-y-auto custom-scrollbar space-y-3 pr-2">
+                    <!-- Liste Historique -->
+                    <div class="glass-panel rounded-3xl p-6 md:p-8 flex flex-col min-h-[400px] lg:max-h-[600px] overflow-hidden border border-cyan-500/20 shadow-[0_0_30px_rgba(34,211,238,0.05)]">
+                        <div id="jobHistoryList" class="flex-1 overflow-y-auto custom-scrollbar grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pr-2 content-start">
                             <!-- Injecté via Javascript: loadJobHistory() -->
                         </div>
                     </div>
@@ -881,15 +840,19 @@
                                 <div class="md:col-span-12">
                                     <input type="text" id="jobNameStep2" class="w-full bg-transparent border-b border-white/10 focus:border-cyan-400 text-xl md:text-3xl font-black text-white outline-none pb-2 transition-colors truncate placeholder-gray-600" placeholder="Nom du chantier..." oninput="syncJobData(this, 'jobName')">
                                 </div>
-                                <div class="md:col-span-4">
+                                <div class="md:col-span-3">
+                                    <label class="text-[0.5rem] md:text-[0.55rem] text-gray-500 uppercase font-bold tracking-widest block mb-1">Date</label>
+                                    <input type="date" id="jobDateStep2" class="w-full bg-transparent border-b border-white/10 focus:border-cyan-400 text-xs md:text-sm font-bold text-gray-300 focus:text-white outline-none pb-1.5 transition-colors truncate placeholder-gray-600" style="color-scheme: dark;" oninput="syncJobData(this, 'jobDate')">
+                                </div>
+                                <div class="md:col-span-3">
                                     <label class="text-[0.5rem] md:text-[0.55rem] text-gray-500 uppercase font-bold tracking-widest block mb-1">Ville</label>
                                     <input type="text" id="jobCityStep2" class="w-full bg-transparent border-b border-white/10 focus:border-cyan-400 text-xs md:text-sm font-bold text-gray-300 focus:text-white outline-none pb-1.5 transition-colors truncate placeholder-gray-600" placeholder="Ville..." oninput="syncJobData(this, 'jobCity')">
                                 </div>
-                                <div class="md:col-span-5">
+                                <div class="md:col-span-4">
                                     <label class="text-[0.5rem] md:text-[0.55rem] text-gray-500 uppercase font-bold tracking-widest block mb-1">Rue</label>
                                     <input type="text" id="jobStreetStep2" class="w-full bg-transparent border-b border-white/10 focus:border-cyan-400 text-xs md:text-sm font-bold text-gray-300 focus:text-white outline-none pb-1.5 transition-colors truncate placeholder-gray-600" placeholder="Rue..." oninput="syncJobData(this, 'jobStreet')">
                                 </div>
-                                <div class="md:col-span-3">
+                                <div class="md:col-span-2">
                                     <label class="text-[0.5rem] md:text-[0.55rem] text-gray-500 uppercase font-bold tracking-widest block mb-1">Bâtiment</label>
                                     <input type="text" id="jobBuildingStep2" class="w-full bg-transparent border-b border-white/10 focus:border-cyan-400 text-xs md:text-sm font-bold text-gray-300 focus:text-white outline-none pb-1.5 transition-colors truncate placeholder-gray-600" placeholder="N°..." oninput="syncJobData(this, 'jobBuilding')">
                                 </div>
@@ -955,6 +918,7 @@
                                 <table class="w-full text-xs md:text-sm text-left whitespace-nowrap">
                                     <thead class="text-[0.55rem] md:text-[0.6rem] uppercase bg-white/5 text-white font-black sticky top-0 tracking-widest backdrop-blur-xl border-b border-white/10 z-10">
                                         <tr>
+                                            <th class="px-2 md:px-4 py-3 md:py-5 text-center w-10"></th>
                                             <th class="px-4 md:px-8 py-3 md:py-5">ID</th>
                                             <th class="px-4 md:px-8 py-3 md:py-5" data-i18n="label">Libellé</th>
                                             <th class="px-4 md:px-8 py-3 md:py-5">Longueur (m)</th>
@@ -972,7 +936,6 @@
                         
                         <!-- Boutons d'ajout/suppression de lignes -->
                         <div class="flex justify-end gap-3 mt-4 relative z-10">
-                            <button onclick="removeRow()" class="px-4 py-2.5 md:px-5 md:py-3 bg-white/5 hover:bg-red-500/20 text-gray-400 hover:text-red-400 border border-white/10 hover:border-red-500/30 rounded-xl flex items-center justify-center gap-2 transition-all shadow-sm text-[0.6rem] md:text-[0.65rem] font-black uppercase tracking-widest"><i class="fas fa-minus"></i> <span class="hidden sm:inline">Retirer ligne</span></button>
                             <button onclick="addRow()" class="px-4 py-2.5 md:px-5 md:py-3 bg-white/5 hover:bg-green-500/20 text-gray-400 hover:text-green-400 border border-white/10 hover:border-green-500/30 rounded-xl flex items-center justify-center gap-2 transition-all shadow-sm text-[0.6rem] md:text-[0.65rem] font-black uppercase tracking-widest"><i class="fas fa-plus"></i> <span class="hidden sm:inline">Ajouter ligne</span></button>
                         </div>
                         
@@ -1280,6 +1243,53 @@
         </div>
     </div>
 
+    <!-- Modal : Nouveau Chantier -->
+    <div id="newJobModal" class="fixed inset-0 bg-[#050505]/90 z-[400] hidden flex items-center justify-center p-4 md:p-6 backdrop-blur-3xl">
+        <div class="glass-panel w-full max-w-lg rounded-3xl overflow-hidden border border-cyan-500/30 shadow-[0_0_80px_rgba(34,211,238,0.2)] relative flex flex-col max-h-[95vh]">
+            <div class="p-6 md:p-8 border-b border-white/10 flex justify-between items-center relative z-10 bg-black/40 backdrop-blur-md shrink-0">
+                <h3 class="text-white font-black uppercase tracking-widest text-[0.65rem] md:text-xs flex items-center gap-2 md:gap-3"><i class="fas fa-sliders-h text-cyan-400"></i> <span data-i18n="fluidParams">Données chantier</span></h3>
+                <button onclick="closeNewJobModal()" class="text-gray-400 hover:text-white transition-colors"><i class="fas fa-times text-lg md:text-xl"></i></button>
+            </div>
+            <div class="p-6 md:p-8 space-y-4 md:space-y-6 relative z-10 overflow-y-auto custom-scrollbar">
+                <div class="space-y-1.5 md:space-y-2">
+                    <label class="text-[0.55rem] md:text-[0.6rem] font-bold text-white uppercase tracking-widest">Date</label>
+                    <input type="date" id="jobDate" class="input-bz py-2.5 md:py-3.5 transition-colors" style="color-scheme: dark;">
+                </div>
+
+                <div class="space-y-1.5 md:space-y-2">
+                    <label class="text-[0.55rem] md:text-[0.6rem] font-bold text-white uppercase tracking-widest" data-i18n="jobName">Nom du chantier</label>
+                    <input type="text" id="jobName" class="input-bz py-2.5 md:py-3.5 transition-colors" placeholder="Ex: Réhabilitation réseau centre-ville" oninput="clearJobNameError()">
+                    <p id="jobNameError" class="text-red-500 text-[0.55rem] font-bold uppercase tracking-widest hidden mt-1"><i class="fas fa-exclamation-triangle mr-1"></i> Veuillez renseigner le nom du chantier</p>
+                </div>
+                <div class="space-y-1.5 md:space-y-2">
+                    <label class="text-[0.55rem] md:text-[0.6rem] font-bold text-white uppercase tracking-widest" data-i18n="city">Ville</label>
+                    <input type="text" id="jobCity" class="input-bz py-2.5 md:py-3.5 transition-colors" placeholder="Ex: Rennes">
+                </div>
+                <div class="space-y-1.5 md:space-y-2">
+                    <label class="text-[0.55rem] md:text-[0.6rem] font-bold text-white uppercase tracking-widest" data-i18n="street">Rue</label>
+                    <input type="text" id="jobStreet" class="input-bz py-2.5 md:py-3.5 transition-colors" placeholder="Ex: Rue de la République">
+                </div>
+                <div class="grid grid-cols-1 gap-4">
+                    <div class="space-y-1.5 md:space-y-2">
+                        <label class="text-[0.55rem] md:text-[0.6rem] font-bold text-white uppercase tracking-widest" data-i18n="buildingNum">N° de bâtiment</label>
+                        <input type="text" id="jobBuilding" class="input-bz py-2.5 md:py-3.5 transition-colors" placeholder="Ex: 12B">
+                    </div>
+                    <!-- Entrée cachée pour gérer le nombre de colonnes du tableau étape 2 -->
+                    <input type="hidden" id="nbCols" value="1">
+                </div>
+                <!-- Valeur par défaut pour le débit, masquée car paramétrable plus tard -->
+                <div class="space-y-1.5 md:space-y-2 hidden">
+                    <label class="text-[0.55rem] md:text-[0.6rem] font-bold text-white uppercase tracking-widest">Débit Pompe Q (L/min)</label>
+                    <input type="number" id="jobFlowRate" value="0.5" step="0.01" class="input-bz py-2.5 md:py-3.5 border-cyan-500/30" oninput="calculate()">
+                </div>
+                
+                <button onclick="createNewJobEntry()" class="btn-bz-primary py-4 md:py-5 mt-4 rounded-xl md:rounded-2xl bg-white text-black font-black uppercase tracking-widest text-[0.65rem] md:text-[0.75rem] shadow-[0_10px_30px_rgba(255,255,255,0.2)] flex items-center justify-center gap-2 md:gap-3 w-full transition-all shrink-0">
+                    <span>Créer chantier</span> <i class="fas fa-check"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- ========================================== -->
     <!-- SCRIPTS JAVASCRIPT                         -->
     <!-- ========================================== -->
@@ -1384,7 +1394,7 @@
                 injectionPower: "Débit Pompe", tractorSpeed: "Vitesse Tracteur", autoReg: "Régulation Auto", resetZero: "Reset 0", 
                 recordVideo: "Enregistrer un flux vidéo", stop: "Stop", metersDone: "Mètres résinés", metersLeft: "Mètres restants", 
                 timeElapsed: "Temps écoulé", timeRemaining: "Temps Restant", resinConsumed: "Résine Consommée", 
-                resinLeft: "Résine restante", tank: "(Réservoir)", passNum: "Passe N°", newJob: "Nouveau", 
+                resinLeft: "Résine restante", tank: "(Réservoir)", passNum: "Passe N°", newJob: "Créer Chantier", 
                 confirmNewJob: "Êtes-vous sûr de vouloir démarrer un nouveau chantier ? Toutes les données actuelles non archivées seront perdues.", 
                 jobHistory: "Chantiers", label: "Libellé" 
             },
@@ -1545,19 +1555,34 @@
             const city = document.getElementById('jobCity').value.trim();
             const street = document.getElementById('jobStreet').value.trim();
             const building = document.getElementById('jobBuilding').value.trim();
-            const dateStr = new Date().toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' });
             
             // On récupère l'historique ou on crée un tableau vide
             let history = JSON.parse(localStorage.getItem('bz_job_history') || '[]');
             
+            // On cherche s'il existe déjà pour récupérer sa date si besoin
+            let existingJob = history.find(h => h.jobName === name);
+
             // Si le nom du chantier a été modifié dans l'étape 2, on supprime l'ancien nom
             if (activeJobNameForHistory && activeJobNameForHistory !== name) {
+                existingJob = history.find(h => h.jobName === activeJobNameForHistory) || existingJob;
                 history = history.filter(h => h.jobName !== activeJobNameForHistory);
                 activeJobNameForHistory = name;
             }
 
             // On retire l'entrée existante pour éviter les doublons avec le même nom
             history = history.filter(h => h.jobName !== name);
+            
+            // Gestion de la date : on prend celle du champ s'il est rempli, sinon l'existante, sinon aujourd'hui
+            let dateStr = "";
+            const jobDateInput = document.getElementById('jobDate');
+            if (jobDateInput && jobDateInput.value) {
+                const d = new Date(jobDateInput.value);
+                dateStr = d.toLocaleDateString('fr-FR');
+            } else if (existingJob && existingJob.date) {
+                dateStr = existingJob.date;
+            } else {
+                dateStr = new Date().toLocaleDateString('fr-FR');
+            }
             
             // On ajoute la nouvelle sauvegarde à la fin
             history.push({ 
@@ -1584,6 +1609,7 @@
             
             // Transfert des données d'en haut
             document.getElementById('jobNameStep2').value = document.getElementById('jobName').value;
+            document.getElementById('jobDateStep2').value = document.getElementById('jobDate').value;
             document.getElementById('jobCityStep2').value = document.getElementById('jobCity').value;
             document.getElementById('jobStreetStep2').value = document.getElementById('jobStreet').value;
             document.getElementById('jobBuildingStep2').value = document.getElementById('jobBuilding').value;
@@ -1643,6 +1669,14 @@
             document.getElementById('infoModal').classList.add('hidden'); 
         }
 
+        /** Gestion Modale Nouveau Chantier */
+        function openNewJobModal() {
+            document.getElementById('newJobModal').classList.remove('hidden');
+        }
+        function closeNewJobModal() {
+            document.getElementById('newJobModal').classList.add('hidden');
+        }
+
         // --- Variables d'état pour la gestion du chantier/de la pompe ---
         let jobState = { 
             totalMeters: 0, 
@@ -1661,38 +1695,51 @@
         let currentPumpPower = 100; // Pourcentage de puissance pompe (25, 50, 75, 100)
 
         /**
-         * Modifie la puissance de la pompe lors du chantier
-         * @param {number} val - 25, 50, 75 ou 100
+         * Action lors du clic sur le bouton "Créer chantier" (Etape 1).
+         * Sauvegarde les données, puis vide les champs pour de nouvelles saisies.
          */
-        function setPumpPower(val) {
-            currentPumpPower = val;
-            
-            // Reset des couleurs de tous les boutons
-            document.querySelectorAll('.power-btn').forEach(btn => {
-                btn.classList.remove('bg-cyan-500', 'border-cyan-400', 'text-white', 'shadow-[0_0_15px_rgba(34,211,238,0.4)]');
-                btn.classList.add('bg-white/5', 'border-white/10', 'text-gray-400');
-            });
-            
-            // Illumine le bouton cliqué
-            const activeBtn = document.getElementById(`btn-pwr-${val}`);
-            if(activeBtn) {
-                activeBtn.classList.remove('bg-white/5', 'border-white/10', 'text-gray-400');
-                activeBtn.classList.add('bg-cyan-500', 'border-cyan-400', 'text-white', 'shadow-[0_0_15px_rgba(34,211,238,0.4)]');
-            }
-            
-            // Si le panneau de simulation est ouvert, on met à jour le débit et temps restant
-            if (!document.getElementById('operationPanel').classList.contains('hidden')) {
-                updateMetricsUI();
-            }
-        }
+        function createNewJobEntry() {
+            const nameInput = document.getElementById('jobName');
+            const name = nameInput.value.trim();
+            const errorMsg = document.getElementById('jobNameError');
 
-        /** Ferme la popup demandant confirmation (suppression ou nouveau) */
-        function closeConfirmNewJobModal() {
-            document.getElementById('confirmNewJobModal').classList.add('hidden');
+            if (!name) {
+                // Met en évidence l'erreur si le champ est vide
+                nameInput.classList.add('!border-red-500', '!bg-red-500/10');
+                if (errorMsg) errorMsg.classList.remove('hidden');
+                return; // Ne rien faire et stopper l'exécution
+            }
+            
+            activeJobNameForHistory = name;
+            saveJobToHistory(true);
+            
+            // Vider les champs après création
+            const dateEl = document.getElementById('jobDate');
+            if (dateEl) dateEl.value = '';
+            nameInput.value = '';
+            document.getElementById('jobCity').value = '';
+            document.getElementById('jobStreet').value = '';
+            document.getElementById('jobBuilding').value = '';
+            
+            clearJobNameError(); // Réinitialise l'erreur pour la prochaine ouverture
+            
+            activeJobNameForHistory = ''; // On remet à zéro l'id courant
+            closeNewJobModal(); // Ferme la modale
         }
 
         /**
-         * Charge la liste des chantiers (en cours ou archivés) dans l'historique (Panneau droite Etape 1)
+         * Supprime l'alerte d'erreur sur le champ nom du chantier dès qu'on tape
+         */
+        function clearJobNameError() {
+            const nameInput = document.getElementById('jobName');
+            const errorMsg = document.getElementById('jobNameError');
+            if (nameInput) nameInput.classList.remove('!border-red-500', '!bg-red-500/10');
+            if (errorMsg) errorMsg.classList.add('hidden');
+        }
+
+        /**
+         * Sauvegarde le chantier courant (avec l'état de son tableau) dans le LocalStorage
+         * @param {boolean} updateUI - Mettre à jour la liste d'historique affichée à l'écran
          */
         function loadJobHistory() {
             const container = document.getElementById('jobHistoryList');
@@ -1702,7 +1749,7 @@
             let recentJobs = JSON.parse(localStorage.getItem('bz_job_history') || '[]');
             
             if (archives.length === 0 && recentJobs.length === 0) {
-                container.innerHTML = `<div class="text-center text-gray-500 text-[0.65rem] font-bold uppercase tracking-widest mt-10">Aucun historique disponible</div>`;
+                container.innerHTML = `<div class="col-span-full text-center text-gray-500 text-[0.65rem] font-bold uppercase tracking-widest mt-10">Aucun historique disponible</div>`;
                 return;
             }
             
@@ -1735,6 +1782,38 @@
                 </div>`;
             }
             container.innerHTML = html;
+            
+            // Applique le filtre actuel si une recherche est déjà en cours
+            filterJobHistory();
+        }
+
+        /**
+         * Filtre la liste des chantiers dans l'historique en fonction de la recherche
+         */
+        function filterJobHistory() {
+            const searchInput = document.getElementById('jobSearchInput');
+            if (!searchInput) return;
+            
+            const searchTerm = searchInput.value.toLowerCase();
+            const jobCards = document.querySelectorAll('#jobHistoryList > div');
+            
+            jobCards.forEach(card => {
+                if (card.classList.contains('col-span-full')) return; // Ignore le message "Aucun historique"
+                
+                const jobNameEl = card.querySelector('h4');
+                const cityEl = card.querySelector('p');
+                
+                if (!jobNameEl || !cityEl) return;
+                
+                const jobName = jobNameEl.innerText.toLowerCase();
+                const city = cityEl.innerText.toLowerCase();
+                
+                if (jobName.includes(searchTerm) || city.includes(searchTerm)) {
+                    card.classList.remove('hidden');
+                } else {
+                    card.classList.add('hidden');
+                }
+            });
         }
 
         /**
@@ -1756,6 +1835,17 @@
             document.getElementById('jobCity').value = job.city || '';
             document.getElementById('jobStreet').value = job.street || '';
             document.getElementById('jobBuilding').value = job.building || '';
+
+            // Restaure la date du chantier si elle existe
+            if (job.date) {
+                let datePart = job.date.split(' ')[0]; // Gère l'ancien format avec heure si présent
+                let parts = datePart.split('/');
+                if (parts.length === 3) {
+                    document.getElementById('jobDate').value = `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
+                }
+            } else {
+                document.getElementById('jobDate').value = '';
+            }
 
             document.getElementById('btnFinalReportContainer').classList.add('hidden');
             const resinSelect = document.getElementById('resinType');
@@ -1799,6 +1889,7 @@
 
             // Remplit l'étape 2 (Le panneau du haut)
             document.getElementById('jobNameStep2').value = job.jobName || '';
+            document.getElementById('jobDateStep2').value = document.getElementById('jobDate').value;
             document.getElementById('jobCityStep2').value = job.city || '';
             document.getElementById('jobStreetStep2').value = job.street || '';
             document.getElementById('jobBuildingStep2').value = job.building || '';
@@ -1810,7 +1901,7 @@
             window.scrollTo(0,0);
 
             // Petit effet clignotant
-            ['jobName', 'jobCity', 'jobStreet', 'jobBuilding'].forEach(id => {
+            ['jobName', 'jobDate', 'jobCity', 'jobStreet', 'jobBuilding'].forEach(id => {
                 const el = document.getElementById(id);
                 if(el) {
                     el.classList.add('border-cyan-500', 'bg-cyan-900/40');
@@ -1876,20 +1967,62 @@
             restoreTableState(); 
         }
         
-        function removeRow() {
+        function deleteSpecificRow(index) {
             const nbInput = document.getElementById('nbCols');
             let current = parseInt(nbInput.value);
-            if (current > 1) {
-                // Interdit de supprimer si la ligne est en cours ou terminée
-                if(rowCompletedStatuses[current-1] || currentRowIndex === current-1) { 
-                    openInfoModal("Action impossible : La dernière ligne est en cours de traitement ou déjà terminée."); 
-                    return; 
-                }
-                saveTableState(); 
-                nbInput.value = current - 1; 
-                renderColumns(); 
-                restoreTableState();
+            if (current <= 1) {
+                openInfoModal("Impossible de supprimer la dernière ligne.");
+                return;
             }
+
+            if (currentRowIndex === index) {
+                openInfoModal("Action impossible : Cette ligne est en cours de traitement.");
+                return;
+            }
+
+            // Sauvegarde de l'état actuel des inputs
+            let currentState = [];
+            for(let i=0; i<current; i++) {
+                const labelEl = document.getElementById(`row-label-${i}`);
+                const lenEl = document.getElementById(`row-len-${i}`);
+                const diaEl = document.getElementById(`row-dia-${i}`);
+                const passEl = document.getElementById(`row-passes-${i}`);
+                
+                currentState.push({ 
+                    label: labelEl ? labelEl.value : '', 
+                    len: lenEl ? lenEl.value : '10', 
+                    dia: diaEl ? diaEl.value : '100', 
+                    passes: passEl ? passEl.value : '' 
+                });
+            }
+
+            // Suppression des données de la ligne ciblée
+            currentState.splice(index, 1);
+            rowCompletedStatuses.splice(index, 1);
+            completedPassesCount.splice(index, 1);
+            
+            if (currentRowIndex > index) {
+                currentRowIndex--;
+            }
+
+            // Mise à jour de l'UI
+            nbInput.value = current - 1;
+            renderColumns();
+            
+            // Restauration des inputs avec les données décalées
+            for(let i=0; i<currentState.length; i++) {
+                const labelEl = document.getElementById(`row-label-${i}`);
+                const lenEl = document.getElementById(`row-len-${i}`);
+                const diaEl = document.getElementById(`row-dia-${i}`);
+                const passEl = document.getElementById(`row-passes-${i}`);
+                
+                if(labelEl && currentState[i].label !== undefined) labelEl.value = currentState[i].label;
+                if(lenEl) lenEl.value = currentState[i].len;
+                if(diaEl) diaEl.value = currentState[i].dia;
+                if(passEl && currentState[i].passes) passEl.value = currentState[i].passes;
+            }
+            
+            calculate();
         }
 
         /**
@@ -1913,16 +2046,19 @@
                 
                 // Le bouton change si la ligne a déjà été complètement résinée
                 const btnHtml = isCompleted
-                    ? `<div class="flex flex-col gap-1.5 items-center justify-center min-w-[90px] px-2 py-1">
+                    ? `<div class="flex flex-col gap-1.5 px-2 py-1 min-w-[110px] w-full">
                            <span class="bg-green-500/20 text-green-400 border border-green-500/50 px-2 py-1.5 rounded-lg text-[0.55rem] md:text-[0.6rem] font-black uppercase w-full flex items-center justify-center gap-1.5"><i class="fas fa-check"></i> Terminé</span>
                            <button onclick="generateRowReport(${i-1})" class="bg-blue-500/20 hover:bg-blue-500/40 text-blue-400 border border-blue-500/50 px-2 py-1.5 rounded-lg text-[0.55rem] md:text-[0.6rem] font-black uppercase transition-colors w-full flex items-center justify-center gap-1.5"><i class="fas fa-file-pdf"></i> Rapport</button>
                        </div>`
-                    : `<div class="px-2 py-1 min-w-[110px]">
+                    : `<div class="flex items-center justify-center px-2 py-1 min-w-[110px] w-full">
                            <button id="row-btn-${i-1}" onclick="startRowJob(${i-1})" class="bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white px-3 py-2.5 rounded-xl text-[0.65rem] md:text-[0.7rem] font-black uppercase transition-all w-full shadow-[0_5px_15px_rgba(34,211,238,0.4)] flex items-center justify-center gap-2"><i class="fas fa-play"></i> ${passesDone > 0 ? 'Continuer' : 'Démarrer'}</button>
                        </div>`;
                 
                 html += `
                 <tr class="hover:bg-white/5 ${isCompleted ? 'opacity-60 bg-green-900/10' : ''}" id="row-tr-${i-1}">
+                    <td class="text-center px-2 py-2">
+                        <button onclick="deleteSpecificRow(${i-1})" class="text-red-500 hover:text-red-400 transition-colors p-2 shrink-0 border border-red-500/30 hover:bg-red-500/20 rounded-lg"><i class="fas fa-trash-alt"></i></button>
+                    </td>
                     <td class="px-4 py-3 font-mono text-white text-xs">#${i}</td>
                     <td class="px-2 py-2">
                         <input type="text" id="row-label-${i-1}" class="input-table row-label text-xs w-full min-w-[100px] md:min-w-[140px]" placeholder="Nom..." ${isCompleted ? 'disabled' : ''}>
@@ -1945,7 +2081,7 @@
                     </td>
                 </tr>
                 <tr id="row-msg-tr-${i-1}" class="hidden">
-                    <td colspan="7" class="p-0" id="row-msg-${i-1}"></td>
+                    <td colspan="8" class="p-0" id="row-msg-${i-1}"></td>
                 </tr>`;
             }
             container.innerHTML = html;
@@ -2322,7 +2458,7 @@
                         const actionCell = document.getElementById(`row-action-${currentRowIndex}`);
                         if(actionCell) {
                             actionCell.innerHTML = `
-                            <div class="flex flex-col gap-1.5 items-center justify-center min-w-[90px] px-2 py-1">
+                            <div class="flex flex-col gap-1.5 px-2 py-1 min-w-[110px] w-full">
                                 <span class="bg-green-500/20 text-green-400 border border-green-500/50 px-2 py-1.5 rounded-lg text-[0.55rem] md:text-[0.6rem] font-black uppercase w-full flex items-center justify-center gap-1.5"><i class="fas fa-check"></i> Terminé</span>
                                 <button onclick="generateRowReport(${currentRowIndex})" class="bg-blue-500/20 hover:bg-blue-500/40 text-blue-400 border border-blue-500/50 px-2 py-1.5 rounded-lg text-[0.55rem] md:text-[0.6rem] font-black uppercase transition-colors w-full flex items-center justify-center gap-1.5"><i class="fas fa-file-pdf"></i> Rapport</button>
                             </div>`;
