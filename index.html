@@ -10,236 +10,2265 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     
-    <!-- LIEN GITHUB : Assurez-vous que ce lien pointe vers votre fichier translations.js public -->
+    <!-- traduction -->
     <script src="https://cdn.jsdelivr.net/gh/CompoteDeFraise/app-bzbots@main/translations.js"></script>
-    
+    <!-- Styles CSS personnalisés -->
     <style>
-        :root { --bz-black: #050505; --bz-light-text: #e5e5e5; }
+        :root {
+            --bz-black: #050505;
+            --bz-light-text: #e5e5e5;
+        }
         body { 
             font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
             background-color: var(--bz-black); 
-            color: var(--bz-light-text); 
-            overflow-x: hidden; 
-            margin: 0; 
-            min-height: 100vh; 
-        }
-        .ambient-bg { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; background: #050505; }
-        .ambient-blob-1 { position: absolute; top: -20%; left: -10%; width: 50vw; height: 50vw; background: radial-gradient(circle, rgba(59,130,246,0.15) 0%, rgba(0,0,0,0) 70%); border-radius: 50%; filter: blur(80px); }
-        .ambient-blob-2 { position: absolute; bottom: -20%; right: -10%; width: 60vw; height: 60vw; background: radial-gradient(circle, rgba(147,51,234,0.15) 0%, rgba(0,0,0,0) 70%); border-radius: 50%; filter: blur(100px); }
-        
-        .view-section { display: none; animation: fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
-        .view-section.active { display: flex; flex-direction: column; height: 100vh; width: 100%; }
-        
-        @keyframes fadeIn { 
-            from { opacity: 0; transform: translateY(15px); filter: blur(10px); } 
-            to { opacity: 1; transform: translateY(0); filter: blur(0); } 
+            color: var(--bz-light-text);
+            overflow-x: hidden;
+            margin: 0;
+            min-height: 100vh;
         }
         
-        .glass-panel { 
-            background: rgba(20, 20, 20, 0.4); 
-            backdrop-filter: blur(24px); 
-            border: 1px solid rgba(255, 255, 255, 0.08); 
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7); 
+        /* Effets de fond (blobs lumineux) */
+        .ambient-bg {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            overflow: hidden;
+            pointer-events: none;
+            background: #050505;
+        }
+        .ambient-blob-1 {
+            position: absolute;
+            top: -20%; left: -10%;
+            width: 50vw; height: 50vw;
+            background: radial-gradient(circle, rgba(59,130,246,0.15) 0%, rgba(0,0,0,0) 70%);
+            border-radius: 50%;
+            filter: blur(80px);
+        }
+        .ambient-blob-2 {
+            position: absolute;
+            bottom: -20%; right: -10%;
+            width: 60vw; height: 60vw;
+            background: radial-gradient(circle, rgba(147,51,234,0.15) 0%, rgba(0,0,0,0) 70%);
+            border-radius: 50%;
+            filter: blur(100px);
         }
         
-        .input-bz { 
-            background-color: rgba(0, 0, 0, 0.4); 
-            border: 1px solid rgba(255, 255, 255, 0.1); 
-            color: white; 
-            transition: all 0.3s ease; 
-            width: 100%; 
-            padding: 14px; 
-            border-radius: 12px; 
+        /* Gestion de l'affichage des sections (vues) */
+        .view-section {
+            display: none;
+            animation: fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .input-bz:focus { border-color: rgba(255, 255, 255, 0.4); background-color: rgba(255, 255, 255, 0.05); outline: none; }
+        .view-section.active {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            width: 100%;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); filter: blur(10px); }
+            to { opacity: 1; transform: translateY(0); filter: blur(0); }
+        }
         
+        /* Styles des panneaux avec effet verre (glassmorphism) */
+        .glass-panel {
+            background: rgba(20, 20, 20, 0.4);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7), inset 0 1px 1px rgba(255, 255, 255, 0.05);
+        }
+        
+        /* Champs de saisie génériques */
+        .input-bz {
+            background-color: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            transition: all 0.3s ease;
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
+        }
+        .input-bz:focus {
+            border-color: rgba(255, 255, 255, 0.4);
+            background-color: rgba(255, 255, 255, 0.05);
+            outline: none;
+            box-shadow: 0 0 20px rgba(255,255,255,0.1), inset 0 2px 4px rgba(0,0,0,0.3);
+        }
+        .input-bz.error {
+            border-color: #ef4444 !important;
+            background-color: rgba(239, 68, 68, 0.1) !important;
+        }
+        
+        /* Champs de saisie dans le tableau de dimensionnement */
+        .input-table {
+            background: transparent;
+            border: 1px solid transparent;
+            color: white;
+            width: 100%;
+            font-weight: bold;
+            outline: none;
+            padding: 6px;
+            border-radius: 6px;
+            transition: 0.2s;
+        }
+        .input-table:focus {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        /* Boutons principaux */
         .btn-bz-primary { 
-            background: rgba(255, 255, 255, 0.95); 
+            background: rgba(255, 255, 255, 0.95);
             color: #000; 
             font-weight: 900; 
             text-transform: uppercase; 
-            letter-spacing: 2px; 
-            transition: all 0.3s; 
-            padding: 16px; 
-            border-radius: 12px; 
-            cursor: pointer; 
-            width: 100%; 
-            display: block; 
+            letter-spacing: 2px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid transparent;
+            padding: 16px;
             text-align: center;
+            cursor: pointer;
+            width: 100%;
+            display: block;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(255,255,255,0.2);
         }
         .btn-bz-primary:hover { 
             background: rgba(20, 20, 20, 0.6); 
+            backdrop-filter: blur(10px);
             color: white; 
-            border: 1px solid rgba(255,255,255,0.5); 
-            transform: translateY(-2px); 
+            border-color: rgba(255,255,255,0.5);
+            box-shadow: 0 15px 35px rgba(255,255,255,0.15);
+            transform: translateY(-2px);
         }
         
-        .top-actions { position: absolute; top: 1rem; right: 1rem; display: flex; gap: 0.5rem; z-index: 50; }
-        
-        .lang-selector { 
-            appearance: none; 
-            background: rgba(255,255,255,0.05); 
-            border: 1px solid rgba(255,255,255,0.1); 
-            color: #e5e5e5; 
-            border-radius: 999px; 
-            padding: 6px 30px 6px 12px; 
-            font-size: 11px; 
-            font-weight: 800; 
-            cursor: pointer; 
-            outline: none; 
-            transition: 0.3s; 
+        /* Cartes du menu principal */
+        .card-menu {
+            background: rgba(20, 20, 20, 0.4);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
-        .lang-selector:hover { background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.3); }
+        .card-menu:hover {
+            transform: translateY(-6px);
+            border-color: rgba(255, 255, 255, 0.3);
+            background: rgba(40, 40, 40, 0.5);
+            box-shadow: 0 20px 40px -10px rgba(0,0,0,0.7), 0 0 20px rgba(255,255,255,0.05);
+        }
+        
+        /* Actions en haut (langues, ecc.) */
+        .top-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--bz-light-text);
+            padding: 0.6rem 1.2rem;
+            border-radius: 30px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            backdrop-filter: blur(12px);
+        }
+        .top-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+        .top-actions {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            display: flex;
+            gap: 0.5rem;
+            z-index: 50;
+        }
+        @media (min-width: 768px) {
+            .top-actions {
+                top: 2rem;
+                right: 2rem;
+                gap: 1rem;
+            }
+        }
+        
+        /* Styles du Chat IA */
+        .chat-bubble {
+            max-width: 85%;
+            padding: 16px 20px;
+            border-radius: 20px;
+            margin-bottom: 12px;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .chat-user {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+        .chat-ai {
+            background-color: rgba(255, 255, 255, 0.9);
+            color: black;
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+            box-shadow: 0 10px 25px rgba(255,255,255,0.15);
+        }
+        
+        /* Barres de défilement (Scrollbars) personnalisées */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.4); }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        
+        /* Effets d'animation de bordure (IA, etc.) */
+        .ai-border {
+            position: relative;
+            background: rgba(20, 20, 20, 0.4);
+            border-radius: 18px;
+            z-index: 1;
+            backdrop-filter: blur(20px);
+        }
+        .ai-border::before {
+            content: "";
+            position: absolute;
+            inset: -1.5px;
+            border-radius: 19.5px;
+            background: linear-gradient(45deg, rgba(168,85,247,0.8), rgba(59,130,246,0.8), rgba(6,182,212,0.8));
+            z-index: -1;
+            opacity: 0.5;
+            animation: borderRotate 4s linear infinite;
+        }
+        @keyframes borderRotate {
+            0% { filter: hue-rotate(0deg); }
+            100% { filter: hue-rotate(360deg); }
+        }
+        
+        /* Console de log */
+        .console-log {
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px);
+            color: #34d399;
+            font-family: 'Consolas', monospace;
+            padding: 16px;
+            height: 140px;
+            overflow-y: auto;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        
+        /* Styles pour l'impression des rapports PDF */
+        @media print {
+            body { background: white !important; }
+            body > *:not(#aiAnalysisModal) { display: none !important; }
+            #aiAnalysisModal {
+                position: absolute !important;
+                left: 0 !important;
+                top: 0 !important;
+                width: 100% !important;
+                height: auto !important;
+                background: white !important;
+                display: block !important;
+            }
+            #aiAnalysisModal > div {
+                border: none !important;
+                box-shadow: none !important;
+                max-height: none !important;
+                max-width: none !important;
+                border-radius: 0 !important;
+                width: 100% !important;
+            }
+            .print-hide { display: none !important; }
+            #aiAnalysisContent {
+                background: white !important;
+                overflow: visible !important;
+                padding: 0 !important;
+                max-height: none !important;
+            }
+        }
     </style>
 </head>
 <body>
 
+    <!-- Arrière-plan animé global -->
     <div class="ambient-bg">
         <div class="ambient-blob-1"></div>
         <div class="ambient-blob-2"></div>
     </div>
 
-    <!-- VUE 1 : CONNEXION -->
-    <section id="view-login" class="view-section active justify-center items-center p-4 relative">
+    <!-- ========================================== -->
+    <!-- VUE 1 : CONNEXION (LOGIN)                  -->
+    <!-- ========================================== -->
+    <section id="view-login" class="view-section active justify-center items-center p-4 md:p-6 relative">
         <div class="top-actions">
-            <div class="relative">
-                <select onchange="changeLanguage(this.value)" class="lang-selector">
-                    <!-- Les options seront générées par le script -->
-                </select>
-                <i class="fas fa-chevron-down absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-[8px] opacity-50"></i>
+            <!-- Sélecteur de langue dynamique -->
+            <div class="relative shrink-0">
+                <select onchange="changeLanguage(this.value)" class="lang-selector appearance-none bg-white/5 border border-white/10 text-gray-200 hover:bg-white/15 hover:border-white/30 transition-all rounded-full pl-8 pr-6 py-1.5 md:py-2 text-xs font-bold outline-none cursor-pointer backdrop-blur-md shadow-sm"></select>
+                <i class="fas fa-globe absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400 text-xs"></i>
+                <i class="fas fa-chevron-down absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400 text-[0.55rem]"></i>
             </div>
         </div>
-        
-        <div class="glass-panel max-w-md w-full p-8 md:p-12 rounded-3xl space-y-10 relative overflow-hidden">
-            <div class="flex flex-col items-center">
-                <svg width="100" height="100" viewBox="0 0 100 100" fill="none" class="mb-6">
-                    <text x="50" y="52" text-anchor="middle" font-weight="900" font-size="48" fill="white">BZ</text>
-                    <rect x="15" y="58" width="70" height="4" fill="white"/>
-                </svg>
-                <h2 class="text-xs font-black tracking-[0.4em] text-gray-400 uppercase" data-i18n="loginTitle">Connexion</h2>
+        <div class="glass-panel max-w-md w-full p-8 md:p-12 rounded-3xl space-y-10 relative overflow-hidden mx-auto">
+            <div class="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-32 bg-white/10 blur-3xl rounded-full pointer-events-none"></div>
+            <div class="flex flex-col items-center relative z-10">
+                <div class="mb-6 relative group">
+                    <svg width="120" height="120" viewBox="0 0 100 100" fill="none" class="relative z-10 drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">
+                        <text x="50" y="52" text-anchor="middle" font-weight="900" font-size="48" fill="white" letter-spacing="-2">BZ</text>
+                        <rect x="15" y="58" width="70" height="4" fill="white"/>
+                        <text x="50" y="82" text-anchor="middle" font-weight="bold" font-size="16" fill="white" letter-spacing="4" style="text-transform: lowercase;">bots</text>
+                    </svg>
+                </div>
+                <h2 class="text-center text-xs font-black tracking-[0.4em] text-gray-400 uppercase drop-shadow-md" data-i18n="loginTitle">Connexion</h2>
             </div>
-            
-            <form onsubmit="event.preventDefault(); handleLogin();" class="space-y-6">
+            <form onsubmit="event.preventDefault(); handleLogin();" class="space-y-6 relative z-10">
                 <div>
-                    <label class="block text-[0.65rem] font-bold text-gray-400 uppercase mb-2 tracking-widest" data-i18n="accountName">Compte</label>
-                    <input type="text" class="input-bz" value="Opérateur">
+                    <label class="block text-[0.65rem] font-bold text-gray-400 uppercase mb-2 tracking-widest" data-i18n="accountName">Nom de compte</label>
+                    <input type="text" class="input-bz" placeholder="Utilisateur" value="Opérateur">
                 </div>
                 <div>
                     <label class="block text-[0.65rem] font-bold text-gray-400 uppercase mb-2 tracking-widest" data-i18n="password">Mot de passe</label>
-                    <input type="password" class="input-bz" value="123456">
+                    <input type="password" class="input-bz" placeholder="••••••••" value="123456">
                 </div>
-                <button type="submit" id="loginBtn" class="btn-bz-primary">
+                <button type="submit" id="loginBtn" class="btn-bz-primary mt-4">
                     <span data-i18n="loginBtn">ME CONNECTER</span>
                 </button>
             </form>
+            <div onclick="nav('view-register')" class="text-center text-xs text-gray-400 mt-8 cursor-pointer hover:text-white transition-colors uppercase tracking-widest font-bold relative z-10" data-i18n="createAccount">
+                Créer un compte
+            </div>
         </div>
     </section>
 
-    <!-- VUE 2 : ACCUEIL -->
-    <section id="view-home" class="view-section">
-        <header class="p-4 md:p-6 flex justify-between items-center border-b border-white/10 bg-black/40 backdrop-blur-xl">
-            <div class="flex items-center gap-4">
-                <div class="w-10 h-10 bg-white text-black font-black flex items-center justify-center rounded-full text-xs" id="userAvatar">T</div>
-                <span class="font-black text-white" id="userNameDisplay">Tanguy</span>
+    <!-- ========================================== -->
+    <!-- VUE 2 : INSCRIPTION (REGISTER)             -->
+    <!-- ========================================== -->
+    <section id="view-register" class="view-section justify-center items-center p-4 md:p-6 relative">
+        <div class="top-actions">
+            <!-- Sélecteur de langue dynamique -->
+            <div class="relative shrink-0">
+                <select onchange="changeLanguage(this.value)" class="lang-selector appearance-none bg-white/5 border border-white/10 text-gray-200 hover:bg-white/15 hover:border-white/30 transition-all rounded-full pl-8 pr-6 py-1.5 md:py-2 text-xs font-bold outline-none cursor-pointer backdrop-blur-md shadow-sm"></select>
+                <i class="fas fa-globe absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400 text-xs"></i>
+                <i class="fas fa-chevron-down absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400 text-[0.55rem]"></i>
             </div>
-            <div class="relative">
-                <select onchange="changeLanguage(this.value)" class="lang-selector">
-                    <!-- Les options seront générées par le script -->
-                </select>
-                <i class="fas fa-chevron-down absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-[8px] opacity-50"></i>
+        </div>
+        <div class="glass-panel max-w-md w-full p-8 md:p-12 rounded-3xl space-y-8 relative overflow-hidden mx-auto">
+            <div class="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-32 bg-white/10 blur-3xl rounded-full pointer-events-none"></div>
+            <div class="flex flex-col items-center relative z-10">
+                <svg width="60" height="60" viewBox="0 0 100 100" fill="none" class="mb-4 drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">
+                    <text x="50" y="52" text-anchor="middle" font-weight="900" font-size="48" fill="white" letter-spacing="-2">BZ</text>
+                    <rect x="15" y="58" width="70" height="4" fill="white"/>
+                </svg>
+                <h2 class="text-center text-sm font-black tracking-widest text-gray-300 uppercase" data-i18n="registerTitle">Créer un compte</h2>
+            </div>
+            <form onsubmit="event.preventDefault(); handleRegister();" class="space-y-5 relative z-10">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-[0.65rem] font-bold text-gray-400 uppercase mb-2" data-i18n="lastName">Nom</label>
+                        <input type="text" id="regLastName" class="input-bz" placeholder="Dupont" required>
+                    </div>
+                    <div>
+                        <label class="block text-[0.65rem] font-bold text-gray-400 uppercase mb-2" data-i18n="firstName">Prénom</label>
+                        <input type="text" id="regFirstName" class="input-bz" placeholder="Jean" required>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-[0.65rem] font-bold text-gray-400 uppercase mb-2" data-i18n="email">Adresse mail</label>
+                    <input type="email" id="regEmail" class="input-bz" placeholder="jean.dupont@email.com" required>
+                </div>
+                <div>
+                    <label class="block text-[0.65rem] font-bold text-gray-400 uppercase mb-2" data-i18n="password">Mot de passe</label>
+                    <input type="password" class="input-bz" placeholder="••••••••" required>
+                </div>
+                <div>
+                    <label class="block text-[0.65rem] font-bold text-gray-400 uppercase mb-2" data-i18n="confirmPassword">Confirmation</label>
+                    <input type="password" class="input-bz" placeholder="••••••••" required>
+                </div>
+                <button type="submit" id="registerBtn" class="btn-bz-primary mt-8">
+                    <span data-i18n="registerBtn">CRÉER MON COMPTE</span>
+                </button>
+            </form>
+            <div onclick="nav('view-login')" class="text-center text-xs text-gray-400 mt-6 cursor-pointer hover:text-white transition-colors uppercase tracking-widest font-bold relative z-10" data-i18n="alreadyAccount">
+                Déjà un compte ? Se connecter
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- VUE 3 : ACCUEIL (HOME)                     -->
+    <!-- ========================================== -->
+    <section id="view-home" class="view-section relative">
+        <header class="p-4 md:p-6 flex justify-between items-center border-b border-white/10 bg-black/40 backdrop-blur-xl sticky top-0 z-40">
+            <div class="flex items-center gap-4">
+                <div class="w-10 h-10 bg-white text-black font-black flex items-center justify-center rounded-full text-xs shadow-[0_0_20px_rgba(255,255,255,0.3)] shrink-0" id="userAvatarInitials">T</div>
+                <div>
+                    <span class="block text-[0.6rem] text-gray-400 uppercase font-bold tracking-widest" data-i18n="hello">Session Active</span>
+                    <span class="font-black text-base md:text-lg tracking-wide text-white"><span id="userNameDisplay">Tanguy</span></span>
+                </div>
+            </div>
+            <!-- Sélecteur de langue dynamique -->
+            <div class="flex items-center gap-2 md:gap-3">
+                <div class="relative shrink-0">
+                    <select onchange="changeLanguage(this.value)" class="lang-selector appearance-none bg-white/5 border border-white/10 text-gray-200 hover:bg-white/15 hover:border-white/30 transition-all rounded-full pl-8 pr-6 py-1.5 md:py-2 text-xs font-bold outline-none cursor-pointer backdrop-blur-md shadow-sm"></select>
+                    <i class="fas fa-globe absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400 text-xs"></i>
+                    <i class="fas fa-chevron-down absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400 text-[0.55rem]"></i>
+                </div>
             </div>
         </header>
         
-        <div class="flex-1 p-6 flex flex-col items-center justify-center text-center">
-             <h1 class="text-4xl font-black mb-4 uppercase tracking-tighter" data-i18n="hello">Bienvenue</h1>
-             <p class="text-gray-400 max-w-md" data-i18n="bzLightDesc">Interface de contrôle des systèmes BZBots.</p>
-             <button onclick="nav('view-login')" class="mt-8 text-xs font-bold uppercase tracking-widest text-gray-500 hover:text-white transition-colors">Déconnexion</button>
+        <div class="flex-1 overflow-auto p-4 md:p-6 space-y-8 md:space-y-12">
+            <div>
+                <h3 class="text-xs font-black text-gray-400 mb-6 uppercase tracking-[0.3em] pl-4 border-l-4 border-white" data-i18n="discoverRange">Découvrez notre gamme</h3>
+                <div class="flex overflow-x-auto gap-4 md:gap-6 pb-6 snap-x hide-scrollbar">
+                    
+                    <div class="snap-center shrink-0 w-[280px] md:w-[300px] glass-panel rounded-2xl p-5 md:p-6 flex flex-col hover:border-yellow-500/50 group">
+                        <div class="w-full h-40 md:h-44 bg-black/40 rounded-xl mb-6 flex items-center justify-center border border-white/5 relative overflow-hidden backdrop-blur-sm">
+                             <img src="IMG_6062.png" alt="BzLight" class="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:opacity-100 group-hover:scale-110 transition-all duration-500">
+                             <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent pointer-events-none"></div>
+                        </div>
+                        <h4 class="text-xl md:text-2xl font-black text-white mb-1 tracking-tighter">BzLight</h4>
+                        <p class="text-[0.65rem] text-yellow-400 mb-6 font-bold uppercase tracking-widest drop-shadow-md" data-i18n="bzLightDesc">Robot de fraisage UV</p>
+                        <div class="space-y-3 mb-8">
+                            <div class="text-[0.7rem] text-gray-300 flex items-center gap-3 font-medium"><i class="fas fa-bolt text-yellow-500 w-4 drop-shadow-[0_0_8px_rgba(234,179,8,0.5)]"></i><span data-i18n="highPower">Haute Puissance</span></div>
+                            <div class="text-[0.7rem] text-gray-300 flex items-center gap-3 font-medium"><i class="fas fa-video text-yellow-500 w-4 drop-shadow-[0_0_8px_rgba(234,179,8,0.5)]"></i><span data-i18n="hdCamera">Caméra HD 4K</span></div>
+                            <div class="text-[0.7rem] text-gray-300 flex items-center gap-3 font-medium"><i class="fas fa-crosshairs text-yellow-500 w-4 drop-shadow-[0_0_8px_rgba(234,179,8,0.5)]"></i><span data-i18n="preciseControl">Pilotage Millimétrique</span></div>
+                        </div>
+                        <div class="mt-auto flex gap-3">
+                            <button onclick="openInfoModal('bzLightProduct')" class="flex-1 py-3 bg-white/5 border border-white/10 text-[0.65rem] font-bold uppercase text-gray-300 hover:bg-white/10 hover:text-white transition rounded-xl backdrop-blur-md" data-i18n="docBtn">Doc</button>
+                            <button onclick="nav('view-bzlight')" class="flex-1 py-3 bg-yellow-500 text-[0.65rem] font-black uppercase text-black hover:bg-yellow-400 transition rounded-xl shadow-[0_0_20px_rgba(234,179,8,0.3)]" data-i18n="details">Configurer</button>
+                        </div>
+                    </div>
+                    
+                    <div class="snap-center shrink-0 w-[280px] md:w-[300px] glass-panel rounded-2xl p-5 md:p-6 flex flex-col hover:border-blue-500/50 group">
+                        <div class="w-full h-40 md:h-44 bg-black/40 rounded-xl mb-6 flex items-center justify-center border border-white/5 relative overflow-hidden backdrop-blur-sm">
+                             <img src="IMG_6059.png" alt="Tracteur" class="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:opacity-100 group-hover:scale-110 transition-all duration-500">
+                             <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent pointer-events-none"></div>
+                        </div>
+                        <h4 class="text-xl md:text-2xl font-black text-white mb-1 tracking-tighter">Tracteur</h4>
+                        <p class="text-[0.65rem] text-blue-400 mb-6 font-bold uppercase tracking-widest drop-shadow-md" data-i18n="tractorProduct">Fraisage & Inspection</p>
+                        <div class="space-y-3 mb-8">
+                            <div class="text-[0.7rem] text-gray-300 flex items-center gap-3 font-medium"><i class="fas fa-expand-arrows-alt text-blue-500 w-4 drop-shadow-[0_0_8px_rgba(59,130,246,0.5)]"></i><span data-i18n="portable">Modulable</span></div>
+                            <div class="text-[0.7rem] text-gray-300 flex items-center gap-3 font-medium"><i class="fas fa-shield-alt text-blue-500 w-4 drop-shadow-[0_0_8px_rgba(59,130,246,0.5)]"></i><span data-i18n="antiTMS">Sécurité Opérateur</span></div>
+                        </div>
+                        <div class="mt-auto flex gap-3">
+                            <button onclick="openInfoModal('tractorProduct')" class="flex-1 py-3 bg-white/5 border border-white/10 text-[0.65rem] font-bold uppercase text-gray-300 hover:bg-white/10 hover:text-white transition rounded-xl backdrop-blur-md" data-i18n="techSheet">Fiche</button>
+                            <button class="flex-1 py-3 bg-blue-500 text-[0.65rem] font-black uppercase text-white hover:bg-blue-400 transition rounded-xl shadow-[0_0_20px_rgba(59,130,246,0.4)]" onclick="openInfoModal('devInProgress')" data-i18n="configure">Ouvrir</button>
+                        </div>
+                    </div>
+                    
+                    <div class="snap-center shrink-0 w-[280px] md:w-[300px] glass-panel rounded-2xl p-5 md:p-6 flex flex-col hover:border-cyan-400/50 group">
+                         <div class="w-full h-40 md:h-44 bg-black/40 rounded-xl mb-6 flex items-center justify-center border border-white/5 relative overflow-hidden backdrop-blur-sm">
+                             <i class="fas fa-flask text-6xl md:text-7xl text-cyan-400/40 group-hover:scale-110 group-hover:text-cyan-300/60 transition-all duration-500 drop-shadow-[0_0_20px_rgba(34,211,238,0.3)]"></i>
+                             <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+                        </div>
+                        <h4 class="text-xl md:text-2xl font-black text-white mb-1 tracking-tighter" data-i18n="pumpProduct">Pompe d'application résine</h4>
+                        <p class="text-[0.65rem] text-cyan-400 mb-6 font-bold uppercase tracking-widest drop-shadow-md" data-i18n="pumpDesc">Système d'injection</p>
+                         <div class="space-y-3 mb-8">
+                            <div class="text-[0.7rem] text-gray-300 flex items-center gap-3 font-medium"><i class="fas fa-calculator text-cyan-400 w-4 drop-shadow-[0_0_8px_rgba(34,211,238,0.5)]"></i><span data-i18n="autoCalc">IA Predictor</span></div>
+                            <div class="text-[0.7rem] text-gray-300 flex items-center gap-3 font-medium"><i class="fas fa-wifi text-cyan-400 w-4 drop-shadow-[0_0_8px_rgba(34,211,238,0.5)]"></i><span data-i18n="wifiConn">Wi-Fi AP Ready</span></div>
+                        </div>
+                        <div class="mt-auto">
+                            <!-- Bouton lançant l'application Pompe -->
+                            <button onclick="nav('view-pump')" class="w-full py-4 bg-white/90 text-black text-[0.65rem] font-black uppercase hover:bg-white transition rounded-xl flex items-center justify-center gap-3 shadow-[0_10px_25px_rgba(255,255,255,0.2)]">
+                                <i class="fas fa-play"></i> <span data-i18n="launchApp">Accéder</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div>
+                <h3 class="text-xs font-black text-gray-400 mb-6 uppercase tracking-[0.3em] pl-4 border-l-4 border-white/20" data-i18n="quickAccess">Navigation Rapide</h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+                    <div onclick="nav('view-products')" class="card-menu p-6 md:p-8 rounded-2xl flex flex-col items-center justify-center aspect-square md:aspect-video group">
+                        <i class="fas fa-boxes text-2xl md:text-3xl mb-3 md:mb-4 text-white group-hover:scale-110 transition-transform"></i>
+                        <span class="text-[0.65rem] md:text-[0.7rem] font-bold uppercase tracking-widest text-center" data-i18n="catalog">Catalogue</span>
+                    </div>
+                    <div onclick="nav('view-profile')" class="card-menu p-6 md:p-8 rounded-2xl flex flex-col items-center justify-center aspect-square md:aspect-video group">
+                        <i class="fas fa-user-circle text-2xl md:text-3xl mb-3 md:mb-4 text-gray-300 group-hover:text-white group-hover:scale-110 transition-all"></i>
+                        <span class="text-[0.65rem] md:text-[0.7rem] font-bold uppercase tracking-widest text-center text-gray-300 group-hover:text-white transition-colors" data-i18n="profile">Profil</span>
+                    </div>
+                    <div onclick="nav('view-archives')" class="card-menu p-6 md:p-8 rounded-2xl flex flex-col items-center justify-center aspect-square md:aspect-video group">
+                        <i class="fas fa-file-pdf text-2xl md:text-3xl mb-3 md:mb-4 text-gray-300 group-hover:text-white group-hover:scale-110 transition-all"></i>
+                        <span class="text-[0.65rem] md:text-[0.7rem] font-bold uppercase tracking-widest text-center text-gray-300 group-hover:text-white transition-colors" data-i18n="documents">Archives</span>
+                    </div>
+                    <div onclick="nav('view-ai-chat')" class="hidden card-menu p-6 md:p-8 rounded-2xl flex flex-col items-center justify-center aspect-square md:aspect-video border-purple-500/30 hover:border-purple-400/60 group overflow-hidden relative">
+                        <div class="absolute inset-0 bg-gradient-to-br from-purple-600/10 to-blue-600/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        <i class="fas fa-brain text-2xl md:text-3xl mb-3 md:mb-4 text-purple-400 group-hover:scale-110 transition-transform drop-shadow-[0_0_15px_rgba(168,85,247,0.5)]"></i>
+                        <span class="text-[0.65rem] md:text-[0.7rem] font-black uppercase tracking-widest text-center text-purple-300 relative z-10" data-i18n="aiAssistant">BzIA Assistant</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer class="p-4 md:p-6 text-center border-t border-white/10 bg-black/40 backdrop-blur-xl">
+            <button onclick="openInfoModal('wipMessage')" class="text-[0.55rem] md:text-[0.6rem] text-gray-500 hover:text-white transition-colors uppercase tracking-[0.2em] md:tracking-[0.4em] font-bold" data-i18n="legalMentions">
+                BZBots Systems © 2024 - Confidential Enterprise Suite
+            </button>
+        </footer>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- VUE 4 : ARCHIVES ET RAPPORTS               -->
+    <!-- ========================================== -->
+    <section id="view-archives" class="view-section">
+        <header class="p-4 md:p-6 flex justify-between items-center border-b border-white/10 bg-black/40 backdrop-blur-xl">
+            <div class="flex items-center">
+                <button onclick="nav('view-home')" class="text-gray-400 hover:text-white transition-colors mr-4 md:mr-6">
+                    <i class="fas fa-chevron-left text-lg md:text-xl"></i>
+                </button>
+                <h2 class="font-black text-lg md:text-xl uppercase tracking-[0.2em] text-white" data-i18n="documents">Archives</h2>
+            </div>
+            <!-- Sélecteur de langue dynamique -->
+            <div class="relative shrink-0">
+                <select onchange="changeLanguage(this.value)" class="lang-selector appearance-none bg-white/5 border border-white/10 text-gray-200 hover:bg-white/15 hover:border-white/30 transition-all rounded-full pl-8 pr-6 py-1.5 md:py-2 text-xs font-bold outline-none cursor-pointer backdrop-blur-md shadow-sm"></select>
+                <i class="fas fa-globe absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400 text-xs"></i>
+                <i class="fas fa-chevron-down absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400 text-[0.55rem]"></i>
+            </div>
+        </header>
+        <div class="flex-1 overflow-auto p-4 md:p-8 flex flex-col items-center max-w-5xl mx-auto w-full">
+            <div id="archivesList" class="w-full space-y-6"></div>
         </div>
     </section>
 
+    <!-- ========================================== -->
+    <!-- VUE 5 : CATALOGUE DE PRODUITS              -->
+    <!-- ========================================== -->
+    <section id="view-products" class="view-section">
+        <header class="p-4 md:p-6 flex justify-between items-center border-b border-white/10 bg-black/40 backdrop-blur-xl">
+            <div class="flex items-center">
+                <button onclick="nav('view-home')" class="text-gray-400 hover:text-white transition-colors mr-4 md:mr-6">
+                    <i class="fas fa-chevron-left text-lg md:text-xl"></i>
+                </button>
+                <h2 class="font-black text-lg md:text-xl uppercase tracking-[0.2em] text-white" data-i18n="myProducts">Mes Produits</h2>
+            </div>
+            <!-- Sélecteur de langue dynamique -->
+            <div class="relative shrink-0">
+                <select onchange="changeLanguage(this.value)" class="lang-selector appearance-none bg-white/5 border border-white/10 text-gray-200 hover:bg-white/15 hover:border-white/30 transition-all rounded-full pl-8 pr-6 py-1.5 md:py-2 text-xs font-bold outline-none cursor-pointer backdrop-blur-md shadow-sm"></select>
+                <i class="fas fa-globe absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400 text-xs"></i>
+                <i class="fas fa-chevron-down absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400 text-[0.55rem]"></i>
+            </div>
+        </header>
+        <div class="flex-1 overflow-auto p-4 md:p-6 space-y-4 md:space-y-6 max-w-4xl mx-auto w-full">
+            
+            <div onclick="openProductContact('pump')" class="card-menu p-4 md:p-6 rounded-3xl flex flex-col sm:flex-row items-center sm:items-start md:items-center gap-4 md:gap-6 group border-cyan-500/20 hover:border-cyan-400/50 text-center sm:text-left">
+                <div class="w-16 h-16 md:w-20 md:h-20 shrink-0 bg-black/50 rounded-2xl flex items-center justify-center border border-white/10 group-hover:bg-cyan-900/20 transition-colors backdrop-blur-md">
+                    <i class="fas fa-flask text-2xl md:text-3xl text-cyan-400 drop-shadow-[0_0_10px_rgba(34,211,238,0.5)]"></i>
+                </div>
+                <div class="flex-1">
+                    <h3 class="font-black text-lg md:text-xl text-white tracking-tighter" data-i18n="pumpProduct">La Pompe</h3>
+                    <p class="text-sm text-cyan-400/80 font-bold uppercase tracking-widest text-[0.6rem] md:text-[0.65rem] mt-1" data-i18n="pumpDesc">Injection & Réhabilitation</p>
+                </div>
+                <div class="flex items-center gap-4 mt-2 sm:mt-0">
+                    <span class="text-[0.55rem] md:text-[0.6rem] font-black text-white bg-white/10 px-3 py-1.5 rounded-full uppercase tracking-widest border border-white/10">Fiche Contact</span>
+                    <i class="fas fa-chevron-right text-gray-500 group-hover:text-white transition-colors hidden sm:block"></i>
+                </div>
+            </div>
+            
+            <div onclick="openProductContact('bzlight')" class="card-menu p-4 md:p-6 rounded-3xl flex flex-col sm:flex-row items-center sm:items-start md:items-center gap-4 md:gap-6 group border-yellow-500/20 hover:border-yellow-400/50 text-center sm:text-left">
+                <div class="w-16 h-16 md:w-20 md:h-20 shrink-0 bg-black/50 rounded-2xl flex items-center justify-center border border-white/10 group-hover:border-yellow-500/50 transition-colors backdrop-blur-md overflow-hidden relative">
+                    <img src="IMG_6062.png" alt="BzLight" class="absolute inset-0 w-full h-full object-cover opacity-70 group-hover:opacity-100 transition-opacity">
+                </div>
+                <div class="flex-1">
+                    <h3 class="font-black text-lg md:text-xl text-white tracking-tighter" data-i18n="bzLightProduct">BzLight</h3>
+                    <p class="text-sm text-yellow-500/80 font-bold uppercase tracking-widest text-[0.6rem] md:text-[0.65rem] mt-1" data-i18n="bzLightDesc">Robot de fraisage UV</p>
+                </div>
+                <div class="flex items-center gap-4 mt-2 sm:mt-0">
+                    <span class="text-[0.55rem] md:text-[0.6rem] font-black text-white bg-white/10 px-3 py-1.5 rounded-full uppercase tracking-widest border border-white/10">Fiche Contact</span>
+                    <i class="fas fa-chevron-right text-gray-500 group-hover:text-white transition-colors hidden sm:block"></i>
+                </div>
+            </div>
+            
+            <div onclick="openProductContact('tractor')" class="card-menu p-4 md:p-6 rounded-3xl flex flex-col sm:flex-row items-center sm:items-start md:items-center gap-4 md:gap-6 group border-blue-500/20 hover:border-blue-400/50 text-center sm:text-left">
+                <div class="w-16 h-16 md:w-20 md:h-20 shrink-0 bg-black/50 rounded-2xl flex items-center justify-center border border-white/10 group-hover:border-blue-500/50 transition-colors backdrop-blur-md overflow-hidden relative">
+                    <img src="IMG_6059.png" alt="Tracteur" class="absolute inset-0 w-full h-full object-cover opacity-70 group-hover:opacity-100 transition-opacity">
+                </div>
+                <div class="flex-1">
+                    <h3 class="font-black text-lg md:text-xl text-white tracking-tighter" data-i18n="tractorProduct">Tracteur</h3>
+                    <p class="text-sm text-blue-400/80 font-bold uppercase tracking-widest text-[0.6rem] md:text-[0.65rem] mt-1" data-i18n="tractorDesc">Fraisage & Inspection</p>
+                </div>
+                <div class="flex items-center gap-4 mt-2 sm:mt-0">
+                    <span class="text-[0.55rem] md:text-[0.6rem] font-black text-white bg-white/10 px-3 py-1.5 rounded-full uppercase tracking-widest border border-white/10">Fiche Contact</span>
+                    <i class="fas fa-chevron-right text-gray-500 group-hover:text-white transition-colors hidden sm:block"></i>
+                </div>
+            </div>
+            
+        </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- VUE 6 : PROFIL UTILISATEUR                 -->
+    <!-- ========================================== -->
+    <section id="view-profile" class="view-section">
+        <header class="p-4 md:p-6 flex justify-between items-center border-b border-white/10 bg-black/40 backdrop-blur-xl">
+            <div class="flex items-center">
+                <button onclick="nav('view-home')" class="text-gray-400 hover:text-white transition-colors mr-4 md:mr-6">
+                    <i class="fas fa-chevron-left text-lg md:text-xl"></i>
+                </button>
+                <h2 class="font-black text-lg md:text-xl uppercase tracking-[0.2em] text-white" data-i18n="myProfile">Profil Utilisateur</h2>
+            </div>
+            <!-- Sélecteur de langue dynamique -->
+            <div class="relative shrink-0">
+                <select onchange="changeLanguage(this.value)" class="lang-selector appearance-none bg-white/5 border border-white/10 text-gray-200 hover:bg-white/15 hover:border-white/30 transition-all rounded-full pl-8 pr-6 py-1.5 md:py-2 text-xs font-bold outline-none cursor-pointer backdrop-blur-md shadow-sm"></select>
+                <i class="fas fa-globe absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400 text-xs"></i>
+                <i class="fas fa-chevron-down absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400 text-[0.55rem]"></i>
+            </div>
+        </header>
+        
+        <div class="flex-1 p-4 md:p-8 flex flex-col items-center max-w-2xl mx-auto w-full">
+            <div class="w-24 h-24 md:w-32 md:h-32 bg-white/10 backdrop-blur-xl rounded-full flex items-center justify-center border border-white/20 mb-6 md:mb-8 shadow-[0_0_30px_rgba(255,255,255,0.1)] relative group overflow-hidden shrink-0">
+                <span class="text-3xl md:text-4xl font-black text-white" id="profileInitials">TD</span>
+                <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center cursor-pointer transition-opacity backdrop-blur-sm">
+                    <i class="fas fa-camera text-white text-lg md:text-xl"></i>
+                </div>
+            </div>
+            
+            <div class="w-full glass-panel rounded-3xl p-6 md:p-10 space-y-6 md:space-y-8">
+                <h3 class="text-[0.6rem] md:text-[0.65rem] font-black text-gray-400 uppercase tracking-[0.3em] border-b border-white/10 pb-4" data-i18n="personalInfo">Données Authentifiées</h3>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 md:gap-8">
+                    <div class="space-y-2">
+                        <label class="block text-[0.55rem] md:text-[0.6rem] font-bold text-gray-500 uppercase tracking-widest" data-i18n="firstName">Prénom</label>
+                        <div class="text-base md:text-lg font-black text-white bg-black/40 px-4 py-3 rounded-xl border border-white/5 truncate" id="profFirstName">Tanguy</div>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="block text-[0.55rem] md:text-[0.6rem] font-bold text-gray-500 uppercase tracking-widest" data-i18n="lastName">Nom</label>
+                        <div class="text-base md:text-lg font-black text-white bg-black/40 px-4 py-3 rounded-xl border border-white/5 truncate" id="profLastName">Demo</div>
+                    </div>
+                </div>
+                
+                <div class="space-y-2">
+                    <label class="block text-[0.55rem] md:text-[0.6rem] font-bold text-gray-500 uppercase tracking-widest" data-i18n="email">Identifiant Email</label>
+                    <div class="text-white font-bold flex items-center gap-3 md:gap-4 bg-black/40 px-4 py-3 rounded-xl border border-white/5 text-sm md:text-base overflow-hidden">
+                        <i class="far fa-envelope text-gray-400 shrink-0"></i> <span id="profEmail" class="truncate">tanguy@bzbots.com</span>
+                    </div>
+                </div>
+                
+                <div class="space-y-2">
+                    <label class="block text-[0.55rem] md:text-[0.6rem] font-bold text-gray-500 uppercase tracking-widest" data-i18n="role">Accréditation</label>
+                    <div class="inline-flex items-center gap-2 md:gap-3 px-4 md:px-5 py-2.5 md:py-3 bg-blue-500/10 border border-blue-500/30 rounded-xl text-blue-300 text-[0.65rem] md:text-xs font-black uppercase tracking-widest">
+                        <i class="fas fa-id-badge text-blue-400 shrink-0"></i> <span id="profRole">Opérateur Senior</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="w-full mt-6 md:mt-8 space-y-3 md:space-y-4">
+                <button class="w-full py-3.5 md:py-4 bg-white/5 border border-white/10 text-gray-300 hover:text-white hover:bg-white/10 transition-all rounded-xl uppercase text-[0.65rem] md:text-xs font-black tracking-widest backdrop-blur-md">Modifier les informations</button>
+                <button onclick="handleLogout()" class="w-full py-3.5 md:py-4 bg-red-500/10 border border-red-500/30 text-red-400 hover:bg-red-500 hover:text-white transition-all rounded-xl uppercase text-[0.65rem] md:text-xs font-black tracking-widest backdrop-blur-md shadow-[0_0_15px_rgba(239,68,68,0.1)]">Se Déconnecter</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- VUE 7 : BZLIGHT CONFIG (Paramétrage Robot) -->
+    <!-- ========================================== -->
+    <section id="view-bzlight" class="view-section">
+        <header class="p-4 md:p-6 border-b border-white/10 flex justify-between items-center bg-black/40 backdrop-blur-xl">
+            <div class="flex items-center gap-3 md:gap-4">
+                <button onclick="nav('view-home')" class="text-gray-400 hover:text-white transition-colors">
+                    <i class="fas fa-chevron-left text-lg md:text-xl"></i>
+                </button>
+                <h2 class="font-black text-lg md:text-xl uppercase tracking-widest text-white" data-i18n="bzLightConfig">BzLight V2 Config</h2>
+            </div>
+            <!-- Sélecteur de langue dynamique -->
+            <div class="relative shrink-0">
+                <select onchange="changeLanguage(this.value)" class="lang-selector appearance-none bg-white/5 border border-white/10 text-gray-200 hover:bg-white/15 hover:border-white/30 transition-all rounded-full pl-8 pr-6 py-1.5 md:py-2 text-xs font-bold outline-none cursor-pointer backdrop-blur-md shadow-sm"></select>
+                <i class="fas fa-globe absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400 text-xs"></i>
+                <i class="fas fa-chevron-down absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400 text-[0.55rem]"></i>
+            </div>
+        </header>
+        
+        <div class="flex-1 p-4 md:p-8 overflow-y-auto">
+            <div class="max-w-xl mx-auto space-y-6 md:space-y-8">
+                <div class="glass-panel rounded-3xl p-6 md:p-10 relative overflow-hidden">
+                    <div class="text-center mb-8 md:mb-10 relative z-10">
+                        <div class="w-20 h-20 md:w-24 md:h-24 bg-black/40 backdrop-blur-md rounded-full mx-auto mb-4 md:mb-6 border border-yellow-500/30 flex items-center justify-center shadow-[0_0_30px_rgba(234,179,8,0.2)]">
+                            <i class="fas fa-barcode text-3xl md:text-4xl text-yellow-500 drop-shadow-[0_0_10px_rgba(234,179,8,0.5)]"></i>
+                        </div>
+                        <h2 class="text-xl md:text-2xl font-black text-white mb-2 uppercase tracking-tighter" data-i18n="robotSpecs">Authentification Robot</h2>
+                        <p class="text-[0.65rem] md:text-xs text-gray-400 font-medium" data-i18n="enterSerial">Scannez ou entrez le numéro de série pour la calibration</p>
+                    </div>
+                    
+                    <div class="space-y-5 md:space-y-6 relative z-10">
+                        <div>
+                            <label class="block text-[0.6rem] md:text-[0.65rem] font-bold text-gray-400 uppercase mb-2 tracking-[0.2em]" data-i18n="robotSerial">Serial Number</label>
+                            <div class="relative">
+                                <input type="text" id="robotSerial" class="input-bz pl-12 border-yellow-500/30 focus:border-yellow-400 text-sm md:text-base" placeholder="BZ-UV-XXXX-XXXX">
+                                <i class="fas fa-microchip absolute left-4 top-1/2 -translate-y-1/2 text-gray-500"></i>
+                            </div>
+                        </div>
+                        <button onclick="calculateBzLightSpecs()" class="w-full py-3.5 md:py-4 bg-yellow-500 text-black text-xs md:text-sm font-black uppercase tracking-widest hover:bg-yellow-400 transition rounded-xl shadow-[0_10px_20px_rgba(234,179,8,0.3)]">
+                            <i class="fas fa-sync-alt mr-2"></i> <span data-i18n="check">Synchroniser</span>
+                        </button>
+                    </div>
+                    
+                    <div id="bzLightResults" class="mt-8 md:mt-10 pt-6 md:pt-8 border-t border-white/10 hidden relative z-10">
+                        <div class="grid grid-cols-2 gap-4 md:gap-6">
+                            <div class="bg-black/40 backdrop-blur-md p-4 md:p-6 rounded-2xl border border-white/10 text-center shadow-inner">
+                                <div class="text-[0.55rem] md:text-[0.6rem] text-gray-400 uppercase font-black mb-1 md:mb-2 tracking-widest" data-i18n="armPressure">Pression Levée</div>
+                                <div class="text-2xl md:text-4xl font-black text-white"><span id="bzResPressure">0.0</span><span class="text-xs md:text-sm text-yellow-500 ml-1">BAR</span></div>
+                            </div>
+                            <div class="bg-black/40 backdrop-blur-md p-4 md:p-6 rounded-2xl border border-white/10 text-center shadow-inner">
+                                <div class="text-[0.55rem] md:text-[0.6rem] text-gray-400 uppercase font-black mb-1 md:mb-2 tracking-widest" data-i18n="consumption">Energie</div>
+                                <div class="text-2xl md:text-4xl font-black text-white"><span id="bzResConsum">0.0</span><span class="text-xs md:text-sm text-yellow-500 ml-1">A</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- VUE 8 : INTERFACE POMPE PRINCIPALE         -->
+    <!-- ========================================== -->
+    <section id="view-pump" class="view-section">
+        <header class="p-4 border-b border-white/10 flex flex-wrap justify-between items-center gap-4 bg-black/40 backdrop-blur-xl sticky top-0 z-40">
+            <div class="flex items-center gap-3 md:gap-4">
+                <button onclick="handlePumpBack()" class="text-gray-400 hover:text-white transition-colors">
+                    <i class="fas fa-chevron-left text-lg md:text-xl"></i>
+                </button>
+                <div class="flex items-center gap-2 md:gap-3">
+                    <div class="w-7 h-7 md:w-8 md:h-8 bg-white/90 rounded-lg flex items-center justify-center shadow-[0_0_15px_rgba(255,255,255,0.2)] shrink-0">
+                        <span class="text-black font-black text-[0.6rem] md:text-xs">BZ</span>
+                    </div>
+                    <span class="font-black tracking-widest uppercase text-xs md:text-sm text-white drop-shadow-md truncate" data-i18n="pumpControl">Interface Pompe</span>
+                </div>
+            </div>
+            <div class="flex items-center gap-2 md:gap-3 ml-auto">
+                <button id="wifiBtn" onclick="toggleWifi()" class="px-4 py-2 md:px-5 md:py-2.5 rounded-full border border-white/20 bg-black/40 backdrop-blur-md text-gray-400 hover:border-white/40 flex items-center gap-2 md:gap-3 transition-all shadow-[0_5px_15px_rgba(0,0,0,0.5)]">
+                    <i id="wifiIcon" class="fas fa-wifi text-sm"></i>
+                    <span id="wifiStatus" class="text-[0.55rem] md:text-[0.65rem] font-black uppercase tracking-[0.1em] truncate max-w-[100px] sm:max-w-none" data-i18n="connect">Non Connecté</span>
+                </button>
+                <!-- Sélecteur de langue dynamique -->
+                <div class="relative shrink-0">
+                    <select onchange="changeLanguage(this.value)" class="lang-selector appearance-none bg-white/5 border border-white/10 text-gray-200 hover:bg-white/15 hover:border-white/30 transition-all rounded-full pl-8 pr-6 py-1.5 md:py-2 text-xs font-bold outline-none cursor-pointer backdrop-blur-md shadow-sm"></select>
+                    <i class="fas fa-globe absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400 text-xs"></i>
+                    <i class="fas fa-chevron-down absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400 text-[0.55rem]"></i>
+                </div>
+            </div>
+        </header>
+
+        <div class="flex-1 p-4 md:p-6 overflow-y-auto">
+            <div class="w-full relative">
+                
+                <!-- ETAPE 1 : Données Chantier (Création et Historique) -->
+                <div id="pumpStep1" class="max-w-5xl mx-auto flex flex-col gap-6">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                        <h2 class="text-xs md:text-sm font-black text-white uppercase tracking-[0.2em] flex items-center gap-2 md:gap-3 shrink-0">
+                            <i class="fas fa-history text-cyan-400"></i> <span data-i18n="jobHistory">Historique chantiers</span>
+                        </h2>
+                        <!-- Barre de recherche pour l'historique -->
+                        <div class="relative flex-1 w-full max-w-sm mx-0 sm:mx-4">
+                            <input type="text" id="jobSearchInput" placeholder="Rechercher un chantier..." class="input-bz py-2.5 pl-10 w-full text-xs font-bold transition-colors" oninput="filterJobHistory()">
+                            <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                        </div>
+                        <button onclick="openNewJobModal()" class="btn-bz-primary py-3 md:py-4 px-6 md:px-8 rounded-xl md:rounded-2xl bg-white text-black font-black uppercase tracking-widest text-[0.65rem] md:text-[0.75rem] shadow-[0_10px_30px_rgba(255,255,255,0.2)] flex items-center justify-center gap-2 md:gap-3 transition-all shrink-0 w-full sm:w-auto">
+                            <i class="fas fa-plus"></i> <span data-i18n="newJob">Créer chantier</span>
+                        </button>
+                    </div>
+
+                    <!-- Liste Historique -->
+                    <div class="glass-panel rounded-3xl p-6 md:p-8 flex flex-col min-h-[400px] lg:max-h-[600px] overflow-hidden border border-cyan-500/20 shadow-[0_0_30px_rgba(34,211,238,0.05)]">
+                        <div id="jobHistoryList" class="flex-1 overflow-y-auto custom-scrollbar grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pr-2 content-start">
+                            <!-- Injecté via Javascript -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ETAPE 2 : Tableau de Dimensionnement -->
+                <div id="pumpStep2" class="max-w-5xl mx-auto hidden flex-col space-y-4 md:space-y-6">
+                    <div class="flex justify-start">
+                        <button onclick="goToPumpStep1()" class="text-gray-400 hover:text-white transition-colors flex items-center gap-2 text-[0.65rem] md:text-xs font-bold uppercase tracking-widest bg-white/5 px-4 py-2.5 rounded-xl border border-white/10 hover:bg-white/10 backdrop-blur-md">
+                            <i class="fas fa-arrow-left"></i> Retour aux données chantier
+                        </button>
+                    </div>
+                    
+                    <div class="glass-panel rounded-3xl p-6 md:p-10 relative overflow-hidden min-h-[500px] lg:min-h-0">
+                        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-[0.02] pointer-events-none">
+                            <i class="fas fa-flask text-[15rem] md:text-[30rem]"></i>
+                        </div>
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 md:mb-8 border-b border-white/10 pb-4 md:pb-5 relative z-10">
+                            <h2 class="text-xs md:text-sm font-black text-white uppercase tracking-[0.2em] flex items-center gap-2 md:gap-3"><i class="fas fa-ruler-combined text-white"></i> <span data-i18n="dimensioning">Données de dimensionnements</span></h2>
+                        </div>
+
+                        <!-- Récapitulatif Chantier Modifiable -->
+                        <div class="bg-black/40 border border-white/10 rounded-2xl p-5 md:p-6 mb-6 md:mb-8 relative z-10 shadow-inner backdrop-blur-md">
+                            <h3 class="text-[0.55rem] md:text-[0.6rem] font-black text-gray-400 uppercase tracking-[0.2em] mb-4 flex items-center gap-2"><i class="fas fa-info-circle text-cyan-400"></i> Récapitulatif Chantier</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6">
+                                <div class="md:col-span-12">
+                                    <input type="text" id="jobNameStep2" class="w-full bg-transparent border-b border-white/10 focus:border-cyan-400 text-xl md:text-3xl font-black text-white outline-none pb-2 transition-colors truncate placeholder-gray-600" placeholder="Nom du chantier..." oninput="syncJobData(this, 'jobName')">
+                                </div>
+                                <div class="md:col-span-3">
+                                    <label class="text-[0.5rem] md:text-[0.55rem] text-gray-500 uppercase font-bold tracking-widest block mb-1">Date</label>
+                                    <input type="date" id="jobDateStep2" class="w-full bg-transparent border-b border-white/10 focus:border-cyan-400 text-xs md:text-sm font-bold text-gray-300 focus:text-white outline-none pb-1.5 transition-colors truncate placeholder-gray-600" style="color-scheme: dark;" oninput="syncJobData(this, 'jobDate')">
+                                </div>
+                                <div class="md:col-span-3">
+                                    <label class="text-[0.5rem] md:text-[0.55rem] text-gray-500 uppercase font-bold tracking-widest block mb-1">Ville</label>
+                                    <input type="text" id="jobCityStep2" class="w-full bg-transparent border-b border-white/10 focus:border-cyan-400 text-xs md:text-sm font-bold text-gray-300 focus:text-white outline-none pb-1.5 transition-colors truncate placeholder-gray-600" placeholder="Ville..." oninput="syncJobData(this, 'jobCity')">
+                                </div>
+                                <div class="md:col-span-4">
+                                    <label class="text-[0.5rem] md:text-[0.55rem] text-gray-500 uppercase font-bold tracking-widest block mb-1">Rue</label>
+                                    <input type="text" id="jobStreetStep2" class="w-full bg-transparent border-b border-white/10 focus:border-cyan-400 text-xs md:text-sm font-bold text-gray-300 focus:text-white outline-none pb-1.5 transition-colors truncate placeholder-gray-600" placeholder="Rue..." oninput="syncJobData(this, 'jobStreet')">
+                                </div>
+                                <div class="md:col-span-2">
+                                    <label class="text-[0.5rem] md:text-[0.55rem] text-gray-500 uppercase font-bold tracking-widest block mb-1">Bâtiment</label>
+                                    <input type="text" id="jobBuildingStep2" class="w-full bg-transparent border-b border-white/10 focus:border-cyan-400 text-xs md:text-sm font-bold text-gray-300 focus:text-white outline-none pb-1.5 transition-colors truncate placeholder-gray-600" placeholder="N°..." oninput="syncJobData(this, 'jobBuilding')">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Paramètres Globaux -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-6 md:mb-8 bg-black/40 p-4 md:p-6 rounded-2xl border border-white/10 backdrop-blur-md relative z-10 shadow-inner">
+                            <div class="space-y-1.5 md:space-y-2">
+                                <label class="text-[0.55rem] md:text-[0.6rem] font-bold text-white uppercase tracking-widest" data-i18n="resinType">Résine Certifiée</label>
+                                <div class="relative">
+                                    <select id="resinType" class="input-bz py-2.5 appearance-none bg-black/50" onchange="resetThickness()">
+                                        <option value="spraycoat_plus" data-speed="100" data-layer="0.75" class="bg-[#111]">Spraycoat +</option>
+                                        <option value="spraycoat_flex" data-speed="65" data-layer="1.00" class="bg-[#111]">Spraycoatflex</option>
+                                    </select>
+                                    <i class="fas fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-xs pointer-events-none text-white"></i>
+                                </div>
+                            </div>
+                            <div class="space-y-1.5 md:space-y-2">
+                                <label class="text-[0.55rem] md:text-[0.6rem] font-bold text-white uppercase tracking-widest">Épaisseur / Passe (mm)</label>
+                                <div class="flex items-center gap-2">
+                                    <div class="relative w-1/2 group">
+                                        <input type="number" id="targetThickness" step="0.01" class="input-bz py-2.5 px-1 sm:px-2 bg-white/5 text-green-400 font-black cursor-not-allowed border-white/5 text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" readonly>
+                                        <div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-black text-[0.55rem] text-white px-2 py-1 rounded opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap z-50">Max Rec.</div>
+                                    </div>
+                                    <div class="relative w-1/2 group">
+                                        <input type="number" id="chosenThickness" step="0.01" value="0.75" class="input-bz py-2.5 px-1 sm:px-2 font-black transition-colors text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" oninput="calculate()" onblur="clampThickness()">
+                                        <div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-black text-[0.55rem] text-white px-2 py-1 rounded opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap z-50">Choisie</div>
+                                    </div>
+                                </div>
+                                <div id="thicknessWarning" class="text-[0.5rem] font-bold text-red-400 uppercase mt-1 hidden leading-tight">
+                                    <i class="fas fa-exclamation-circle"></i> Valeur non recommandée
+                                </div>
+                            </div>
+                            <div class="space-y-1.5 md:space-y-2">
+                                <label class="text-[0.55rem] md:text-[0.6rem] font-bold text-white uppercase tracking-widest">Cycle de Passes</label>
+                                <div class="flex items-center gap-2">
+                                    <div class="relative w-1/2 group">
+                                        <div class="input-bz py-2.5 px-1 sm:px-2 bg-white/5 text-center font-black text-gray-400 cursor-not-allowed border-white/5 flex items-center justify-center">
+                                            <span id="calcPassesDisplay">0</span>
+                                        </div>
+                                        <div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-black text-[0.55rem] text-white px-2 py-1 rounded opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap z-50">Rec.</div>
+                                    </div>
+                                    <div class="relative w-1/2 group">
+                                        <input type="number" id="chosenPasses" value="3" min="1" class="input-bz py-2.5 px-1 sm:px-2 font-black transition-colors text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" oninput="calculate()">
+                                        <div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-black text-[0.55rem] text-white px-2 py-1 rounded opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap z-50">Choisi</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tableau Dynamique des Lignes de Canalisation -->
+                        <div class="flex-1 overflow-hidden flex flex-col bg-black/50 rounded-2xl border border-white/10 backdrop-blur-md relative z-10 shadow-inner">
+                            <div class="overflow-x-auto overflow-y-auto flex-1 custom-scrollbar">
+                                <table class="w-full text-xs md:text-sm text-left whitespace-nowrap">
+                                    <thead class="text-[0.55rem] md:text-[0.6rem] uppercase bg-white/5 text-white font-black sticky top-0 tracking-widest backdrop-blur-xl border-b border-white/10 z-10">
+                                        <tr>
+                                            <th class="px-2 md:px-4 py-3 md:py-5 text-center w-10"></th>
+                                            <th class="px-4 md:px-8 py-3 md:py-5">ID</th>
+                                            <th class="px-4 md:px-8 py-3 md:py-5" data-i18n="label">Libellé</th>
+                                            <th class="px-4 md:px-8 py-3 md:py-5">Longueur (m)</th>
+                                            <th class="px-4 md:px-8 py-3 md:py-5">Diamètre (mm)</th>
+                                            <th class="px-4 md:px-8 py-3 md:py-5 text-center">Passes</th>
+                                            <th class="px-4 md:px-8 py-3 md:py-5 text-center">Quantité Résine</th>
+                                            <th class="px-4 md:px-8 py-3 md:py-5 text-center sticky right-0 bg-[#0a0a0a] z-20 border-l border-white/5 shadow-[-10px_0_15px_rgba(0,0,0,0.5)]">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <!-- Lignes générées par Javascript: renderColumns() -->
+                                    <tbody id="columnsContainer" class="divide-y divide-white/5"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <!-- Boutons d'ajout de ligne -->
+                        <div class="flex justify-end gap-3 mt-4 relative z-10">
+                            <button onclick="addRow()" class="px-4 py-2.5 md:px-5 md:py-3 bg-white/5 hover:bg-green-500/20 text-gray-400 hover:text-green-400 border border-white/10 hover:border-green-500/30 rounded-xl flex items-center justify-center gap-2 transition-all shadow-sm text-[0.6rem] md:text-[0.65rem] font-black uppercase tracking-widest"><i class="fas fa-plus"></i> <span class="hidden sm:inline">Ajouter ligne</span></button>
+                        </div>
+                        
+                        <!-- Totaux globaux -->
+                        <div class="grid grid-cols-2 gap-4 mt-6 md:mt-8 relative z-10">
+                            <div class="bg-gradient-to-br from-cyan-900/40 to-black/60 border border-cyan-500/30 p-4 md:p-6 rounded-2xl flex flex-col justify-center items-center text-center shadow-[0_10px_30px_rgba(34,211,238,0.1)] backdrop-blur-md">
+                                <span class="text-[0.55rem] md:text-[0.6rem] text-cyan-400 uppercase font-black tracking-[0.2em] mb-1 md:mb-2 drop-shadow-md" data-i18n="totalLinear">Cumul Linéaire Appliqué</span>
+                                <div class="text-2xl md:text-4xl font-black text-white"><span id="totalLin">0.0</span><span class="text-xs md:text-sm text-cyan-500 ml-1">m</span></div>
+                            </div>
+                            <div class="bg-gradient-to-br from-purple-900/40 to-black/60 border border-purple-500/30 p-4 md:p-6 rounded-2xl flex flex-col justify-center items-center text-center shadow-[0_10px_30px_rgba(168,85,247,0.1)] backdrop-blur-md">
+                                <span class="text-[0.55rem] md:text-[0.6rem] text-purple-400 uppercase font-black tracking-[0.2em] mb-1 md:mb-2 drop-shadow-md">Quantité Résine Totale</span>
+                                <div class="text-2xl md:text-4xl font-black text-white"><span id="totalRes">0.0</span><span class="text-xs md:text-sm text-purple-500 ml-1">L</span></div>
+                                <div id="totalResRatio" class="text-[0.55rem] md:text-[0.6rem] text-gray-400 uppercase font-bold tracking-widest mt-1">A: 0.0 L | B: 0.0 L</div>
+                            </div>
+                        </div>
+
+                        <!-- Bouton Rapport Global -->
+                        <div id="btnFinalReportContainer" class="mt-6 md:mt-8 hidden relative z-10">
+                             <button onclick="generateFinalReport()" class="w-full py-4 md:py-5 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white text-xs md:text-sm font-black uppercase tracking-[0.2em] transition-all rounded-xl md:rounded-2xl shadow-[0_10px_30px_rgba(34,211,238,0.3)] flex items-center justify-center gap-3">
+                                <i class="fas fa-file-pdf text-lg md:text-xl"></i> Générer le rapport final du chantier
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- MODALS DIVERS                              -->
+    <!-- ========================================== -->
+
+    <!-- Modal : Nouveau Chantier -->
+    <div id="newJobModal" class="fixed inset-0 bg-[#050505]/90 z-[400] hidden flex items-center justify-center p-4 md:p-6 backdrop-blur-3xl">
+        <div class="glass-panel w-full max-w-lg rounded-3xl overflow-hidden border border-cyan-500/30 shadow-[0_0_80px_rgba(34,211,238,0.2)] relative flex flex-col max-h-[95vh]">
+            <div class="p-6 md:p-8 border-b border-white/10 flex justify-between items-center relative z-10 bg-black/40 backdrop-blur-md shrink-0">
+                <h3 class="text-white font-black uppercase tracking-widest text-[0.65rem] md:text-xs flex items-center gap-2 md:gap-3"><i class="fas fa-sliders-h text-cyan-400"></i> <span data-i18n="fluidParams">Données chantier</span></h3>
+                <button onclick="closeNewJobModal()" class="text-gray-400 hover:text-white transition-colors"><i class="fas fa-times text-lg md:text-xl"></i></button>
+            </div>
+            <div class="p-6 md:p-8 space-y-4 md:space-y-6 relative z-10 overflow-y-auto custom-scrollbar">
+                <div class="space-y-1.5 md:space-y-2">
+                    <label class="text-[0.55rem] md:text-[0.6rem] font-bold text-white uppercase tracking-widest">Date</label>
+                    <input type="date" id="jobDate" class="input-bz py-2.5 md:py-3.5 transition-colors" style="color-scheme: dark;">
+                </div>
+
+                <div class="space-y-1.5 md:space-y-2">
+                    <label class="text-[0.55rem] md:text-[0.6rem] font-bold text-white uppercase tracking-widest" data-i18n="jobName">Nom du chantier</label>
+                    <input type="text" id="jobName" class="input-bz py-2.5 md:py-3.5 transition-colors" placeholder="Ex: Réhabilitation réseau centre-ville" oninput="clearJobNameError()">
+                    <p id="jobNameError" class="text-red-500 text-[0.55rem] font-bold uppercase tracking-widest hidden mt-1"><i class="fas fa-exclamation-triangle mr-1"></i> Veuillez renseigner le nom du chantier</p>
+                </div>
+                <div class="space-y-1.5 md:space-y-2">
+                    <label class="text-[0.55rem] md:text-[0.6rem] font-bold text-white uppercase tracking-widest" data-i18n="city">Ville</label>
+                    <input type="text" id="jobCity" class="input-bz py-2.5 md:py-3.5 transition-colors" placeholder="Ex: Rennes">
+                </div>
+                <div class="space-y-1.5 md:space-y-2">
+                    <label class="text-[0.55rem] md:text-[0.6rem] font-bold text-white uppercase tracking-widest" data-i18n="street">Rue</label>
+                    <input type="text" id="jobStreet" class="input-bz py-2.5 md:py-3.5 transition-colors" placeholder="Ex: Rue de la République">
+                </div>
+                <div class="grid grid-cols-1 gap-4">
+                    <div class="space-y-1.5 md:space-y-2">
+                        <label class="text-[0.55rem] md:text-[0.6rem] font-bold text-white uppercase tracking-widest" data-i18n="buildingNum">N° de bâtiment</label>
+                        <input type="text" id="jobBuilding" class="input-bz py-2.5 md:py-3.5 transition-colors" placeholder="Ex: 12B">
+                    </div>
+                    <!-- Entrée cachée pour le tableau étape 2 -->
+                    <input type="hidden" id="nbCols" value="1">
+                </div>
+                
+                <button onclick="createNewJobEntry()" class="btn-bz-primary py-4 md:py-5 mt-4 rounded-xl md:rounded-2xl bg-white text-black font-black uppercase tracking-widest text-[0.65rem] md:text-[0.75rem] shadow-[0_10px_30px_rgba(255,255,255,0.2)] flex items-center justify-center gap-2 md:gap-3 w-full transition-all shrink-0">
+                    <span>Créer chantier</span> <i class="fas fa-check"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Info Générique -->
+    <div id="infoModal" class="fixed inset-0 bg-black/80 z-[600] hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="glass-panel w-full max-w-sm rounded-2xl overflow-hidden shadow-2xl relative flex flex-col">
+            <div class="p-6 md:p-8 text-center relative z-10 overflow-y-auto max-h-[60vh] custom-scrollbar">
+                <i class="fas fa-info-circle text-3xl md:text-4xl text-cyan-400 mb-4 drop-shadow-md"></i>
+                <p id="infoModalText" class="text-white text-sm md:text-base font-medium leading-relaxed"></p>
+            </div>
+            <div class="p-4 md:p-6 bg-black/60 text-center border-t border-white/10 backdrop-blur-xl relative z-10 shrink-0">
+                <button onclick="closeInfoModal()" class="px-8 py-3 md:px-12 md:py-4 bg-white/90 text-black text-[0.6rem] md:text-[0.65rem] font-black uppercase rounded-lg md:rounded-xl hover:bg-white transition-all shadow-[0_5px_15px_rgba(255,255,255,0.2)]">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal PDF -->
+    <div id="aiAnalysisModal" class="fixed inset-0 bg-[#050505]/95 z-[500] hidden flex items-center justify-center p-2 md:p-6 backdrop-blur-3xl print-hide">
+        <div class="glass-panel w-full max-w-4xl max-h-[98vh] md:max-h-[90vh] rounded-2xl md:rounded-3xl flex flex-col border border-purple-500/30 shadow-[0_0_80px_rgba(168,85,247,0.15)] relative">
+            <div class="p-4 md:p-6 border-b border-white/10 flex justify-between items-center bg-black/40 backdrop-blur-md shrink-0 print-hide">
+                <h3 class="text-white font-black uppercase tracking-widest text-xs md:text-sm flex items-center gap-2 md:gap-3"><i class="fas fa-file-pdf text-purple-400"></i> Rapport Chantier</h3>
+                <div class="flex gap-2 md:gap-4">
+                    <button onclick="printPdf()" class="px-3 py-2 md:px-5 md:py-2.5 bg-purple-600 hover:bg-purple-500 text-white text-[0.6rem] md:text-xs font-black uppercase rounded-lg md:rounded-xl transition shadow-[0_5px_15px_rgba(168,85,247,0.4)] flex items-center gap-2"><i class="fas fa-download"></i> <span class="hidden sm:inline">PDF</span></button>
+                    <button onclick="closeAiModal()" class="text-gray-400 hover:text-white transition-colors p-2"><i class="fas fa-times text-lg md:text-xl"></i></button>
+                </div>
+            </div>
+            <div id="aiAnalysisContent" class="p-4 md:p-8 overflow-y-auto text-sm flex-1 bg-white text-black rounded-b-2xl md:rounded-b-3xl print:p-0 print:m-0 print:w-full print:h-full print:absolute print:left-0 print:top-0 print:bg-white custom-scrollbar">
+                <!-- Contenu PDF généré -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- SCRIPTS JAVASCRIPT                         -->
+    <!-- ========================================== -->
+    
+    <!-- Importation du dictionnaire de langues externe -->
+    <script src="translations.js"></script>
+
     <script>
-        // --- CONFIGURATION INITIALE ---
+        // --- Variables Globales ---
+        let currentReportContext = { type: 'global', rowIndex: -1 }; // Pour savoir quel type de rapport on génère
+        
+        // Initialisation par défaut
+        let availableLangs = ['fr', 'en']; 
         let currentLang = 'fr';
+        
+        const esp32Ip = "http://192.168.4.1"; // IP typique d'une connexion au réseau wifi du robot (ESP32)
+        let isWifiConnected = false;
 
-        /**
-         * Initialise dynamiquement les menus déroulants à partir de l'objet 'translations'
-         * chargé depuis le fichier externe translations.js
-         */
-        function initLanguageSelectors() {
-            // Vérifie si la variable 'translations' existe (venant du fichier GitHub)
-            if (typeof translations === 'undefined') {
-                console.error("Erreur : Le fichier translations.js n'a pas pu être chargé depuis GitHub.");
-                // Fallback minimal pour éviter le crash
-                window.translations = { fr: { loginBtn: "ME CONNECTER" }, en: { loginBtn: "LOGIN" } };
-            }
+        // --- Données du Catalogue Produit ---
+        const bzProducts = {
+            'pump': { name: 'Pompe Application Résine', id: 'BZ-PUMP-2024', status: 'Actif', lastMaint: '12/01/2024', nextMaint: '12/07/2024', cycle: '450h / 1000h' },
+            'bzlight': { name: 'BzLight V2', id: 'BZ-UV-8821', status: 'Actif', lastMaint: '05/03/2024', nextMaint: '05/09/2024', cycle: '120h / 500h' },
+            'tractor': { name: 'Tracteur d\'inspection', id: 'BZ-TRAC-109', status: 'En Révision', lastMaint: '10/02/2024', nextMaint: 'N/A', cycle: '800h / 800h' }
+        };
 
-            const availableLangs = Object.keys(translations);
-            const selectors = document.querySelectorAll('.lang-selector');
-
-            selectors.forEach(select => {
-                select.innerHTML = ''; // Nettoyage
-                availableLangs.forEach(langCode => {
-                    const option = document.createElement('option');
-                    option.value = langCode;
-                    option.textContent = langCode.toUpperCase();
-                    option.className = "bg-[#111]";
-                    if (langCode === currentLang) option.selected = true;
-                    select.appendChild(option);
-                });
-            });
-
-            updateInterfaceLanguage();
-        }
-
-        /**
-         * Change la langue de l'application
-         */
-        function changeLanguage(lang) {
-            currentLang = lang;
-            // Synchronise tous les sélecteurs
-            document.querySelectorAll('.lang-selector').forEach(sel => sel.value = lang);
-            updateInterfaceLanguage();
-        }
-
-        /**
-         * Applique les traductions aux éléments data-i18n
-         */
-        function updateInterfaceLanguage() {
-            if (typeof translations === 'undefined' || !translations[currentLang]) return;
-
-            const texts = translations[currentLang];
-            document.querySelectorAll('[data-i18n]').forEach(el => {
-                const key = el.getAttribute('data-i18n');
-                if (texts[key]) el.innerText = texts[key];
-            });
-        }
-
-        /**
-         * Navigation entre les vues
-         */
+        // --- Fonctions de Navigation ---
         function nav(viewId) {
             document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
             document.getElementById(viewId).classList.add('active');
+            window.scrollTo(0,0);
+            if(viewId === 'view-archives') loadArchivesList();
+        }
+
+        function handleLogin() { nav('view-home'); }
+        function handleRegister() { nav('view-login'); openInfoModal("Compte créé avec succès. En attente d'approbation administrateur."); }
+        function handleLogout() { nav('view-login'); }
+
+        /** Ouverture modale info générique */
+        function openInfoModal(key) {
+            document.getElementById('infoModalText').innerText = key;
+            document.getElementById('infoModal').classList.remove('hidden');
+        }
+        function closeInfoModal() { 
+            document.getElementById('infoModal').classList.add('hidden'); 
+        }
+
+        /** Gestion Modale Nouveau Chantier */
+        function openNewJobModal() {
+            document.getElementById('newJobModal').classList.remove('hidden');
+            clearJobNameError();
+        }
+        function closeNewJobModal() {
+            document.getElementById('newJobModal').classList.add('hidden');
+        }
+
+        function openProductContact(prodKey) {
+            openInfoModal(`Fiche ${bzProducts[prodKey].name} - ID: ${bzProducts[prodKey].id}\nEn développement.`);
         }
 
         /**
-         * Simulation de la connexion
+         * Fonction pour changer la langue et synchroniser les selecteurs
+         * @param {string} lang - Code de la langue
          */
-        function handleLogin() {
-            const btn = document.getElementById('loginBtn');
-            const originalText = btn.innerHTML;
-            btn.innerText = "...";
-            setTimeout(() => { 
-                nav('view-home');
-                btn.innerHTML = originalText;
-            }, 800);
+        function changeLanguage(lang) {
+            if(typeof translations !== 'undefined' && translations[lang]) {
+                currentLang = lang;
+                updateInterfaceLanguage();
+                
+                // Synchronise tous les sélecteurs de la page pour qu'ils affichent la même langue
+                document.querySelectorAll('.lang-selector').forEach(select => {
+                    select.value = lang;
+                });
+            }
         }
 
-        // Lancement au chargement de la fenêtre
-        window.onload = () => {
-            // On laisse un petit délai pour être sûr que le script externe est bien interprété
-            setTimeout(initLanguageSelectors, 500);
+        /** Met à jour tous les textes possédant un attribut data-i18n */
+        function updateInterfaceLanguage() {
+            if(typeof translations === 'undefined') return;
+            const dict = translations[currentLang];
+            if(!dict) return;
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (dict[key]) {
+                    if (el.tagName === 'INPUT' && el.type === 'text') el.placeholder = dict[key];
+                    else el.innerText = dict[key];
+                }
+            });
+        }
+
+        // --- Variables d'état pour la gestion du chantier/de la pompe ---
+        let jobState = { 
+            startTime: null, 
+            status: 'idle', 
+            resinUsed: 0, 
+            meters: 0,
+            timerInterval: null
         };
+        let activeJobNameForHistory = ''; 
+        let rowCompletedStatuses = []; // Tableau boolean: true si toutes les passes de la ligne sont finies
+        let currentRowIndex = -1; // Index de la ligne actuellement en cours de traitement
+        let completedPassesCount = []; // Tableau pour tracker le nombre de passes terminées par ligne
+        let currentPumpPower = 100; // Pourcentage de puissance pompe (25, 50, 75, 100)
+
+        /**
+         * Action lors du clic sur le bouton "Créer chantier" (Etape 1).
+         * Sauvegarde les données, puis vide les champs pour de nouvelles saisies.
+         */
+        function createNewJobEntry() {
+            const nameInput = document.getElementById('jobName');
+            const name = nameInput.value.trim();
+            const errorMsg = document.getElementById('jobNameError');
+
+            if (!name) {
+                // Met en évidence l'erreur si le champ est vide
+                nameInput.classList.add('error');
+                if (errorMsg) errorMsg.classList.remove('hidden');
+                return; // Ne rien faire et stopper l'exécution
+            }
+            
+            activeJobNameForHistory = name;
+            saveJobToHistory(true);
+            
+            // Vider les champs après création
+            const dateEl = document.getElementById('jobDate');
+            if (dateEl) dateEl.value = '';
+            nameInput.value = '';
+            document.getElementById('jobCity').value = '';
+            document.getElementById('jobStreet').value = '';
+            document.getElementById('jobBuilding').value = '';
+            
+            clearJobNameError(); // Réinitialise l'erreur pour la prochaine ouverture
+            
+            activeJobNameForHistory = ''; // On remet à zéro l'id courant
+            closeNewJobModal(); // Ferme la modale
+        }
+
+        /** Supprime l'alerte d'erreur sur le champ nom du chantier dès qu'on tape */
+        function clearJobNameError() {
+            const nameInput = document.getElementById('jobName');
+            const errorMsg = document.getElementById('jobNameError');
+            if (nameInput) nameInput.classList.remove('error');
+            if (errorMsg) errorMsg.classList.add('hidden');
+        }
+
+        /**
+         * Exporte l'état actuel des inputs du tableau Etape 2
+         */
+        function getTableState() {
+            const nbCols = parseInt(document.getElementById('nbCols').value) || 1;
+            let rows = [];
+            for(let i=0; i<nbCols; i++) {
+                rows.push({
+                    label: document.getElementById(`row-label-${i}`)?.value || '',
+                    len: document.getElementById(`row-len-${i}`)?.value || '10',
+                    dia: document.getElementById(`row-dia-${i}`)?.value || '100',
+                    passes: document.getElementById(`row-passes-${i}`)?.value || ''
+                });
+            }
+            return {
+                nbCols: nbCols,
+                rows: rows,
+                completedStatuses: rowCompletedStatuses,
+                completedPassesCount: completedPassesCount,
+                resinType: document.getElementById('resinType').value,
+                chosenThickness: document.getElementById('chosenThickness').value,
+                chosenPasses: document.getElementById('chosenPasses').value
+            };
+        }
+
+        /**
+         * Sauvegarde le chantier courant dans le LocalStorage
+         */
+        function saveJobToHistory(updateUI = true) {
+            let name = document.getElementById('jobName').value.trim();
+            // Si on sauvegarde depuis l'étape 2, on prend le nom de l'étape 2
+            if(document.getElementById('pumpStep2').classList.contains('flex')) {
+                name = document.getElementById('jobNameStep2').value.trim();
+            }
+            if (!name) return;
+            
+            let city = document.getElementById('jobCity').value.trim();
+            let street = document.getElementById('jobStreet').value.trim();
+            let building = document.getElementById('jobBuilding').value.trim();
+            
+            if(document.getElementById('pumpStep2').classList.contains('flex')) {
+                city = document.getElementById('jobCityStep2').value.trim();
+                street = document.getElementById('jobStreetStep2').value.trim();
+                building = document.getElementById('jobBuildingStep2').value.trim();
+            }
+            
+            let history = JSON.parse(localStorage.getItem('bz_job_history') || '[]');
+            let existingJob = history.find(h => h.jobName === name);
+
+            if (activeJobNameForHistory && activeJobNameForHistory !== name) {
+                existingJob = history.find(h => h.jobName === activeJobNameForHistory) || existingJob;
+                history = history.filter(h => h.jobName !== activeJobNameForHistory);
+                activeJobNameForHistory = name;
+            }
+
+            history = history.filter(h => h.jobName !== name);
+            
+            let dateStr = "";
+            let jobDateInput = document.getElementById('jobDate');
+            if(document.getElementById('pumpStep2').classList.contains('flex')) {
+                jobDateInput = document.getElementById('jobDateStep2');
+            }
+
+            if (jobDateInput && jobDateInput.value) {
+                const d = new Date(jobDateInput.value);
+                dateStr = d.toLocaleDateString('fr-FR');
+            } else if (existingJob && existingJob.date) {
+                dateStr = existingJob.date;
+            } else {
+                dateStr = new Date().toLocaleDateString('fr-FR');
+            }
+            
+            history.push({ 
+                jobName: name, 
+                city: city, 
+                street: street, 
+                building: building, 
+                date: dateStr,
+                tableState: getTableState()
+            });
+            
+            localStorage.setItem('bz_job_history', JSON.stringify(history));
+            
+            if(updateUI) loadJobHistory();
+        }
+
+        function syncJobData(inputEl, fieldName) {
+            // Met à jour l'étape 1 en arrière plan
+            if(document.getElementById(fieldName)) {
+                document.getElementById(fieldName).value = inputEl.value;
+            }
+            saveJobToHistory(false);
+        }
+
+        function goToPumpStep2() {
+            activeJobNameForHistory = document.getElementById('jobName').value.trim();
+            saveJobToHistory();
+            
+            document.getElementById('jobNameStep2').value = document.getElementById('jobName').value;
+            document.getElementById('jobDateStep2').value = document.getElementById('jobDate').value;
+            document.getElementById('jobCityStep2').value = document.getElementById('jobCity').value;
+            document.getElementById('jobStreetStep2').value = document.getElementById('jobStreet').value;
+            document.getElementById('jobBuildingStep2').value = document.getElementById('jobBuilding').value;
+            
+            document.getElementById('pumpStep1').classList.add('hidden');
+            document.getElementById('pumpStep2').classList.remove('hidden');
+            document.getElementById('pumpStep2').classList.add('flex');
+            window.scrollTo(0,0);
+        }
+
+        function handlePumpBack() {
+            const step2 = document.getElementById('pumpStep2');
+            if(step2 && !step2.classList.contains('hidden')) {
+                goToPumpStep1();
+            } else {
+                nav('view-home');
+            }
+        }
+
+        function goToPumpStep1() {
+            document.getElementById('pumpStep2').classList.add('hidden');
+            document.getElementById('pumpStep2').classList.remove('flex');
+            document.getElementById('pumpStep1').classList.remove('hidden');
+            document.getElementById('pumpStep1').classList.add('flex');
+            loadJobHistory();
+            window.scrollTo(0,0);
+        }
+
+        function toggleWifi() {
+            isWifiConnected = !isWifiConnected;
+            const btn = document.getElementById('wifiBtn');
+            const icon = document.getElementById('wifiIcon');
+            const status = document.getElementById('wifiStatus');
+            
+            if(isWifiConnected) {
+                btn.classList.replace('border-white/20', 'border-cyan-500');
+                btn.classList.replace('text-gray-400', 'text-cyan-400');
+                btn.classList.add('bg-cyan-900/30');
+                status.innerText = "BZ-Pump-Net";
+                openInfoModal("Connecté au réseau Wi-Fi de la pompe (" + esp32Ip + "). Prêt pour l'envoi des commandes.");
+            } else {
+                btn.classList.replace('border-cyan-500', 'border-white/20');
+                btn.classList.replace('text-cyan-400', 'text-gray-400');
+                btn.classList.remove('bg-cyan-900/30');
+                status.innerText = typeof translations !== 'undefined' && translations[currentLang] ? translations[currentLang].connect : "Non Connecté";
+            }
+        }
+
+        function loadJobHistory() {
+            const container = document.getElementById('jobHistoryList');
+            if (!container) return;
+            
+            let archives = JSON.parse(localStorage.getItem('bz_archives') || '[]');
+            let recentJobs = JSON.parse(localStorage.getItem('bz_job_history') || '[]');
+            
+            if (archives.length === 0 && recentJobs.length === 0) {
+                container.innerHTML = `<div class="col-span-full text-center text-gray-500 text-[0.65rem] font-bold uppercase tracking-widest mt-10">Aucun historique disponible</div>`;
+                return;
+            }
+            
+            let allJobsRaw = [...archives, ...recentJobs];
+            let allJobsMap = new Map();
+            allJobsRaw.forEach(j => {
+                if(!allJobsMap.has(j.jobName)) {
+                    allJobsMap.set(j.jobName, j);
+                }
+            });
+            let allJobs = Array.from(allJobsMap.values()).reverse();
+
+            let html = '';
+            for(let arc of allJobs) {
+                const totalM = arc.tableState && arc.tableState.rows ? arc.tableState.rows.reduce((sum, r) => sum + (parseFloat(r.len)||0), 0) : 0;
+                
+                html += `
+                <div class="bg-black/40 border border-white/10 rounded-2xl p-4 md:p-5 hover:border-cyan-500/50 transition-all cursor-pointer group relative overflow-hidden flex flex-col backdrop-blur-md shadow-inner" onclick="loadJobIntoForm('${arc.jobName}')">
+                    <div class="absolute inset-0 bg-gradient-to-br from-cyan-900/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <div class="relative z-10 flex-1">
+                        <h4 class="text-white font-black text-sm md:text-base mb-1 truncate pr-6">${arc.jobName}</h4>
+                        <p class="text-[0.6rem] md:text-[0.65rem] text-cyan-400 font-bold uppercase tracking-widest truncate">${arc.city} ${arc.street ? '- '+arc.street : ''}</p>
+                        
+                        <div class="flex items-center gap-3 mt-4 mb-2">
+                            <div class="bg-white/5 border border-white/10 px-2.5 py-1.5 rounded-lg text-center flex-1">
+                                <div class="text-[0.5rem] text-gray-500 uppercase font-bold">Lignes</div>
+                                <div class="text-xs font-black text-gray-300">${arc.tableState ? arc.tableState.nbCols : 0}</div>
+                            </div>
+                            <div class="bg-white/5 border border-white/10 px-2.5 py-1.5 rounded-lg text-center flex-1">
+                                <div class="text-[0.5rem] text-gray-500 uppercase font-bold">Mètres</div>
+                                <div class="text-xs font-black text-gray-300">${totalM}</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="text-[0.55rem] text-gray-600 mt-3 flex justify-between items-center border-t border-white/5 pt-3">
+                        <span class="font-bold"><i class="far fa-calendar-alt mr-1"></i> ${arc.date}</span>
+                        <span class="text-cyan-500 font-black opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1 bg-cyan-500/10 px-2 py-1 rounded">OUVRIR <i class="fas fa-arrow-right text-[0.5rem]"></i></span>
+                    </div>
+                </div>`;
+            }
+            container.innerHTML = html;
+            filterJobHistory();
+        }
+
+        function filterJobHistory() {
+            const searchInput = document.getElementById('jobSearchInput');
+            if (!searchInput) return;
+            
+            const searchTerm = searchInput.value.toLowerCase();
+            const jobCards = document.querySelectorAll('#jobHistoryList > div');
+            
+            jobCards.forEach(card => {
+                if (card.classList.contains('col-span-full')) return;
+                const jobNameEl = card.querySelector('h4');
+                const cityEl = card.querySelector('p');
+                if (!jobNameEl || !cityEl) return;
+                
+                const jobName = jobNameEl.innerText.toLowerCase();
+                const city = cityEl.innerText.toLowerCase();
+                
+                if (jobName.includes(searchTerm) || city.includes(searchTerm)) {
+                    card.classList.remove('hidden');
+                } else {
+                    card.classList.add('hidden');
+                }
+            });
+        }
+
+        function loadJobIntoForm(name) {
+            let recentJobs = JSON.parse(localStorage.getItem('bz_job_history') || '[]');
+            let job = recentJobs.find(j => j.jobName === name);
+            if (!job) {
+                let archives = JSON.parse(localStorage.getItem('bz_archives') || '[]');
+                job = archives.find(j => j.jobName === name);
+                if (!job) return;
+            }
+
+            document.getElementById('jobName').value = job.jobName || '';
+            document.getElementById('jobCity').value = job.city || '';
+            document.getElementById('jobStreet').value = job.street || '';
+            document.getElementById('jobBuilding').value = job.building || '';
+
+            if (job.date) {
+                let datePart = job.date.split(' ')[0];
+                let parts = datePart.split('/');
+                if (parts.length === 3) {
+                    document.getElementById('jobDate').value = `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
+                }
+            } else {
+                document.getElementById('jobDate').value = '';
+            }
+
+            document.getElementById('btnFinalReportContainer').classList.add('hidden');
+            const resinSelect = document.getElementById('resinType');
+            resinSelect.value = job.tableState && job.tableState.resinType ? job.tableState.resinType : "spraycoat_plus";
+
+            activeJobNameForHistory = job.jobName || '';
+
+            if (job.tableState) {
+                document.getElementById('nbCols').value = job.tableState.nbCols;
+                rowCompletedStatuses = job.tableState.completedStatuses || [];
+                completedPassesCount = job.tableState.completedPassesCount || [];
+                currentRowIndex = -1;
+                
+                if(job.tableState.chosenThickness) document.getElementById('chosenThickness').value = job.tableState.chosenThickness;
+                if(job.tableState.chosenPasses) document.getElementById('chosenPasses').value = job.tableState.chosenPasses;
+
+                renderColumns();
+                
+                for(let i=0; i<job.tableState.nbCols; i++) {
+                    let r = job.tableState.rows[i];
+                    if(!r) continue;
+                    
+                    let labelEl = document.getElementById(`row-label-${i}`);
+                    let lenEl = document.getElementById(`row-len-${i}`);
+                    let diaEl = document.getElementById(`row-dia-${i}`);
+                    let passEl = document.getElementById(`row-passes-${i}`);
+                    
+                    if(labelEl && r.label !== undefined) labelEl.value = r.label;
+                    if(lenEl && r.len !== undefined) lenEl.value = r.len;
+                    if(diaEl && r.dia !== undefined) diaEl.value = r.dia;
+                    if(passEl && r.passes !== undefined) passEl.value = r.passes;
+                }
+            } else {
+                rowCompletedStatuses = [];
+                completedPassesCount = [];
+                currentRowIndex = -1;
+                document.getElementById('nbCols').value = "1";
+                renderColumns();
+            }
+
+            calculate();
+
+            document.getElementById('jobNameStep2').value = job.jobName || '';
+            document.getElementById('jobDateStep2').value = document.getElementById('jobDate').value;
+            document.getElementById('jobCityStep2').value = job.city || '';
+            document.getElementById('jobStreetStep2').value = job.street || '';
+            document.getElementById('jobBuildingStep2').value = job.building || '';
+
+            document.getElementById('pumpStep1').classList.add('hidden');
+            document.getElementById('pumpStep2').classList.remove('hidden');
+            document.getElementById('pumpStep2').classList.add('flex');
+            window.scrollTo(0,0);
+
+            if (job.tableState && job.tableState.completedStatuses && job.tableState.completedStatuses.length > 0 && job.tableState.completedStatuses.every(s => s === true)) {
+                document.getElementById('btnFinalReportContainer').classList.remove('hidden');
+            }
+        }
+
+        // --- Mécanismes de manipulation des lignes du tableau ---
+        function saveTableState() {
+            window.tempTableState = [];
+            const nb = parseInt(document.getElementById('nbCols').value);
+            for(let i=0; i<nb; i++) {
+                const label = document.getElementById(`row-label-${i}`);
+                const len = document.getElementById(`row-len-${i}`);
+                const dia = document.getElementById(`row-dia-${i}`);
+                if(label && len && dia) {
+                    window.tempTableState.push({ label: label.value, len: len.value, dia: dia.value });
+                }
+            }
+        }
+        function restoreTableState() {
+            if(!window.tempTableState) return;
+            for(let i=0; i<window.tempTableState.length; i++) {
+                const label = document.getElementById(`row-label-${i}`);
+                const len = document.getElementById(`row-len-${i}`);
+                const dia = document.getElementById(`row-dia-${i}`);
+                if(label) label.value = window.tempTableState[i].label;
+                if(len) len.value = window.tempTableState[i].len;
+                if(dia) dia.value = window.tempTableState[i].dia;
+            }
+            calculate();
+        }
+
+        function addRow() { 
+            saveTableState(); 
+            const nbInput = document.getElementById('nbCols'); 
+            nbInput.value = parseInt(nbInput.value) + 1; 
+            renderColumns(); 
+            restoreTableState(); 
+        }
+        
+        function deleteSpecificRow(index) {
+            const nbInput = document.getElementById('nbCols');
+            let current = parseInt(nbInput.value);
+            if (current <= 1) {
+                openInfoModal("Impossible de supprimer la dernière ligne.");
+                return;
+            }
+
+            if (currentRowIndex === index) {
+                openInfoModal("Action impossible : Cette ligne est en cours de traitement.");
+                return;
+            }
+
+            let currentState = [];
+            for(let i=0; i<current; i++) {
+                const labelEl = document.getElementById(`row-label-${i}`);
+                const lenEl = document.getElementById(`row-len-${i}`);
+                const diaEl = document.getElementById(`row-dia-${i}`);
+                const passEl = document.getElementById(`row-passes-${i}`);
+                
+                currentState.push({ 
+                    label: labelEl ? labelEl.value : '', 
+                    len: lenEl ? lenEl.value : '10', 
+                    dia: diaEl ? diaEl.value : '100', 
+                    passes: passEl ? passEl.value : '' 
+                });
+            }
+
+            currentState.splice(index, 1);
+            rowCompletedStatuses.splice(index, 1);
+            completedPassesCount.splice(index, 1);
+            
+            if (currentRowIndex > index) currentRowIndex--;
+
+            nbInput.value = current - 1;
+            renderColumns();
+            
+            for(let i=0; i<currentState.length; i++) {
+                const labelEl = document.getElementById(`row-label-${i}`);
+                const lenEl = document.getElementById(`row-len-${i}`);
+                const diaEl = document.getElementById(`row-dia-${i}`);
+                const passEl = document.getElementById(`row-passes-${i}`);
+                
+                if(labelEl && currentState[i].label !== undefined) labelEl.value = currentState[i].label;
+                if(lenEl) lenEl.value = currentState[i].len;
+                if(diaEl) diaEl.value = currentState[i].dia;
+                if(passEl && currentState[i].passes) passEl.value = currentState[i].passes;
+            }
+            
+            calculate();
+        }
+
+        function renderColumns() {
+            const container = document.getElementById('columnsContainer');
+            const nb = parseInt(document.getElementById('nbCols').value) || 1;
+            let html = '';
+            for(let i = 1; i <= nb; i++) {
+                const isCompleted = rowCompletedStatuses[i-1];
+                const passesDone = completedPassesCount[i-1] || 0;
+                
+                const btnHtml = isCompleted
+                    ? `<div class="flex flex-col gap-1.5 px-2 py-1 min-w-[110px] w-full">
+                           <span class="bg-green-500/20 text-green-400 border border-green-500/50 px-2 py-1.5 rounded-lg text-[0.55rem] md:text-[0.6rem] font-black uppercase w-full flex items-center justify-center gap-1.5"><i class="fas fa-check"></i> Terminé</span>
+                           <button onclick="generateRowReport(${i-1})" class="bg-blue-500/20 hover:bg-blue-500/40 text-blue-400 border border-blue-500/50 px-2 py-1.5 rounded-lg text-[0.55rem] md:text-[0.6rem] font-black uppercase transition-colors w-full flex items-center justify-center gap-1.5"><i class="fas fa-file-pdf"></i> Rapport</button>
+                       </div>`
+                    : `<div class="flex items-center justify-center px-2 py-1 min-w-[110px] w-full">
+                           <button id="row-btn-${i-1}" onclick="startRowJob(${i-1})" class="bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white px-3 py-2.5 rounded-xl text-[0.65rem] md:text-[0.7rem] font-black uppercase transition-all w-full shadow-[0_5px_15px_rgba(34,211,238,0.4)] flex items-center justify-center gap-2"><i class="fas fa-play"></i> ${passesDone > 0 ? 'Continuer' : 'Démarrer'}</button>
+                       </div>`;
+                
+                html += `
+                <tr class="hover:bg-white/5 ${isCompleted ? 'opacity-60 bg-green-900/10' : ''}" id="row-tr-${i-1}">
+                    <td class="text-center px-2 py-2">
+                        <button onclick="deleteSpecificRow(${i-1})" class="text-red-500 hover:text-red-400 transition-colors p-2 shrink-0 border border-red-500/30 hover:bg-red-500/20 rounded-lg"><i class="fas fa-trash-alt"></i></button>
+                    </td>
+                    <td class="px-4 py-3 font-mono text-white text-xs">#${i}</td>
+                    <td class="px-2 py-2">
+                        <input type="text" id="row-label-${i-1}" class="input-table row-label text-xs w-full min-w-[100px] md:min-w-[140px]" placeholder="Nom..." ${isCompleted ? 'disabled' : ''}>
+                    </td>
+                    <td>
+                        <input type="number" id="row-len-${i-1}" class="input-table row-length text-xs" value="10" oninput="calculate()" ${isCompleted ? 'disabled' : ''}>
+                    </td>
+                    <td>
+                        <input type="number" id="row-dia-${i-1}" class="input-table row-dia text-xs" value="100" oninput="calculate()" ${isCompleted ? 'disabled' : ''}>
+                    </td>
+                    <td class="text-center">
+                        <input type="number" id="row-passes-${i-1}" class="input-table row-passes text-center text-lg cursor-not-allowed opacity-60" value="" min="1" readonly tabindex="-1">
+                    </td>
+                    <td class="text-center px-4">
+                        <div id="row-resin-val-${i-1}" class="font-black text-purple-400 text-xs md:text-sm">-- L</div>
+                        <div id="row-resin-ratio-${i-1}" class="text-[0.55rem] text-gray-400 uppercase tracking-widest mt-0.5 whitespace-nowrap">A: -- | B: --</div>
+                    </td>
+                    <td class="text-center p-0 sticky right-0 bg-[#0a0a0a] z-10 border-l border-white/5 shadow-[-10px_0_15px_rgba(0,0,0,0.5)]" id="row-action-${i-1}">
+                        ${btnHtml}
+                    </td>
+                </tr>
+                <tr id="row-msg-tr-${i-1}" class="hidden">
+                    <td colspan="8" class="p-0" id="row-msg-${i-1}"></td>
+                </tr>`;
+            }
+            container.innerHTML = html;
+            calculate();
+        }
+
+        function resetThickness() {
+            const select = document.getElementById('resinType');
+            const maxThick = parseFloat(select.options[select.selectedIndex].dataset.layer);
+            document.getElementById('targetThickness').value = maxThick;
+            
+            const chosenThickEl = document.getElementById('chosenThickness');
+            if (parseFloat(chosenThickEl.value) > maxThick) {
+                chosenThickEl.value = maxThick;
+            }
+            
+            clampThickness();
+            calculate();
+        }
+
+        function clampThickness() {
+            const select = document.getElementById('resinType');
+            const maxThick = parseFloat(select.options[select.selectedIndex].dataset.layer);
+            const chosenThickEl = document.getElementById('chosenThickness');
+            const warningEl = document.getElementById('thicknessWarning');
+            
+            let val = parseFloat(chosenThickEl.value);
+            if(isNaN(val) || val <= 0) val = 0.5;
+            
+            if (val > maxThick) {
+                chosenThickEl.classList.add('error');
+                warningEl.classList.remove('hidden');
+                warningEl.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Dépassement (${maxThick} max)`;
+            } else {
+                chosenThickEl.classList.remove('error');
+                warningEl.classList.add('hidden');
+            }
+        }
+
+        function calculate() {
+            const q = 0.5; // Débit fixe L/min
+            const nb = parseInt(document.getElementById('nbCols').value) || 1;
+            const select = document.getElementById('resinType');
+            const defaultSpeed = parseFloat(select.options[select.selectedIndex].dataset.speed) || 100;
+            
+            const chosenThick = parseFloat(document.getElementById('chosenThickness').value) || 0.75;
+            const targetThickness = 3.0; 
+            const calcPasses = Math.ceil(targetThickness / chosenThick);
+            
+            document.getElementById('calcPassesDisplay').innerText = calcPasses;
+            
+            const chosenPasses = parseInt(document.getElementById('chosenPasses').value) || calcPasses;
+
+            let totalLen = 0;
+            let totalRes = 0;
+
+            for(let i=0; i<nb; i++) {
+                const lenEl = document.getElementById(`row-len-${i}`);
+                const diaEl = document.getElementById(`row-dia-${i}`);
+                const passEl = document.getElementById(`row-passes-${i}`);
+                
+                if(!lenEl || !diaEl) continue;
+                
+                const l = parseFloat(lenEl.value) || 0;
+                const d = parseFloat(diaEl.value) || 0;
+                
+                if(passEl) passEl.value = chosenPasses;
+
+                if (l > 0 && d > 0) {
+                    const radius = (d / 2) / 1000;
+                    const area = Math.PI * Math.pow(radius, 2);
+                    const surfaceArea = Math.PI * (d/1000) * l;
+                    const volumeTotal = surfaceArea * (chosenThick / 1000) * chosenPasses;
+                    const resQ = volumeTotal * 1000 * 1.2;
+
+                    totalLen += l;
+                    totalRes += resQ;
+
+                    const resEl = document.getElementById(`row-resin-val-${i}`);
+                    const ratioEl = document.getElementById(`row-resin-ratio-${i}`);
+                    if (resEl) resEl.innerHTML = `${resQ.toFixed(1)} <span class="text-[0.6rem] md:text-xs">L</span>`;
+                    if (ratioEl) {
+                        const compA = (resQ * (2/3)).toFixed(1);
+                        const compB = (resQ * (1/3)).toFixed(1);
+                        ratioEl.innerHTML = `A: <span class="text-white">${compA}L</span> <span class="mx-1 text-white/20">|</span> B: <span class="text-white">${compB}L</span>`;
+                    }
+                } else {
+                    const resEl = document.getElementById(`row-resin-val-${i}`);
+                    const ratioEl = document.getElementById(`row-resin-ratio-${i}`);
+                    if (resEl) resEl.innerHTML = `-- L`;
+                    if (ratioEl) ratioEl.innerHTML = `A: -- | B: --`;
+                }
+            }
+
+            document.getElementById('totalLin').innerText = totalLen.toFixed(1);
+            document.getElementById('totalRes').innerText = totalRes.toFixed(1);
+            
+            const totA = (totalRes * (2/3)).toFixed(1);
+            const totB = (totalRes * (1/3)).toFixed(1);
+            document.getElementById('totalResRatio').innerHTML = `A: <span class="text-white">${totA} L</span> <span class="mx-2 text-white/20">|</span> B: <span class="text-white">${totB} L</span>`;
+            
+            saveJobToHistory(false);
+        }
+
+        // --- Fonctions d'exécution de la pompe ---
+        function setPumpPower(power) {
+            currentPumpPower = power;
+            document.querySelectorAll('.pump-power-btn').forEach(btn => {
+                btn.classList.remove('bg-cyan-600', 'text-white', 'border-cyan-400');
+                btn.classList.add('bg-white/5', 'text-gray-400', 'border-white/10');
+            });
+            const activeBtn = document.getElementById(`btn-power-${power}`);
+            if(activeBtn) {
+                activeBtn.classList.remove('bg-white/5', 'text-gray-400', 'border-white/10');
+                activeBtn.classList.add('bg-cyan-600', 'text-white', 'border-cyan-400');
+            }
+        }
+
+        function startRowJob(index) {
+            if(currentRowIndex !== -1 && currentRowIndex !== index) {
+                openInfoModal("Veuillez terminer la ligne en cours d'abord.");
+                return;
+            }
+
+            const passesDone = completedPassesCount[index] || 0;
+            const totalPasses = parseInt(document.getElementById(`row-passes-${index}`).value) || 1;
+
+            if(passesDone >= totalPasses) {
+                openInfoModal("Cette ligne est déjà terminée.");
+                return;
+            }
+
+            currentRowIndex = index;
+            const passNum = passesDone + 1; // Passe actuelle
+            
+            if(!isWifiConnected) {
+                openInfoModal("La pompe n'est pas connectée au Wi-Fi. Action impossible.");
+                return;
+            }
+
+            const len = document.getElementById(`row-len-${index}`).value;
+            const dia = document.getElementById(`row-dia-${index}`).value;
+            const resinType = document.getElementById('resinType').value;
+            const thk = document.getElementById('chosenThickness').value;
+            const totalRes = document.getElementById(`row-resin-val-${index}`).innerText.replace(' L','');
+            const resPerPass = (parseFloat(totalRes) / totalPasses).toFixed(1);
+
+            const msgRow = document.getElementById(`row-msg-${index}`);
+            document.getElementById(`row-msg-tr-${index}`).classList.remove('hidden');
+            
+            const btnEl = document.getElementById(`row-btn-${index}`);
+            if(btnEl) btnEl.classList.add('hidden'); // On cache le bouton démarrer
+
+            let html = `
+            <div class="bg-black border-y border-cyan-500/30 p-4 md:p-6 w-full shadow-inner relative overflow-hidden">
+                <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjMDAwIj48L3JlY3Q+CjxwYXRoIGQ9Ik0wIDBMMCA0TDEgNEwxIDBaTTEgMEwyIDBMMiA0TDEgNFoiIGZpbGw9IiMxMTEiPjwvcGF0aD4KPC9zdmc+')] opacity-20 pointer-events-none"></div>
+                
+                <div class="flex justify-between items-center mb-6 relative z-10 border-b border-white/10 pb-4">
+                    <h4 class="text-xs md:text-sm font-black text-cyan-400 uppercase tracking-widest flex items-center gap-2 md:gap-3">
+                        <i class="fas fa-satellite-dish animate-pulse"></i> Séquence d'injection - Ligne #${index+1} - <span class="text-white bg-cyan-900/50 px-2 py-0.5 rounded">Passe ${passNum}/${totalPasses}</span>
+                    </h4>
+                </div>
+
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-6 md:mb-8 relative z-10">
+                    <div class="bg-black/60 p-3 md:p-4 rounded-xl border border-white/10 backdrop-blur-md">
+                        <div class="text-[0.55rem] md:text-[0.6rem] text-gray-500 uppercase font-black tracking-widest mb-1 md:mb-2" data-i18n="diameter">Diamètre</div>
+                        <div class="font-black text-lg md:text-xl text-white">${dia} <span class="text-[0.6rem] md:text-[0.65rem] text-gray-400">mm</span></div>
+                    </div>
+                    <div class="bg-black/60 p-3 md:p-4 rounded-xl border border-white/10 backdrop-blur-md">
+                        <div class="text-[0.55rem] md:text-[0.6rem] text-gray-500 uppercase font-black tracking-widest mb-1 md:mb-2" data-i18n="totalLength">Longueur</div>
+                        <div class="font-black text-lg md:text-xl text-white">${len} <span class="text-[0.6rem] md:text-[0.65rem] text-gray-400">m</span></div>
+                    </div>
+                    <div class="bg-black/60 p-3 md:p-4 rounded-xl border border-white/10 backdrop-blur-md border-cyan-500/30">
+                        <div class="text-[0.55rem] md:text-[0.6rem] text-cyan-500 uppercase font-black tracking-widest mb-1 md:mb-2" data-i18n="thickPerPass">Épaisseur</div>
+                        <div class="font-black text-lg md:text-xl text-cyan-400">${thk} <span class="text-[0.6rem] md:text-[0.65rem]">mm</span></div>
+                    </div>
+                    <div class="bg-black/60 p-3 md:p-4 rounded-xl border border-white/10 backdrop-blur-md border-purple-500/30">
+                        <div class="text-[0.55rem] md:text-[0.6rem] text-purple-500 uppercase font-black tracking-widest mb-1 md:mb-2" data-i18n="resinPerPass">Résine prévue</div>
+                        <div class="font-black text-lg md:text-xl text-purple-400">${resPerPass} <span class="text-[0.6rem] md:text-[0.65rem]">L</span></div>
+                    </div>
+                </div>
+
+                <div class="bg-white/5 p-4 md:p-6 rounded-2xl border border-white/10 flex flex-col md:flex-row gap-6 md:gap-8 items-center relative z-10 mb-6 md:mb-8">
+                    <div class="flex-1 w-full space-y-4 md:space-y-6">
+                        <div>
+                            <div class="text-[0.6rem] md:text-[0.65rem] text-gray-400 uppercase font-bold tracking-widest mb-2" data-i18n="injectionPower">Puissance Pompe</div>
+                            <div class="flex gap-2 bg-black/40 p-1.5 rounded-xl border border-white/10 w-fit">
+                                <button id="btn-power-25" onclick="setPumpPower(25)" class="pump-power-btn px-4 py-2 rounded-lg text-xs font-black transition-all bg-white/5 text-gray-400 hover:bg-white/10">25%</button>
+                                <button id="btn-power-50" onclick="setPumpPower(50)" class="pump-power-btn px-4 py-2 rounded-lg text-xs font-black transition-all bg-white/5 text-gray-400 hover:bg-white/10">50%</button>
+                                <button id="btn-power-75" onclick="setPumpPower(75)" class="pump-power-btn px-4 py-2 rounded-lg text-xs font-black transition-all bg-white/5 text-gray-400 hover:bg-white/10">75%</button>
+                                <button id="btn-power-100" onclick="setPumpPower(100)" class="pump-power-btn px-4 py-2 rounded-lg text-xs font-black transition-all bg-cyan-600 text-white border border-cyan-400 shadow-[0_0_15px_rgba(34,211,238,0.3)]">100%</button>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between items-end mb-2">
+                                <div class="text-[0.6rem] md:text-[0.65rem] text-gray-400 uppercase font-bold tracking-widest" data-i18n="tractorSpeed">Vitesse Tracteur</div>
+                                <div class="text-cyan-400 text-xs font-black" id="speedDisplay-${index}">0.8 m/min</div>
+                            </div>
+                            <input type="range" min="0.1" max="5.0" step="0.1" value="0.8" class="w-full accent-cyan-500" oninput="document.getElementById('speedDisplay-${index}').innerText = this.value + ' m/min'">
+                        </div>
+                    </div>
+                    
+                    <div class="w-full md:w-auto flex flex-col gap-3 shrink-0">
+                        <button id="mainActionBtn-${index}" onclick="toggleJob(${index}, ${len})" class="w-full md:w-48 h-16 md:h-20 bg-green-500 hover:bg-green-400 text-black rounded-2xl font-black uppercase tracking-[0.2em] text-sm md:text-base transition-all shadow-[0_0_30px_rgba(34,197,94,0.3)] flex items-center justify-center gap-3">
+                            <i class="fas fa-power-off text-xl"></i> START
+                        </button>
+                        <button onclick="openInfoModal('Module enregistrement vidéo en cours de déploiement.')" class="w-full md:w-48 py-3 bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 rounded-xl text-[0.65rem] md:text-xs font-black uppercase tracking-widest transition flex items-center justify-center gap-2">
+                            <i class="fas fa-video"></i> <span data-i18n="recordVideo">Enregistrer Vidéo</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 relative z-10">
+                    <div class="bg-black/60 p-4 border-l-2 border-green-500 rounded-r-xl">
+                        <div class="text-[0.55rem] md:text-[0.6rem] text-gray-500 uppercase font-bold mb-1" data-i18n="metersDone">Mètres Résinés</div>
+                        <div class="text-xl md:text-2xl font-black text-white" id="liveMeters-${index}">0.0</div>
+                    </div>
+                    <div class="bg-black/60 p-4 border-l-2 border-blue-500 rounded-r-xl">
+                        <div class="text-[0.55rem] md:text-[0.6rem] text-gray-500 uppercase font-bold mb-1" data-i18n="timeElapsed">Temps écoulé</div>
+                        <div class="text-xl md:text-2xl font-black text-white" id="liveTime-${index}">00:00</div>
+                    </div>
+                    <div class="bg-black/60 p-4 border-l-2 border-purple-500 rounded-r-xl">
+                        <div class="text-[0.55rem] md:text-[0.6rem] text-gray-500 uppercase font-bold mb-1" data-i18n="resinConsumed">Résine Consommée</div>
+                        <div class="text-xl md:text-2xl font-black text-white" id="liveResin-${index}">0.0L</div>
+                    </div>
+                    <div class="bg-black/60 p-4 border-l-2 border-orange-500 rounded-r-xl">
+                        <div class="text-[0.55rem] md:text-[0.6rem] text-gray-500 uppercase font-bold mb-1" data-i18n="resinLeft">Restant (Réservoir)</div>
+                        <div class="text-xl md:text-2xl font-black text-white">45.0L</div>
+                    </div>
+                </div>
+            </div>`;
+            
+            msgRow.innerHTML = html;
+            setPumpPower(100);
+            updateInterfaceLanguage();
+        }
+
+        function toggleJob(index, maxLen) {
+            const btn = document.getElementById(`mainActionBtn-${index}`);
+            if(jobState.status === 'idle') {
+                jobState.status = 'running';
+                jobState.startTime = Date.now() - (jobState.elapsed || 0);
+                btn.innerHTML = `<i class="fas fa-stop-circle text-xl"></i> STOP`;
+                btn.classList.replace('bg-green-500', 'bg-red-500');
+                btn.classList.replace('hover:bg-green-400', 'hover:bg-red-400');
+                btn.classList.replace('shadow-[0_0_30px_rgba(34,197,94,0.3)]', 'shadow-[0_0_30px_rgba(239,68,68,0.4)]');
+                
+                jobState.timerInterval = setInterval(() => {
+                    const elapsed = Date.now() - jobState.startTime;
+                    jobState.elapsed = elapsed;
+                    const secs = Math.floor(elapsed / 1000);
+                    const mins = Math.floor(secs / 60);
+                    const displaySecs = secs % 60;
+                    document.getElementById(`liveTime-${index}`).innerText = `${mins.toString().padStart(2,'0')}:${displaySecs.toString().padStart(2,'0')}`;
+                    
+                    const speed = parseFloat(document.getElementById(`speedDisplay-${index}`).innerText);
+                    jobState.meters = (secs / 60) * speed;
+                    if(jobState.meters > maxLen) jobState.meters = maxLen;
+                    document.getElementById(`liveMeters-${index}`).innerText = jobState.meters.toFixed(1);
+                    
+                    // Simulation conso résine basée sur la puissance de la pompe
+                    jobState.resinUsed += (currentPumpPower / 100) * 0.05; 
+                    document.getElementById(`liveResin-${index}`).innerText = jobState.resinUsed.toFixed(1) + 'L';
+                    
+                    if(jobState.meters >= maxLen) {
+                        finishJob(index);
+                    }
+                }, 1000);
+            } else {
+                clearInterval(jobState.timerInterval);
+                jobState.status = 'idle';
+                btn.innerHTML = `<i class="fas fa-power-off text-xl"></i> REPRENDRE`;
+                btn.classList.replace('bg-red-500', 'bg-yellow-500');
+                btn.classList.replace('hover:bg-red-400', 'hover:bg-yellow-400');
+                btn.classList.replace('shadow-[0_0_30px_rgba(239,68,68,0.4)]', 'shadow-[0_0_30px_rgba(234,179,8,0.4)]');
+            }
+        }
+
+        function finishJob(index) {
+            clearInterval(jobState.timerInterval);
+            jobState = { startTime: null, status: 'idle', resinUsed: 0, meters: 0, timerInterval: null };
+            document.getElementById(`row-msg-tr-${index}`).classList.add('hidden');
+            
+            // On incrémente le nombre de passes terminées
+            if(!completedPassesCount[index]) completedPassesCount[index] = 0;
+            completedPassesCount[index]++;
+            
+            const totalPasses = parseInt(document.getElementById(`row-passes-${index}`).value) || 1;
+            const passNum = completedPassesCount[index];
+            
+            saveJobToHistory(false); // Sauvegarde l'état
+
+            if(passNum === totalPasses) {
+                rowCompletedStatuses[currentRowIndex] = true;
+                
+                const actionCell = document.getElementById(`row-action-${currentRowIndex}`);
+                if(actionCell) {
+                    actionCell.innerHTML = `
+                    <div class="flex flex-col gap-1.5 px-2 py-1 min-w-[110px] w-full">
+                        <span class="bg-green-500/20 text-green-400 border border-green-500/50 px-2 py-1.5 rounded-lg text-[0.55rem] md:text-[0.6rem] font-black uppercase w-full flex items-center justify-center gap-1.5"><i class="fas fa-check"></i> Terminé</span>
+                        <button onclick="generateRowReport(${currentRowIndex})" class="bg-blue-500/20 hover:bg-blue-500/40 text-blue-400 border border-blue-500/50 px-2 py-1.5 rounded-lg text-[0.55rem] md:text-[0.6rem] font-black uppercase transition-colors w-full flex items-center justify-center gap-1.5"><i class="fas fa-file-pdf"></i> Rapport</button>
+                    </div>`;
+                }
+                
+                const trEl = document.getElementById(`row-tr-${currentRowIndex}`);
+                if(trEl) trEl.classList.add('opacity-60', 'bg-green-900/10');
+                ['row-label', 'row-len', 'row-dia'].forEach(prefix => {
+                    const el = document.getElementById(`${prefix}-${currentRowIndex}`);
+                    if(el) el.disabled = true;
+                });
+                
+                currentRowIndex = -1; // Libère la ligne
+                
+                if (rowCompletedStatuses.length === parseInt(document.getElementById('nbCols').value) && rowCompletedStatuses.every(s => s === true)) {
+                    document.getElementById('btnFinalReportContainer').classList.remove('hidden');
+                    openInfoModal("Chantier terminé avec succès ! Toutes les canalisations ont été résinées.");
+                } else {
+                    openInfoModal(`Canalisation #${index+1} terminée. Vous pouvez passer à la suivante.`);
+                }
+            } else {
+                currentRowIndex = -1; // Libère la ligne pour permettre la prochaine passe ou une autre ligne
+                const btnEl = document.getElementById(`row-btn-${index}`);
+                if(btnEl) {
+                    btnEl.classList.remove('hidden');
+                    btnEl.innerHTML = `<i class="fas fa-play"></i> Continuer (Passe ${passNum+1})`;
+                }
+                openInfoModal(`Passe ${passNum} sur ${totalPasses} terminée pour la canalisation #${index+1}.`);
+            }
+            
+            saveJobToHistory(false);
+        }
+
+        // --- Fonctions de Rapports et Archives ---
+        function generateRowReport(rowIndex) {
+            currentReportContext = { type: 'row', rowIndex: rowIndex };
+            const jobName = document.getElementById('jobNameStep2').value || "Chantier_Inconnu";
+            const date = document.getElementById('jobDateStep2').value || new Date().toLocaleDateString();
+            const label = document.getElementById(`row-label-${rowIndex}`).value || `Ligne_${rowIndex+1}`;
+            const len = document.getElementById(`row-len-${rowIndex}`).value;
+            const dia = document.getElementById(`row-dia-${rowIndex}`).value;
+            const passes = document.getElementById(`row-passes-${rowIndex}`).value;
+            const resinType = document.getElementById('resinType').options[document.getElementById('resinType').selectedIndex].text;
+            const resQte = document.getElementById(`row-resin-val-${rowIndex}`).innerText;
+
+            let content = `
+                <div class="text-center mb-8">
+                    <h1 class="text-2xl font-black uppercase tracking-widest text-purple-700">Rapport d'Intervention - Ligne #${rowIndex+1}</h1>
+                    <p class="text-gray-500 font-bold">${jobName} - ${date}</p>
+                </div>
+                <div class="grid grid-cols-2 gap-6 mb-8">
+                    <div class="bg-gray-100 p-4 rounded-xl border border-gray-200">
+                        <h4 class="text-[0.6rem] font-black text-gray-400 uppercase tracking-widest mb-3">Identification</h4>
+                        <div class="space-y-2">
+                            <p class="text-sm"><span class="font-bold text-gray-500">Libellé :</span> <span class="font-black">${label}</span></p>
+                            <p class="text-sm"><span class="font-bold text-gray-500">Opérateur :</span> <span class="font-black">Tanguy Demo</span></p>
+                        </div>
+                    </div>
+                    <div class="bg-gray-100 p-4 rounded-xl border border-gray-200">
+                        <h4 class="text-[0.6rem] font-black text-gray-400 uppercase tracking-widest mb-3">Paramètres Techniques</h4>
+                        <div class="space-y-2">
+                            <p class="text-sm"><span class="font-bold text-gray-500">Dimensions :</span> <span class="font-black">L: ${len}m / Ø: ${dia}mm</span></p>
+                            <p class="text-sm"><span class="font-bold text-gray-500">Résine :</span> <span class="font-black">${resinType}</span></p>
+                            <p class="text-sm"><span class="font-bold text-gray-500">Passes effectuées :</span> <span class="font-black">${passes}</span></p>
+                            <p class="text-sm"><span class="font-bold text-gray-500">Volume consommé :</span> <span class="font-black">${resQte}</span></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-8 border-t border-gray-200 pt-6">
+                    <h4 class="text-xs font-black text-purple-700 uppercase mb-4">Certificat de conformité</h4>
+                    <p class="text-xs text-gray-600 leading-relaxed text-justify">
+                        Je soussigné, certifie que l'intervention sur la ligne <strong>${label}</strong> du chantier <strong>${jobName}</strong> a été réalisée conformément aux spécifications techniques. L'application de la résine <strong>${resinType}</strong> a été contrôlée et validée par le système automatisé de la pompe BZBots.
+                    </p>
+                    <div class="mt-8 flex justify-between px-10">
+                        <div class="text-center">
+                            <p class="text-xs font-bold text-gray-500 mb-8">Signature Opérateur</p>
+                            <p class="font-black border-t border-black pt-2 w-32">Tanguy Demo</p>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-xs font-bold text-gray-500 mb-8">Cachet BZBots IA</p>
+                            <p class="font-black text-purple-600 border-2 border-purple-600 p-2 rounded rotate-[-5deg]">VALIDE</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('aiAnalysisContent').innerHTML = content;
+            document.getElementById('aiAnalysisModal').classList.remove('hidden');
+        }
+
+        function generateFinalReport() {
+            currentReportContext = { type: 'global', rowIndex: -1 };
+            const jobName = document.getElementById('jobNameStep2').value || "Chantier_Inconnu";
+            const date = document.getElementById('jobDateStep2').value || new Date().toLocaleDateString();
+            const city = document.getElementById('jobCityStep2').value;
+            const street = document.getElementById('jobStreetStep2').value;
+            const bldg = document.getElementById('jobBuildingStep2').value;
+            const resinType = document.getElementById('resinType').options[document.getElementById('resinType').selectedIndex].text;
+            
+            const totalLin = document.getElementById('totalLin').innerText;
+            const totalRes = document.getElementById('totalRes').innerText;
+            const nbCols = parseInt(document.getElementById('nbCols').value);
+
+            let tableHtml = `
+                <table class="w-full text-xs text-left mb-8 border-collapse">
+                    <thead>
+                        <tr class="bg-gray-200">
+                            <th class="p-2 border border-gray-300">ID</th>
+                            <th class="p-2 border border-gray-300">Libellé</th>
+                            <th class="p-2 border border-gray-300">Dimensions</th>
+                            <th class="p-2 border border-gray-300">Passes</th>
+                            <th class="p-2 border border-gray-300">Résine</th>
+                            <th class="p-2 border border-gray-300">Statut</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            for(let i=0; i<nbCols; i++) {
+                const label = document.getElementById(`row-label-${i}`).value || `Ligne_${i+1}`;
+                const len = document.getElementById(`row-len-${i}`).value;
+                const dia = document.getElementById(`row-dia-${i}`).value;
+                const passes = document.getElementById(`row-passes-${i}`).value;
+                const res = document.getElementById(`row-resin-val-${i}`).innerText;
+                const isDone = rowCompletedStatuses[i] ? "Terminé" : "Incomplet";
+                const color = rowCompletedStatuses[i] ? "text-green-600" : "text-red-600";
+
+                tableHtml += `
+                    <tr>
+                        <td class="p-2 border border-gray-300 font-mono">#${i+1}</td>
+                        <td class="p-2 border border-gray-300 font-bold">${label}</td>
+                        <td class="p-2 border border-gray-300">L:${len}m Ø:${dia}mm</td>
+                        <td class="p-2 border border-gray-300">${passes}</td>
+                        <td class="p-2 border border-gray-300">${res}</td>
+                        <td class="p-2 border border-gray-300 font-black ${color}">${isDone}</td>
+                    </tr>
+                `;
+            }
+            tableHtml += `</tbody></table>`;
+
+            let content = `
+                <div class="text-center mb-8 border-b border-gray-200 pb-6">
+                    <h1 class="text-3xl font-black uppercase tracking-widest text-blue-700 mb-2">Rapport Global de Chantier</h1>
+                    <h2 class="text-xl font-bold text-gray-700">${jobName}</h2>
+                    <p class="text-sm text-gray-500 mt-2">${street ? street+', ' : ''}${bldg ? bldg+', ' : ''}${city} | Date: ${date}</p>
+                </div>
+                
+                <div class="grid grid-cols-3 gap-4 mb-8">
+                    <div class="bg-blue-50 p-4 rounded-xl border border-blue-100 text-center">
+                        <h4 class="text-[0.6rem] font-black text-blue-400 uppercase tracking-widest mb-1">Total Linéaire</h4>
+                        <p class="text-xl font-black text-blue-700">${totalLin} m</p>
+                    </div>
+                    <div class="bg-purple-50 p-4 rounded-xl border border-purple-100 text-center">
+                        <h4 class="text-[0.6rem] font-black text-purple-400 uppercase tracking-widest mb-1">Volume Total</h4>
+                        <p class="text-xl font-black text-purple-700">${totalRes} L</p>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-xl border border-gray-200 text-center">
+                        <h4 class="text-[0.6rem] font-black text-gray-500 uppercase tracking-widest mb-1">Résine Utilisée</h4>
+                        <p class="text-sm font-black text-gray-700 mt-1">${resinType}</p>
+                    </div>
+                </div>
+
+                <h3 class="text-sm font-black uppercase text-gray-700 mb-4 border-l-4 border-blue-500 pl-2">Détail des canalisations</h3>
+                ${tableHtml}
+
+                <div class="mt-8 border-t border-gray-200 pt-6">
+                    <p class="text-xs text-gray-600 leading-relaxed text-justify mb-8">
+                        Ce document atteste de la réalisation des travaux d'injection de résine sur l'ensemble des canalisations listées ci-dessus. Les données ont été enregistrées automatiquement par le système BZBots garantissant la traçabilité des volumes appliqués.
+                    </p>
+                    <div class="flex justify-between px-10">
+                        <div class="text-center">
+                            <p class="text-xs font-bold text-gray-500 mb-8">Responsable de Chantier</p>
+                            <p class="font-black border-t border-black pt-2 w-40">Tanguy Demo</p>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-xs font-bold text-gray-500 mb-8">Validation Système</p>
+                            <p class="font-black text-blue-600 border-2 border-blue-600 p-2 rounded rotate-[5deg] bg-blue-50">ARCHIVÉ</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('aiAnalysisContent').innerHTML = content;
+            document.getElementById('aiAnalysisModal').classList.remove('hidden');
+
+            const history = JSON.parse(localStorage.getItem('bz_job_history') || '[]');
+            const jobIndex = history.findIndex(j => j.jobName === activeJobNameForHistory);
+            
+            if(jobIndex !== -1) {
+                let archives = JSON.parse(localStorage.getItem('bz_archives') || '[]');
+                archives.push(history[jobIndex]);
+                localStorage.setItem('bz_archives', JSON.stringify(archives));
+                
+                history.splice(jobIndex, 1);
+                localStorage.setItem('bz_job_history', JSON.stringify(history));
+                
+                activeJobNameForHistory = '';
+                loadJobHistory();
+            }
+        }
+
+        function closeAiModal() { 
+            document.getElementById('aiAnalysisModal').classList.add('hidden'); 
+            if(currentReportContext.type === 'global') {
+                goToPumpStep1();
+            }
+        }
+
+        function printPdf() {
+            const element = document.getElementById('aiAnalysisContent');
+            const opt = {
+                margin: 10,
+                filename: `Rapport_BZBots_${Date.now()}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, useCORS: true },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+            
+            const btnContainer = document.querySelector('#aiAnalysisModal .flex.gap-2');
+            if(btnContainer) btnContainer.style.display = 'none';
+            
+            html2pdf().set(opt).from(element).save().then(() => {
+                if(btnContainer) btnContainer.style.display = 'flex';
+            });
+        }
+
+        function loadArchivesList() {
+            const container = document.getElementById('archivesList');
+            if (!container) return;
+            
+            let archives = JSON.parse(localStorage.getItem('bz_archives') || '[]');
+            
+            if (archives.length === 0) {
+                container.innerHTML = `<div class="text-center text-gray-500 text-xs font-bold uppercase tracking-widest mt-10">Aucune archive disponible</div>`;
+                return;
+            }
+            
+            let html = '';
+            archives.reverse().forEach((arc, idx) => {
+                const totalM = arc.tableState && arc.tableState.rows ? arc.tableState.rows.reduce((sum, r) => sum + (parseFloat(r.len)||0), 0) : 0;
+                html += `
+                <div class="w-full bg-black/40 border border-white/10 rounded-2xl p-4 md:p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 hover:border-purple-500/50 transition-all group backdrop-blur-md">
+                    <div class="flex items-start gap-4">
+                        <div class="w-10 h-10 md:w-12 md:h-12 bg-purple-900/30 rounded-xl flex items-center justify-center border border-purple-500/30 shrink-0">
+                            <i class="fas fa-file-pdf text-purple-400 text-lg md:text-xl"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-white font-black text-sm md:text-base mb-1">${arc.jobName}</h4>
+                            <p class="text-[0.6rem] md:text-[0.65rem] text-gray-400 font-bold uppercase tracking-widest"><i class="far fa-calendar-alt mr-1"></i> ${arc.date} | ${arc.city}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4 md:gap-6 w-full md:w-auto">
+                        <div class="hidden sm:block text-right">
+                            <div class="text-[0.55rem] md:text-[0.6rem] text-gray-500 uppercase font-black tracking-widest">Total Appliqué</div>
+                            <div class="font-black text-white text-sm md:text-base">${totalM.toFixed(1)} m</div>
+                        </div>
+                        <div class="flex gap-2 w-full md:w-auto">
+                            <button onclick="loadArchivePdf('${arc.jobName}')" class="flex-1 md:flex-none px-4 py-2.5 bg-purple-600/20 hover:bg-purple-600 text-purple-300 hover:text-white border border-purple-500/30 rounded-xl text-[0.6rem] md:text-xs font-black uppercase transition-all shadow-sm">Ouvrir</button>
+                            <button onclick="deleteArchive(${idx})" class="px-3 py-2.5 bg-red-500/10 hover:bg-red-500 text-red-400 hover:text-white border border-red-500/30 rounded-xl transition-all"><i class="fas fa-trash-alt"></i></button>
+                        </div>
+                    </div>
+                </div>`;
+            });
+            container.innerHTML = html;
+        }
+
+        function loadArchivePdf(jobName) {
+            let archives = JSON.parse(localStorage.getItem('bz_archives') || '[]');
+            let job = archives.find(j => j.jobName === jobName);
+            if(!job) return;
+
+            let totalLin = 0;
+            let totalRes = 0;
+            let tableHtml = `
+                <table class="w-full text-xs text-left mb-8 border-collapse">
+                    <thead>
+                        <tr class="bg-gray-200">
+                            <th class="p-2 border border-gray-300">ID</th>
+                            <th class="p-2 border border-gray-300">Libellé</th>
+                            <th class="p-2 border border-gray-300">Dimensions</th>
+                            <th class="p-2 border border-gray-300">Passes</th>
+                            <th class="p-2 border border-gray-300">Résine</th>
+                            <th class="p-2 border border-gray-300">Statut</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            if(job.tableState && job.tableState.rows) {
+                const passes = job.tableState.chosenPasses || 3;
+                const thk = job.tableState.chosenThickness || 0.75;
+
+                for(let i=0; i<job.tableState.nbCols; i++) {
+                    const r = job.tableState.rows[i];
+                    if(!r) continue;
+                    
+                    const l = parseFloat(r.len) || 0;
+                    const d = parseFloat(r.dia) || 0;
+                    
+                    let resQ = 0;
+                    if(l>0 && d>0) {
+                        const surfaceArea = Math.PI * (d/1000) * l;
+                        const volumeTotal = surfaceArea * (thk / 1000) * passes;
+                        resQ = volumeTotal * 1000 * 1.2;
+                        totalLin += l;
+                        totalRes += resQ;
+                    }
+                    
+                    tableHtml += `
+                        <tr>
+                            <td class="p-2 border border-gray-300 font-mono">#${i+1}</td>
+                            <td class="p-2 border border-gray-300 font-bold">${r.label}</td>
+                            <td class="p-2 border border-gray-300">L:${l}m Ø:${d}mm</td>
+                            <td class="p-2 border border-gray-300">${passes}</td>
+                            <td class="p-2 border border-gray-300">${resQ.toFixed(1)} L</td>
+                            <td class="p-2 border border-gray-300 font-black text-green-600">Terminé</td>
+                        </tr>
+                    `;
+                }
+            }
+            tableHtml += `</tbody></table>`;
+
+            let content = `
+                <div class="text-center mb-8 border-b border-gray-200 pb-6">
+                    <h1 class="text-3xl font-black uppercase tracking-widest text-blue-700 mb-2">Rapport Global de Chantier (Archive)</h1>
+                    <h2 class="text-xl font-bold text-gray-700">${job.jobName}</h2>
+                    <p class="text-sm text-gray-500 mt-2">${job.street ? job.street+', ' : ''}${job.building ? job.building+', ' : ''}${job.city} | Date: ${job.date}</p>
+                </div>
+                
+                <div class="grid grid-cols-3 gap-4 mb-8">
+                    <div class="bg-blue-50 p-4 rounded-xl border border-blue-100 text-center">
+                        <h4 class="text-[0.6rem] font-black text-blue-400 uppercase tracking-widest mb-1">Total Linéaire</h4>
+                        <p class="text-xl font-black text-blue-700">${totalLin.toFixed(1)} m</p>
+                    </div>
+                    <div class="bg-purple-50 p-4 rounded-xl border border-purple-100 text-center">
+                        <h4 class="text-[0.6rem] font-black text-purple-400 uppercase tracking-widest mb-1">Volume Total</h4>
+                        <p class="text-xl font-black text-purple-700">${totalRes.toFixed(1)} L</p>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-xl border border-gray-200 text-center">
+                        <h4 class="text-[0.6rem] font-black text-gray-500 uppercase tracking-widest mb-1">Résine Utilisée</h4>
+                        <p class="text-sm font-black text-gray-700 mt-1">${job.tableState ? job.tableState.resinType : 'N/A'}</p>
+                    </div>
+                </div>
+
+                <h3 class="text-sm font-black uppercase text-gray-700 mb-4 border-l-4 border-blue-500 pl-2">Détail des canalisations</h3>
+                ${tableHtml}
+            `;
+            
+            document.getElementById('aiAnalysisContent').innerHTML = content;
+            document.getElementById('aiAnalysisModal').classList.remove('hidden');
+        }
+
+        function deleteArchive(index) {
+            let archives = JSON.parse(localStorage.getItem('bz_archives') || '[]');
+            archives.splice(index, 1);
+            localStorage.setItem('bz_archives', JSON.stringify(archives));
+            loadArchivesList();
+        }
+
+        /** Génère des valeurs aléatoires dans la vue BzLight (Mockup) */
+        function calculateBzLightSpecs() { 
+            document.getElementById('bzLightResults').classList.remove('hidden'); 
+            document.getElementById('bzResPressure').innerText = (Math.random() * 2 + 5).toFixed(1); 
+            document.getElementById('bzResConsum').innerText = (Math.random() * 5 + 10).toFixed(1); 
+        }
+
+        /** Fonction d'initialisation au chargement de la page */
+        window.onload = () => { 
+            // VÉRIFICATION DE SÉCURITÉ : Est-ce que le fichier translations.js a bien été trouvé ?
+            if (typeof translations !== 'undefined') {
+                availableLangs = Object.keys(translations);
+                currentLang = availableLangs[0];
+            } else {
+                console.error("ERREUR : Fichier translations.js introuvable.");
+                alert("Attention : Le fichier 'translations.js' est introuvable par le navigateur. Vérifiez qu'il est bien sur GitHub au même endroit que index.html, et videz le cache de votre navigateur !");
+            }
+
+            // Peupler dynamiquement TOUS les sélecteurs de langue de la page à partir des clés du dictionnaire chargé
+            const langNames = { fr: 'FR', en: 'EN', es: 'ES', it: 'IT', ko: 'KO', ja: 'JA', ru: 'RU', zh: 'ZH', da: 'DA', de: 'DE', pt: 'PT' };
+            document.querySelectorAll('.lang-selector').forEach(select => {
+                select.innerHTML = '';
+                availableLangs.forEach(l => {
+                    select.innerHTML += `<option value="${l}" class="bg-[#111]">${langNames[l] || l.toUpperCase()}</option>`;
+                });
+                select.value = currentLang;
+            });
+
+            updateInterfaceLanguage(); 
+            calculate(); 
+        }
     </script>
 </body>
 </html>
