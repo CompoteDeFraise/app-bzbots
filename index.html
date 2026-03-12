@@ -9,9 +9,10 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-
-    <!-- LIEN GITHUB : Dictionnaire de langues externe -->
-    <script src="https://cdn.jsdelivr.net/gh/CompoteDeFraise/app-bzbots@main/translations.js"></script>
+    
+    <!-- Fichier de traductions externe (GitHub) -->
+    <!-- Remplacez "translations.js" par le lien direct vers votre fichier sur GitHub (ex: via jsDelivr) -->
+    <script src="translations.js"></script>
     
     <!-- Styles CSS personnalisés -->
     <style>
@@ -1296,11 +1297,10 @@
     <!-- ========================================== -->
     <!-- SCRIPTS JAVASCRIPT                         -->
     <!-- ========================================== -->
-
     <script>
         // --- Variables Globales ---
         let currentReportContext = { type: 'global', rowIndex: -1 }; // Pour savoir quel type de rapport on génère
-        const availableLangs = ['fr', 'en', 'es', 'it', 'ko', 'ja', 'ru', 'zh', 'da', 'de', 'pt']; // Langues disponibles
+        const availableLangs = ['fr', 'en']; // Langues disponibles
         let currentLangIndex = 0;
         let currentLang = availableLangs[currentLangIndex];
         const esp32Ip = "http://192.168.4.1"; // IP typique d'une connexion au réseau wifi du robot (ESP32)
@@ -1372,72 +1372,6 @@
             document.getElementById('productContactModal').classList.add('hidden'); 
         }
 
-        // --- Traductions Multi-langues ---
-        // Les traductions sont directement intégrées ici pour garantir une application 100% autonome
-        const translations = {
-            fr: { 
-                loginTitle: "Connexion", accountName: "Identifiant", password: "Mot de passe", loginBtn: "ME CONNECTER", 
-                createAccount: "Créer un compte", hello: "Session Active", discoverRange: "Découvrez notre gamme", 
-                quickAccess: "Navigation Rapide", catalog: "Catalogue", profile: "Profil", documents: "Archives", 
-                aiAssistant: "BzIA Assistant", pumpProduct: "Pompe d'application résine", pumpDesc: "Système d'injection", 
-                bzLightProduct: "BzLight", bzLightDesc: "Robot de fraisage", tractorProduct: "Tracteur", 
-                tractorDesc: "Tractage de câble pour application de résine", techSheet: "Fiche", details: "Configurer", 
-                launchApp: "Accéder", fluidParams: "Données chantier", jobName: "Nom du chantier", city: "Ville", 
-                street: "Rue", buildingNum: "N° de bâtiment", nbCols: "Nbre colonnes", resinType: "Type de Résine", 
-                targetThickness: "Épaisseur Maxi par passe (recommandé)", recThickness: "Épaisseur Rec. (mm)", 
-                totalPasses: "Cycle de passes recommandé", recSpeed: "Vitesse Recommandée", dimensioning: "Données de dimensionnements", 
-                stdLength: "Longueur Std (m)", stdDia: "Diamètre Std (mm)", totalLinear: "Cumul Linéaire Appliqué", 
-                pumpControl: "Interface Pompe", connect: "Lier", resinSpraycoatPlus: "Spraycoat +", 
-                resinSpraycoatFlex: "Spraycoatflex", legalMentions: "BZBots Systems © 2024 - Confidential Enterprise Suite", 
-                personalInfo: "Données Authentifiées", firstName: "Prénom", lastName: "Nom", email: "Identifiant Email", 
-                role: "Accréditation", bzLightConfig: "BzLight V2 Config", robotSpecs: "Authentification Robot", 
-                enterSerial: "Scannez ou entrez le numéro de série", robotSerial: "Serial Number", check: "Synchroniser", 
-                armPressure: "Pression Levée", consumption: "Energie", myProducts: "Mes Produits", devInProgress: "Module en développement", 
-                aiIntro: "Connecté au noyau BZ-AI. Posez votre question technique.", coatingTitle: "Coating", paramReminder: "Rappel Paramètres", 
-                diameter: "Diamètre", totalLength: "Longueur Totale", thickPerPass: "Épaisseur/Passe", passCount: "Nombre Passes", 
-                totalThickness: "Épaisseur Totale", resinPerPass: "Qte Résine/Passe", injectionSeq: "Séquence d'injection", 
-                injectionPower: "Débit Pompe", tractorSpeed: "Vitesse Tracteur", autoReg: "Régulation Auto", resetZero: "Reset 0", 
-                recordVideo: "Enregistrer un flux vidéo", stop: "Stop", metersDone: "Mètres résinés", metersLeft: "Mètres restants", 
-                timeElapsed: "Temps écoulé", timeRemaining: "Temps Restant", resinConsumed: "Résine Consommée", 
-                resinLeft: "Résine restante", tank: "(Réservoir)", passNum: "Passe N°", newJob: "Créer Chantier", 
-                confirmNewJob: "Êtes-vous sûr de vouloir démarrer un nouveau chantier ? Toutes les données actuelles non archivées seront perdues.", 
-                jobHistory: "Chantiers", label: "Libellé" 
-            },
-            en: { 
-                loginTitle: "Login", accountName: "User ID", password: "Password", loginBtn: "LOG IN", createAccount: "Create account", 
-                hello: "Active Session", discoverRange: "Discover our range", quickAccess: "Quick Navigation", catalog: "Catalog", 
-                profile: "Profile", documents: "Archives", aiAssistant: "BzIA Assistant", pumpProduct: "The Pump", pumpDesc: "Injection system", 
-                bzLightProduct: "BzLight", bzLightDesc: "UV Milling Robot", tractorProduct: "Tractor", tractorDesc: "Milling & Inspection", 
-                techSheet: "Sheet", details: "Configure", launchApp: "Launch control", fluidParams: "Job data", jobName: "Job Name", 
-                city: "City", street: "Street", buildingNum: "Building No.", nbCols: "Col Count", resinType: "Resin Type", 
-                targetThickness: "Max thickness per pass (recommended)", recThickness: "Rec. Thickness (mm)", totalPasses: "Recommended pass cycle", 
-                recSpeed: "Recommended Speed", dimensioning: "Technical Layout", stdLength: "Std Length (m)", stdDia: "Std Diameter (mm)", 
-                totalLinear: "Applied Linear Total", pumpControl: "Pump Interface", connect: "Link", resinSpraycoatPlus: "Spraycoat +", 
-                resinSpraycoatFlex: "Spraycoatflex", legalMentions: "BZBots Systems © 2024 - Confidential Enterprise Suite", 
-                personalInfo: "Authenticated Data", firstName: "First Name", lastName: "Last Name", email: "Email ID", role: "Accreditation", 
-                bzLightConfig: "BzLight V2 Config", robotSpecs: "Robot Authentication", enterSerial: "Scan or enter serial number", 
-                robotSerial: "Serial Number", check: "Synchronize", armPressure: "Lift Pressure", consumption: "Energy", myProducts: "My Products", 
-                devInProgress: "Module under development", aiIntro: "Connected to BZ-AI core. Ask your technical question.", coatingTitle: "Coating", 
-                paramReminder: "Parameters Reminder", diameter: "Diameter", totalLength: "Total Length", thickPerPass: "Thickness/Pass", 
-                passCount: "Pass Count", totalThickness: "Total Thickness", resinPerPass: "Resin/Pass Qty", injectionSeq: "Injection Sequence", 
-                injectionPower: "Pump Power", tractorSpeed: "Tractor Speed", autoReg: "Auto Regulation", resetZero: "Reset 0", 
-                recordVideo: "Record Video Stream", stop: "Stop", metersDone: "Coated Meters", metersLeft: "Remaining Meters", 
-                timeElapsed: "Time Elapsed", timeRemaining: "Time Remaining", resinConsumed: "Consumed Resin", resinLeft: "Remaining Resin", 
-                tank: "(Tank)", passNum: "Pass No.", newJob: "New", 
-                confirmNewJob: "Are you sure you want to start a new job? All current unsaved data will be lost.", 
-                jobHistory: "Job History", label: "Label" 
-            },
-            es: { loginTitle: "Iniciar sesión", accountName: "Usuario", password: "Password", loginBtn: "INICIAR SESIÓN", createAccount: "Crear cuenta", hello: "Sesión Activa", discoverRange: "Descubra nuestra gama", quickAccess: "Acceso Rápido", catalog: "Catálogo", profile: "Perfil", documents: "Archivos", aiAssistant: "Asistente BzIA", pumpProduct: "Bomba", pumpDesc: "Sistema de inyección", bzLightProduct: "BzLight", bzLightDesc: "Robot de fresado", tractorProduct: "Tractor", tractorDesc: "Fresado e Inspección", techSheet: "Ficha", details: "Configurar", launchApp: "Acceder", fluidParams: "Datos de obra", jobName: "Nombre de obra", city: "Ciudad", street: "Calle", buildingNum: "Edificio", nbCols: "Columnas", resinType: "Tipo de Resina", targetThickness: "Espesor Max/pasada", recThickness: "Espesor Rec. (mm)", totalPasses: "Ciclo recomendado", recSpeed: "Velocidad Recomendada", dimensioning: "Datos técnicos", stdLength: "Longitud (m)", stdDia: "Diámetro (mm)", totalLinear: "Total Lineal", pumpControl: "Interfaz Bomba", connect: "Conectar", resinSpraycoatPlus: "Spraycoat +", resinSpraycoatFlex: "Spraycoatflex", legalMentions: "BZBots Systems © 2024", personalInfo: "Datos Autenticados", firstName: "Nombre", lastName: "Apellido", email: "Email", role: "Rol", bzLightConfig: "Config. BzLight", robotSpecs: "Autenticación", enterSerial: "Ingrese el número de serie", robotSerial: "Número de Serie", check: "Sincronizar", armPressure: "Presión", consumption: "Energía", myProducts: "Mis Productos", devInProgress: "En desarrollo", aiIntro: "Conectado a BZ-AI. ¿En qué puedo ayudarle?", coatingTitle: "Recubrimiento", paramReminder: "Parámetros", diameter: "Diámetro", totalLength: "Longitud", thickPerPass: "Espesor/Pasada", passCount: "Pasadas", totalThickness: "Espesor Total", resinPerPass: "Resina/Pasada", injectionSeq: "Secuencia", injectionPower: "Potencia Bomba", tractorSpeed: "Velocidad Tractor", autoReg: "Regulación Auto", resetZero: "Reset 0", recordVideo: "Grabar", stop: "Stop", metersDone: "Metros listos", metersLeft: "Metros restantes", timeElapsed: "Tiempo transcurrido", timeRemaining: "Tiempo restante", resinConsumed: "Resina consumida", resinLeft: "Resina restante", tank: "(Tanque)", passNum: "Pasada N°", newJob: "Nueva Obra", confirmNewJob: "¿Confirmar nueva obra?", jobHistory: "Historial", label: "Etiqueta" },
-            it: { loginTitle: "Accesso", accountName: "Utente", password: "Password", loginBtn: "ACCEDI", createAccount: "Crea account", hello: "Sessione Attiva", discoverRange: "Scopri la gamma", quickAccess: "Accesso Rapido", catalog: "Catalogo", profile: "Profilo", documents: "Archivio", aiAssistant: "Assistente BzIA", pumpProduct: "Pompa", pumpDesc: "Sistema di iniezione", bzLightProduct: "BzLight", bzLightDesc: "Robot di fresatura", tractorProduct: "Trattore", tractorDesc: "Fresatura e Ispezione", techSheet: "Scheda", details: "Configura", launchApp: "Accedi", fluidParams: "Dati cantiere", jobName: "Nome cantiere", city: "Città", street: "Via", buildingNum: "Edificio", nbCols: "Colonne", resinType: "Tipo di Resina", targetThickness: "Spessore Max/passata", recThickness: "Spessore Racc. (mm)", totalPasses: "Ciclo raccomandato", recSpeed: "Velocità Raccomandata", dimensioning: "Dati tecnici", stdLength: "Lunghezza (m)", stdDia: "Diametro (mm)", totalLinear: "Totale Lineare", pumpControl: "Interfaccia Pompa", connect: "Connetti", resinSpraycoatPlus: "Spraycoat +", resinSpraycoatFlex: "Spraycoatflex", legalMentions: "BZBots Systems © 2024", personalInfo: "Dati Autenticati", firstName: "Nome", lastName: "Cognome", email: "Email", role: "Ruolo", bzLightConfig: "Config. BzLight", robotSpecs: "Autenticazione", enterSerial: "Inserisci il numero di serie", robotSerial: "Numero di Serie", check: "Sincronizza", armPressure: "Pressione", consumption: "Energia", myProducts: "I Miei Prodotti", devInProgress: "In sviluppo", aiIntro: "Connesso a BZ-AI. Come posso aiutarti?", coatingTitle: "Rivestimento", paramReminder: "Parametri", diameter: "Diametro", totalLength: "Lunghezza", thickPerPass: "Spessore/Passata", passCount: "Passate", totalThickness: "Spessore Totale", resinPerPass: "Resina/Passata", injectionSeq: "Sequenza", injectionPower: "Potenza Pompa", tractorSpeed: "Velocità Trattore", autoReg: "Regolazione Auto", resetZero: "Reset 0", recordVideo: "Registra", stop: "Stop", metersDone: "Metri completati", metersLeft: "Metri rimanenti", timeElapsed: "Tempo trascorso", timeRemaining: "Tempo rimanente", resinConsumed: "Resina consumata", resinLeft: "Resina rimanente", tank: "(Serbatoio)", passNum: "Passata N°", newJob: "Nuovo Cantiere", confirmNewJob: "Confermare nuovo cantiere?", jobHistory: "Storico", label: "Etichetta" },
-            de: { loginTitle: "Anmeldung", accountName: "Benutzer", password: "Password", loginBtn: "EINLOGGEN", createAccount: "Konto erstellen", hello: "Aktive Sitzung", discoverRange: "Produktpalette", quickAccess: "Schnellzugriff", catalog: "Katalog", profile: "Profil", documents: "Archiv", aiAssistant: "BzIA Assistent", pumpProduct: "Pumpe", pumpDesc: "Einspritzsystem", bzLightProduct: "BzLight", bzLightDesc: "Fräsroboter", tractorProduct: "Traktor", tractorDesc: "Fräsen & Inspektion", techSheet: "Datenblatt", details: "Konfigurieren", launchApp: "Starten", fluidParams: "Projektdaten", jobName: "Projektname", city: "Stadt", street: "Straße", buildingNum: "Gebäude", nbCols: "Spalten", resinType: "Harztyp", targetThickness: "Max. Dicke/Durchgang", recThickness: "Empf. Dicke (mm)", totalPasses: "Empf. Durchgänge", recSpeed: "Empf. Geschwindigkeit", dimensioning: "Technische Daten", stdLength: "Länge (m)", stdDia: "Durchmesser (mm)", totalLinear: "Gesamtlänge", pumpControl: "Pumpensteuerung", connect: "Verbinden", resinSpraycoatPlus: "Spraycoat +", resinSpraycoatFlex: "Spraycoatflex", legalMentions: "BZBots Systems © 2024", personalInfo: "Authentifizierte Daten", firstName: "Vorname", lastName: "Nachname", email: "E-Mail", role: "Rolle", bzLightConfig: "BzLight Config", robotSpecs: "Authentifizierung", enterSerial: "Seriennummer eingeben", robotSerial: "Seriennummer", check: "Synchronisieren", armPressure: "Druck", consumption: "Energie", myProducts: "Meine Produkte", devInProgress: "In Entwicklung", aiIntro: "Verbunden mit BZ-AI.", coatingTitle: "Beschichtung", paramReminder: "Parameter", diameter: "Durchmesser", totalLength: "Gesamtlänge", thickPerPass: "Dicke/Durchgang", passCount: "Durchgänge", totalThickness: "Gesamtdicke", resinPerPass: "Harz/Durchgang", injectionSeq: "Sequenz", injectionPower: "Pumpenleistung", tractorSpeed: "Traktorgeschwindigkeit", autoReg: "Auto-Regulierung", resetZero: "Reset 0", recordVideo: "Aufnehmen", stop: "Stopp", metersDone: "Meter fertig", metersLeft: "Meter verbleibend", timeElapsed: "Verstrichene Zeit", timeRemaining: "Verbleibende Zeit", resinConsumed: "Harz verbraucht", resinLeft: "Harz verbleibend", tank: "(Tank)", passNum: "Durchgang Nr.", newJob: "Neues Projekt", confirmNewJob: "Neues Projekt bestätigen?", jobHistory: "Verlauf", label: "Etikett" },
-            pt: { loginTitle: "Entrar", accountName: "Usuário", password: "Password", loginBtn: "ENTRAR", createAccount: "Criar conta", hello: "Sessão Ativa", discoverRange: "Descubra nossa linha", quickAccess: "Acesso Rápido", catalog: "Catálogo", profile: "Perfil", documents: "Arquivos", aiAssistant: "Assistente BzIA", pumpProduct: "Bomba", pumpDesc: "Sistema de injeção", bzLightProduct: "BzLight", bzLightDesc: "Robô de fresagem", tractorProduct: "Trator", tractorDesc: "Fresagem e Inspeção", techSheet: "Ficha", details: "Configurar", launchApp: "Acessar", fluidParams: "Dados da obra", jobName: "Nome da obra", city: "Cidade", street: "Rua", buildingNum: "Edifício", nbCols: "Colunas", resinType: "Tipo de Resina", targetThickness: "Espessura Máx/passada", recThickness: "Espessura Rec. (mm)", totalPasses: "Ciclo recomendado", recSpeed: "Velocidade Recomendada", dimensioning: "Dados técnicos", stdLength: "Comprimento (m)", stdDia: "Diâmetro (mm)", totalLinear: "Total Linear", pumpControl: "Interface Bomba", connect: "Conectar", resinSpraycoatPlus: "Spraycoat +", resinSpraycoatFlex: "Spraycoatflex", legalMentions: "BZBots Systems © 2024", personalInfo: "Dados Autenticados", firstName: "Nome", lastName: "Sobrenome", email: "Email", role: "Função", bzLightConfig: "Config. BzLight", robotSpecs: "Autenticação", enterSerial: "Insira o número de série", robotSerial: "Número de Série", check: "Sincronizar", armPressure: "Pressão", consumption: "Energia", myProducts: "Meus Produtos", devInProgress: "Em desenvolvimento", aiIntro: "Conectado ao BZ-AI.", coatingTitle: "Revestimento", paramReminder: "Parâmetros", diameter: "Diâmetro", totalLength: "Comprimento", thickPerPass: "Espessura/Passada", passCount: "Passadas", totalThickness: "Espessura Total", resinPerPass: "Resina/Passada", injectionSeq: "Sequência", injectionPower: "Potência Bomba", tractorSpeed: "Velocidade Trator", autoReg: "Regulação Auto", resetZero: "Reset 0", recordVideo: "Gravar", stop: "Parar", metersDone: "Metros concluídos", metersLeft: "Metros restantes", timeElapsed: "Tempo decorrido", timeRemaining: "Tempo restante", resinConsumed: "Resina consumida", resinLeft: "Resina restante", tank: "(Tanque)", passNum: "Passada N°", newJob: "Nova Obra", confirmNewJob: "Confirmar nova obra?", jobHistory: "Histórico", label: "Etiqueta" },
-            ko: { loginTitle: "로그인", accountName: "사용자 ID", password: "비밀번호", loginBtn: "로그인", createAccount: "계정 만들기", hello: "활성 세션", discoverRange: "제품군 알아보기", quickAccess: "빠른 탐색", catalog: "카탈로그", profile: "프로필", documents: "문서", aiAssistant: "BzIA 어시스턴트", pumpProduct: "펌프", pumpDesc: "주입 시스템", bzLightProduct: "BzLight", bzLightDesc: "밀링 로봇", tractorProduct: "트랙터", tractorDesc: "밀링 및 검사", techSheet: "시트", details: "구성", launchApp: "액세스", fluidParams: "작업 데이터", jobName: "작업 이름", city: "도시", street: "거리", buildingNum: "건물 번호", nbCols: "열 수", resinType: "수지 유형", targetThickness: "패스 당 최대 두께", recThickness: "권장 두께 (mm)", totalPasses: "권장 패스 주기", recSpeed: "권장 속도", dimensioning: "치수 데이터", stdLength: "표준 길이 (m)", stdDia: "표준 직경 (mm)", totalLinear: "적용된 총 선형", pumpControl: "펌프 인터페이스", connect: "연결", resinSpraycoatPlus: "Spraycoat +", resinSpraycoatFlex: "Spraycoatflex", legalMentions: "BZBots Systems © 2024", personalInfo: "인증된 데이터", firstName: "이름", lastName: "성", email: "이메일", role: "역할", bzLightConfig: "BzLight 설정", robotSpecs: "로봇 인증", enterSerial: "일련 번호 입력", robotSerial: "일련 번호", check: "동기화", armPressure: "압력", consumption: "에너지", myProducts: "내 제품", devInProgress: "개발 중", aiIntro: "BZ-AI에 연결됨.", coatingTitle: "코팅", paramReminder: "매개 변수", diameter: "직경", totalLength: "총 길이", thickPerPass: "두께/패스", passCount: "패스 수", totalThickness: "총 두께", resinPerPass: "수지/패스", injectionSeq: "주입 순서", injectionPower: "펌프 전원", tractorSpeed: "트랙터 속도", autoReg: "자동 규정", resetZero: "0으로 재설정", recordVideo: "비디오 녹화", stop: "중지", metersDone: "완료된 미터", metersLeft: "남은 미터", timeElapsed: "경과 시간", timeRemaining: "남은 시간", resinConsumed: "소비된 수지", resinLeft: "남은 수지", tank: "(탱크)", passNum: "패스 N°", newJob: "새 작업", confirmNewJob: "새 작업을 시작하시겠습니까?", jobHistory: "작업 내역", label: "라벨" },
-            ja: { loginTitle: "ログイン", accountName: "ユーザーID", password: "パスワード", loginBtn: "ログイン", createAccount: "アカウント作成", hello: "アクティブセッション", discoverRange: "製品ラインナップ", quickAccess: "クイックアクセス", catalog: "カタログ", profile: "プロフィール", documents: "ドキュメント", aiAssistant: "BzIAアシスタント", pumpProduct: "ポンプ", pumpDesc: "注入システム", bzLightProduct: "BzLight", bzLightDesc: "ミーリングロボット", tractorProduct: "トラクター", tractorDesc: "ミーリング＆検査", techSheet: "シート", details: "構成", launchApp: "アクセス", fluidParams: "ジョブデータ", jobName: "ジョブ名", city: "都市", street: "通り", buildingNum: "建物番号", nbCols: "列数", resinType: "樹脂タイプ", targetThickness: "パスあたりの最大厚さ", recThickness: "推奨厚さ (mm)", totalPasses: "推奨パスサイクル", recSpeed: "推奨速度", dimensioning: "寸法データ", stdLength: "標準長さ (m)", stdDia: "標準直径 (mm)", totalLinear: "適用された合計線形", pumpControl: "ポンプインターフェース", connect: "接続", resinSpraycoatPlus: "Spraycoat +", resinSpraycoatFlex: "Spraycoatflex", legalMentions: "BZBots Systems © 2024", personalInfo: "認証済みデータ", firstName: "名", lastName: "姓", email: "メール", role: "役割", bzLightConfig: "BzLight設定", robotSpecs: "ロボット認証", enterSerial: "シリアル番号を入力", robotSerial: "シリアル番号", check: "同期", armPressure: "圧力", consumption: "エネルギー", myProducts: "マイ製品", devInProgress: "開発中", aiIntro: "BZ-AIに接続しました。", coatingTitle: "コーティング", paramReminder: "パラメーター", diameter: "直径", totalLength: "全長", thickPerPass: "厚さ/パス", passCount: "パス数", totalThickness: "合計厚さ", resinPerPass: "樹脂/パス", injectionSeq: "注入シーケンス", injectionPower: "ポンプパワー", tractorSpeed: "トラクター速度", autoReg: "自動調整", resetZero: "リセット0", recordVideo: "ビデオ録画", stop: "停止", metersDone: "完了メーター", metersLeft: "残りメーター", timeElapsed: "経過時間", timeRemaining: "残り時間", resinConsumed: "消費された樹脂", resinLeft: "残りの樹脂", tank: "(タンク)", passNum: "パス N°", newJob: "新しいジョブ", confirmNewJob: "新しいジョブを開始しますか？", jobHistory: "ジョブ履歴", label: "ラベル" },
-            ru: { loginTitle: "Вход", accountName: "Идентификатор", password: "Пароль", loginBtn: "ВОЙТИ", createAccount: "Создать аккаунт", hello: "Активный сеанс", discoverRange: "Наш ассортимент", quickAccess: "Быстрый доступ", catalog: "Каталог", profile: "Профиль", documents: "Архивы", aiAssistant: "Ассистент BzIA", pumpProduct: "Насос", pumpDesc: "Система впрыска", bzLightProduct: "BzLight", bzLightDesc: "Фрезерный робот", tractorProduct: "Трактор", tractorDesc: "Фрезерование и осмотр", techSheet: "Лист", details: "Настроить", launchApp: "Доступ", fluidParams: "Данные работы", jobName: "Название работы", city: "Город", street: "Улица", buildingNum: "Здание", nbCols: "Колонны", resinType: "Тип смолы", targetThickness: "Макс. толщина/проход", recThickness: "Рек. толщина (мм)", totalPasses: "Рек. цикл проходов", recSpeed: "Рек. скорость", dimensioning: "Данные размеров", stdLength: "Длина (м)", stdDia: "Диаметр (мм)", totalLinear: "Всего линейно", pumpControl: "Интерфейс насоса", connect: "Подключить", resinSpraycoatPlus: "Spraycoat +", resinSpraycoatFlex: "Spraycoatflex", legalMentions: "BZBots Systems © 2024", personalInfo: "Данные пользователя", firstName: "Имя", lastName: "Фамилия", email: "Email", role: "Роль", bzLightConfig: "Настройка BzLight", robotSpecs: "Аутентификация", enterSerial: "Введите серийный номер", robotSerial: "Серийный номер", check: "Синхронизация", armPressure: "Давление", consumption: "Энергия", myProducts: "Мои продукты", devInProgress: "В разработке", aiIntro: "Подключено к BZ-AI.", coatingTitle: "Покрытие", paramReminder: "Параметры", diameter: "Диаметр", totalLength: "Длина", thickPerPass: "Толщина/Проход", passCount: "Проходы", totalThickness: "Общая толщина", resinPerPass: "Смола/Проход", injectionSeq: "Последовательность", injectionPower: "Мощность насоса", tractorSpeed: "Скорость трактора", autoReg: "Авторегулировка", resetZero: "Сброс 0", recordVideo: "Запись видео", stop: "Стоп", metersDone: "Метров готово", metersLeft: "Осталось метров", timeElapsed: "Прошло времени", timeRemaining: "Осталось времени", resinConsumed: "Смолы израсходовано", resinLeft: "Осталось смолы", tank: "(Бак)", passNum: "Проход N°", newJob: "Новая работа", confirmNewJob: "Начать новую работу?", jobHistory: "История", label: "Метка" },
-            zh: { loginTitle: "登录", accountName: "用户ID", password: "密码", loginBtn: "登录", createAccount: "创建账户", hello: "活动会话", discoverRange: "发现我们的产品", quickAccess: "快速导航", catalog: "目录", profile: "个人资料", documents: "文件", aiAssistant: "BzIA 助手", pumpProduct: "泵", pumpDesc: "注射系统", bzLightProduct: "BzLight", bzLightDesc: "铣削机器人", tractorProduct: "拖拉机", tractorDesc: "铣削和检查", techSheet: "图纸", details: "配置", launchApp: "访问", fluidParams: "工作数据", jobName: "工作名称", city: "城市", street: "街道", buildingNum: "建筑编号", nbCols: "列数", resinType: "树脂类型", targetThickness: "每次最大厚度", recThickness: "推荐厚度 (mm)", totalPasses: "推荐周期", recSpeed: "推荐速度", dimensioning: "尺寸数据", stdLength: "标准长度 (m)", stdDia: "标准直径 (mm)", totalLinear: "总线性", pumpControl: "泵接口", connect: "连接", resinSpraycoatPlus: "Spraycoat +", resinSpraycoatFlex: "Spraycoatflex", legalMentions: "BZBots Systems © 2024", personalInfo: "认证数据", firstName: "名字", lastName: "姓氏", email: "电子邮件", role: "角色", bzLightConfig: "BzLight 配置", robotSpecs: "机器人认证", enterSerial: "输入序列号", robotSerial: "序列号", check: "同步", armPressure: "压力", consumption: "能源", myProducts: "我的产品", devInProgress: "开发中", aiIntro: "已连接到 BZ-AI。", coatingTitle: "涂层", paramReminder: "参数", diameter: "直径", totalLength: "总长度", thickPerPass: "厚度/次", passCount: "次数", totalThickness: "总厚度", resinPerPass: "树脂/次", injectionSeq: "注射顺序", injectionPower: "泵功率", tractorSpeed: "拖拉机速度", autoReg: "自动调节", resetZero: "重置 0", recordVideo: "录制视频", stop: "停止", metersDone: "完成米数", metersLeft: "剩余米数", timeElapsed: "已用时间", timeRemaining: "剩余时间", resinConsumed: "消耗的树脂", resinLeft: "剩余的树脂", tank: "(水箱)", passNum: "次数 N°", newJob: "新工作", confirmNewJob: "确认开始新工作？", jobHistory: "历史记录", label: "标签" },
-            da: { loginTitle: "Log ind", accountName: "Bruger-ID", password: "Adgangskode", loginBtn: "LOG IND", createAccount: "Opret konto", hello: "Aktiv session", discoverRange: "Opdag vores udvalg", quickAccess: "Hurtig adgang", catalog: "Katalog", profile: "Profil", documents: "Arkiv", aiAssistant: "BzIA Assistent", pumpProduct: "Pumpe", pumpDesc: "Indsprøjtningssystem", bzLightProduct: "BzLight", bzLightDesc: "Fræserobot", tractorProduct: "Traktor", tractorDesc: "Fræsning og Inspektion", techSheet: "Datablad", details: "Konfigurer", launchApp: "Få adgang", fluidParams: "Jobdata", jobName: "Jobnavn", city: "By", street: "Gade", buildingNum: "Bygningsnr.", nbCols: "Antal kolonner", resinType: "Harpikstype", targetThickness: "Maks. tykkelse/pas", recThickness: "Anbefalet tykkelse (mm)", totalPasses: "Anbefalede pas", recSpeed: "Anbefalet hastighed", dimensioning: "Dimensionsdata", stdLength: "Længde (m)", stdDia: "Diameter (mm)", totalLinear: "Total lineær", pumpControl: "Pumpe interface", connect: "Forbind", resinSpraycoatPlus: "Spraycoat +", resinSpraycoatFlex: "Spraycoatflex", legalMentions: "BZBots Systems © 2024", personalInfo: "Godkendte data", firstName: "Fornavn", lastName: "Efternavn", email: "E-mail", role: "Rolle", bzLightConfig: "BzLight Konfig", robotSpecs: "Robot Godkendelse", enterSerial: "Indtast serienummer", robotSerial: "Serienummer", check: "Synkroniser", armPressure: "Tryk", consumption: "Energi", myProducts: "Mine Produkter", devInProgress: "Under udvikling", aiIntro: "Forbundet til BZ-AI.", coatingTitle: "Belægning", paramReminder: "Parametre", diameter: "Diameter", totalLength: "Total Længde", thickPerPass: "Tykkelse/Pas", passCount: "Pas", totalThickness: "Total Tykkelse", resinPerPass: "Harpiks/Pas", injectionSeq: "Sekvens", injectionPower: "Pumpeeffekt", tractorSpeed: "Traktorhastighed", autoReg: "Autoregulering", resetZero: "Nulstil", recordVideo: "Optag video", stop: "Stop", metersDone: "Meter færdige", metersLeft: "Meter tilbage", timeElapsed: "Tid forløbet", timeRemaining: "Tid tilbage", resinConsumed: "Harpiks forbrugt", resinLeft: "Harpiks tilbage", tank: "(Tank)", passNum: "Pas N°", newJob: "Nyt Job", confirmNewJob: "Bekræft nyt job?", jobHistory: "Historik", label: "Etiket" }
-        };
-
         /**
          * Fonction pour changer la langue et synchroniser les selecteurs
          * @param {string} lang - Code de la langue ("fr" ou "en")
@@ -1455,15 +1389,23 @@
          * Met à jour le texte de tous les éléments possédant l'attribut data-i18n
          */
         function updateInterfaceLanguage() {
+            // "translations" provient maintenant du fichier JS externe
+            if (typeof translations === 'undefined') {
+                console.warn("Le fichier translations.js n'a pas pu être chargé ou la variable n'existe pas.");
+                return;
+            }
+            
             const texts = translations[currentLang];
+            if (!texts) return;
+
             document.querySelectorAll('[data-i18n]').forEach(el => {
                 const key = el.getAttribute('data-i18n');
                 if (texts[key]) el.innerText = texts[key];
             });
             // Met à jour la bulle d'intro dans le Chat IA
             const container = document.getElementById('chat-container');
-            if (container && container.children.length <= 1) {
-                container.innerHTML = `<div class="chat-bubble chat-ai">${translations[currentLang].aiIntro}</div>`;
+            if (container && container.children.length <= 1 && texts.aiIntro) {
+                container.innerHTML = `<div class="chat-bubble chat-ai">${texts.aiIntro}</div>`;
             }
         }
 
@@ -1534,28 +1476,6 @@
                 // Sauvegarde ET mise à jour de l'historique visuel directement
                 saveJobToHistory(true); 
             }
-        }
-
-        /**
-         * Action lors du clic sur le bouton "Créer chantier" (Etape 1).
-         * Sauvegarde les données, puis vide les champs pour de nouvelles saisies.
-         */
-        function createNewJobEntry() {
-            const name = document.getElementById('jobName').value.trim();
-            if (!name) return; // Ne rien faire si le nom est vide
-            
-            activeJobNameForHistory = name;
-            saveJobToHistory(true);
-            
-            // Vider les champs après création
-            const dateEl = document.getElementById('jobDate');
-            if (dateEl) dateEl.value = '';
-            document.getElementById('jobName').value = '';
-            document.getElementById('jobCity').value = '';
-            document.getElementById('jobStreet').value = '';
-            document.getElementById('jobBuilding').value = '';
-            
-            activeJobNameForHistory = ''; // On remet à zéro l'id courant
         }
 
         /**
@@ -1662,10 +1582,11 @@
         /** Simulation du bouton Connexion */
         function handleLogin() {
             const btn = document.getElementById('loginBtn');
+            const translationTexts = typeof translations !== 'undefined' ? translations[currentLang] : null;
             btn.innerText = 'AUTHENTIFICATION...';
             setTimeout(() => { 
                 nav('view-home'); 
-                btn.innerText = translations[currentLang].loginBtn; 
+                btn.innerText = translationTexts ? translationTexts.loginBtn : "ME CONNECTER"; 
             }, 800);
         }
         
@@ -1676,7 +1597,8 @@
 
         /** Ouverture modale info générique */
         function openInfoModal(key) {
-            document.getElementById('infoModalText').innerText = translations[currentLang][key] || key;
+            const translationTexts = typeof translations !== 'undefined' ? translations[currentLang] : null;
+            document.getElementById('infoModalText').innerText = translationTexts ? (translationTexts[key] || key) : key;
             document.getElementById('infoModal').classList.remove('hidden');
         }
         function closeInfoModal() { 
@@ -2339,7 +2261,8 @@
             document.getElementById('opHeaderDN').innerText = `DN${dia}`; 
             document.getElementById('opHeaderResin').innerText = resinName;
             
-            const passLabel = currentLang === 'en' ? 'PASS' : 'PASSE';
+            const translationTexts = typeof translations !== 'undefined' ? translations[currentLang] : null;
+            const passLabel = (translationTexts && translationTexts.passNum) ? (currentLang === 'en' ? 'PASS' : 'PASSE') : 'PASSE';
             document.getElementById('opHeaderThickness').innerText = `${epPasse}MM / ${passLabel}`;
             
             document.getElementById('opRappelDN').innerText = `DN${dia}`; 
@@ -2352,7 +2275,7 @@
             // Génère les boutons "GO" pour chaque passe dans la liste de gauche
             // Si la passe est déjà terminée, on l'affiche directement validée
             let passesHtml = '';
-            const passWord = translations[currentLang].passNum || 'Passe N°';
+            const passWord = (translationTexts && translationTexts.passNum) ? translationTexts.passNum : 'Passe N°';
             for(let i=1; i<=passes; i++) {
                 if (i <= passesDone) {
                     passesHtml += `
@@ -2994,7 +2917,8 @@
                 status.classList.add('text-green-400'); 
             } else { 
                 icon.className = 'fas fa-wifi text-sm text-gray-400'; 
-                status.innerText = translations[currentLang].connect || "Lier"; 
+                const translationTexts = typeof translations !== 'undefined' ? translations[currentLang] : null;
+                status.innerText = (translationTexts && translationTexts.connect) ? translationTexts.connect : "Lier"; 
                 status.classList.remove('text-green-400'); 
             }
         }
@@ -3008,20 +2932,9 @@
 
         /** Fonction d'initialisation au chargement de la page */
         window.onload = () => { 
-            // Peupler dynamiquement tous les sélecteurs de langue pour éviter de le faire à la main partout
-            const langNames = { fr: 'FR', en: 'EN', es: 'ES', it: 'IT', ko: 'KO', ja: 'JA', ru: 'RU', zh: 'ZH', da: 'DA', de: 'DE', pt: 'PT' };
-            document.querySelectorAll('.lang-selector').forEach(select => {
-                select.innerHTML = ''; // Vide les anciennes options (FR/EN)
-                availableLangs.forEach(l => {
-                    select.innerHTML += `<option value="${l}" class="bg-[#111]">${langNames[l]}</option>`;
-                });
-                select.value = currentLang;
-            });
-
             updateInterfaceLanguage(); 
             calculate(); 
         }
     </script>
 </body>
 </html>
-
