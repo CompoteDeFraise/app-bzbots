@@ -10,9 +10,9 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     
-    <!-- Fichier de traductions externe (GitHub) -->
-    <!-- Remplacez "translations.js" par le lien direct vers votre fichier sur GitHub (ex: via jsDelivr) -->
-    <script src="translations.js"></script>
+    <!-- Fichier de traductions externe (GitHub via jsDelivr) -->
+    <!-- "var translations = {...}" doit être utilisé dans translations.js (pas const/let) pour être global -->
+    <script defer src="https://cdn.jsdelivr.net/gh/CompoteDeFraise/app-bzbots@main/translations.js"></script>
     
     <!-- Styles CSS personnalisés -->
     <style>
@@ -311,8 +311,6 @@
             <!-- Sélecteur de langue -->
             <div class="relative shrink-0">
                 <select onchange="changeLanguage(this.value)" class="lang-selector appearance-none bg-white/5 border border-white/10 text-gray-200 hover:bg-white/15 hover:border-white/30 transition-all rounded-full pl-8 pr-6 py-1.5 md:py-2 text-xs font-bold outline-none cursor-pointer backdrop-blur-md shadow-sm">
-                    <option value="fr" class="bg-[#111]">FR</option>
-                    <option value="en" class="bg-[#111]">EN</option>
                 </select>
                 <i class="fas fa-globe absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400 text-xs"></i>
                 <i class="fas fa-chevron-down absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400 text-[0.55rem]"></i>
@@ -359,8 +357,6 @@
             <!-- Sélecteur de langue -->
             <div class="relative shrink-0">
                 <select onchange="changeLanguage(this.value)" class="lang-selector appearance-none bg-white/5 border border-white/10 text-gray-200 hover:bg-white/15 hover:border-white/30 transition-all rounded-full pl-8 pr-6 py-1.5 md:py-2 text-xs font-bold outline-none cursor-pointer backdrop-blur-md shadow-sm">
-                    <option value="fr" class="bg-[#111]">FR</option>
-                    <option value="en" class="bg-[#111]">EN</option>
                 </select>
                 <i class="fas fa-globe absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400 text-xs"></i>
                 <i class="fas fa-chevron-down absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400 text-[0.55rem]"></i>
@@ -426,9 +422,7 @@
             <div class="flex items-center gap-2 md:gap-3">
                 <div class="relative shrink-0">
                     <select onchange="changeLanguage(this.value)" class="lang-selector appearance-none bg-white/5 border border-white/10 text-gray-200 hover:bg-white/15 hover:border-white/30 transition-all rounded-full pl-8 pr-6 py-1.5 md:py-2 text-xs font-bold outline-none cursor-pointer backdrop-blur-md shadow-sm">
-                        <option value="fr" class="bg-[#111]">FR</option>
-                        <option value="en" class="bg-[#111]">EN</option>
-                    </select>
+                </select>
                     <i class="fas fa-globe absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400 text-xs"></i>
                     <i class="fas fa-chevron-down absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400 text-[0.55rem]"></i>
                 </div>
@@ -547,8 +541,6 @@
             <!-- Sélecteur de langue -->
             <div class="relative shrink-0">
                 <select onchange="changeLanguage(this.value)" class="lang-selector appearance-none bg-white/5 border border-white/10 text-gray-200 hover:bg-white/15 hover:border-white/30 transition-all rounded-full pl-8 pr-6 py-1.5 md:py-2 text-xs font-bold outline-none cursor-pointer backdrop-blur-md shadow-sm">
-                    <option value="fr" class="bg-[#111]">FR</option>
-                    <option value="en" class="bg-[#111]">EN</option>
                 </select>
                 <i class="fas fa-globe absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400 text-xs"></i>
                 <i class="fas fa-chevron-down absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400 text-[0.55rem]"></i>
@@ -573,8 +565,6 @@
             <!-- Sélecteur de langue -->
             <div class="relative shrink-0">
                 <select onchange="changeLanguage(this.value)" class="lang-selector appearance-none bg-white/5 border border-white/10 text-gray-200 hover:bg-white/15 hover:border-white/30 transition-all rounded-full pl-8 pr-6 py-1.5 md:py-2 text-xs font-bold outline-none cursor-pointer backdrop-blur-md shadow-sm">
-                    <option value="fr" class="bg-[#111]">FR</option>
-                    <option value="en" class="bg-[#111]">EN</option>
                 </select>
                 <i class="fas fa-globe absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400 text-xs"></i>
                 <i class="fas fa-chevron-down absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400 text-[0.55rem]"></i>
@@ -644,8 +634,6 @@
             <!-- Sélecteur de langue -->
             <div class="relative shrink-0">
                 <select onchange="changeLanguage(this.value)" class="lang-selector appearance-none bg-white/5 border border-white/10 text-gray-200 hover:bg-white/15 hover:border-white/30 transition-all rounded-full pl-8 pr-6 py-1.5 md:py-2 text-xs font-bold outline-none cursor-pointer backdrop-blur-md shadow-sm">
-                    <option value="fr" class="bg-[#111]">FR</option>
-                    <option value="en" class="bg-[#111]">EN</option>
                 </select>
                 <i class="fas fa-globe absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400 text-xs"></i>
                 <i class="fas fa-chevron-down absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400 text-[0.55rem]"></i>
@@ -677,7 +665,7 @@
                 <div class="space-y-2">
                     <label class="block text-[0.55rem] md:text-[0.6rem] font-bold text-gray-500 uppercase tracking-widest" data-i18n="email">Identifiant Email</label>
                     <div class="text-white font-bold flex items-center gap-3 md:gap-4 bg-black/40 px-4 py-3 rounded-xl border border-white/5 text-sm md:text-base overflow-hidden">
-                        <i class="far fa-envelope text-gray-400 shrink-0"></i> <span id="profEmail" class="truncate">tanguy@bzbots.com</span>
+                        <i class="far fa-envelope text-gray-400 shrink-0"></i> <span id="profEmail" class="truncate"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="e793868980929ea7859d85889394c984888a">[email&#160;protected]</a></span>
                     </div>
                 </div>
                 
@@ -710,8 +698,6 @@
             <!-- Sélecteur de langue -->
             <div class="relative shrink-0">
                 <select onchange="changeLanguage(this.value)" class="lang-selector appearance-none bg-white/5 border border-white/10 text-gray-200 hover:bg-white/15 hover:border-white/30 transition-all rounded-full pl-8 pr-6 py-1.5 md:py-2 text-xs font-bold outline-none cursor-pointer backdrop-blur-md shadow-sm">
-                    <option value="fr" class="bg-[#111]">FR</option>
-                    <option value="en" class="bg-[#111]">EN</option>
                 </select>
                 <i class="fas fa-globe absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400 text-xs"></i>
                 <i class="fas fa-chevron-down absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400 text-[0.55rem]"></i>
@@ -785,9 +771,7 @@
                 <!-- Sélecteur de langue -->
                 <div class="relative shrink-0">
                     <select onchange="changeLanguage(this.value)" class="lang-selector appearance-none bg-white/5 border border-white/10 text-gray-200 hover:bg-white/15 hover:border-white/30 transition-all rounded-full pl-8 pr-6 py-1.5 md:py-2 text-xs font-bold outline-none cursor-pointer backdrop-blur-md shadow-sm">
-                        <option value="fr" class="bg-[#111]">FR</option>
-                        <option value="en" class="bg-[#111]">EN</option>
-                    </select>
+                </select>
                     <i class="fas fa-globe absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400 text-xs"></i>
                     <i class="fas fa-chevron-down absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400 text-[0.55rem]"></i>
                 </div>
@@ -990,8 +974,6 @@
             <!-- Sélecteur de langue -->
             <div class="relative shrink-0 ml-4">
                 <select onchange="changeLanguage(this.value)" class="lang-selector appearance-none bg-white/5 border border-white/10 text-gray-200 hover:bg-white/15 hover:border-white/30 transition-all rounded-full pl-8 pr-6 py-1.5 md:py-2 text-xs font-bold outline-none cursor-pointer backdrop-blur-md shadow-sm">
-                    <option value="fr" class="bg-[#111]">FR</option>
-                    <option value="en" class="bg-[#111]">EN</option>
                 </select>
                 <i class="fas fa-globe absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400 text-xs"></i>
                 <i class="fas fa-chevron-down absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400 text-[0.55rem]"></i>
@@ -1182,11 +1164,11 @@
                             <div id="pcPhoneText" class="text-xs md:text-sm font-black text-white tracking-wider truncate">+33 0 00 00 00 00</div>
                         </div>
                     </a>
-                    <a id="pcEmailLink" href="mailto:#" class="w-full flex items-center gap-3 md:gap-4 bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/30 transition-all p-3 md:p-4 rounded-xl backdrop-blur-md group">
+                    <a id="pcEmailLink" href="/cdn-cgi/l/email-protection#587b" class="w-full flex items-center gap-3 md:gap-4 bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/30 transition-all p-3 md:p-4 rounded-xl backdrop-blur-md group">
                         <div class="w-8 h-8 md:w-10 md:h-10 shrink-0 rounded-full bg-white/10 flex items-center justify-center text-white group-hover:scale-110 transition-transform text-sm md:text-base"><i class="fas fa-envelope"></i></div>
                         <div class="min-w-0">
                             <div class="text-[0.55rem] md:text-[0.6rem] text-gray-400 font-bold uppercase tracking-widest truncate">Email Support / Commercial</div>
-                            <div id="pcEmailText" class="text-xs md:text-sm font-black text-white tracking-wider truncate">contact@bzbots.com</div>
+                            <div id="pcEmailText" class="text-xs md:text-sm font-black text-white tracking-wider truncate"><span class="__cf_email__" data-cfemail="9cfff3f2e8fdffe8dcfee6fef3e8efb2fff3f1">[email&#160;protected]</span></div>
                         </div>
                     </a>
                     <a id="pcWebLink" href="#" target="_blank" class="w-full flex items-center justify-center gap-2 md:gap-3 bg-white/90 text-black hover:bg-white transition-all p-3.5 md:p-4 rounded-xl font-black uppercase text-[0.65rem] md:text-xs tracking-widest shadow-[0_5px_15px_rgba(255,255,255,0.2)]"><i class="fas fa-globe"></i> Visiter le site web</a>
@@ -1297,12 +1279,11 @@
     <!-- ========================================== -->
     <!-- SCRIPTS JAVASCRIPT                         -->
     <!-- ========================================== -->
-    <script>
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
         // --- Variables Globales ---
         let currentReportContext = { type: 'global', rowIndex: -1 }; // Pour savoir quel type de rapport on génère
-        const availableLangs = ['fr', 'en']; // Langues disponibles
-        let currentLangIndex = 0;
-        let currentLang = availableLangs[currentLangIndex];
+        // Les langues disponibles sont lues dynamiquement depuis translations.js au chargement
+        let currentLang = 'fr'; // Langue par défaut avant chargement de translations.js
         const esp32Ip = "http://192.168.4.1"; // IP typique d'une connexion au réseau wifi du robot (ESP32)
         let isWifiConnected = false;
 
@@ -2924,16 +2905,62 @@
         }
 
         /** Génère des valeurs aléatoires dans la vue BzLight (Mockup) */
+        /** Génère des valeurs aléatoires dans la vue BzLight (Mockup) */
         function calculateBzLightSpecs() { 
             document.getElementById('bzLightResults').classList.remove('hidden'); 
             document.getElementById('bzResPressure').innerText = (Math.random() * 2 + 5).toFixed(1); 
             document.getElementById('bzResConsum').innerText = (Math.random() * 5 + 10).toFixed(1); 
         }
 
+        // === FONCTIONS MANQUANTES (ajoutées par correction) ===
+
+        /** Gère la soumission du formulaire d'inscription (simulation) */
+        function handleRegister() {
+            const btn = document.getElementById('registerBtn');
+            btn.innerText = 'CRÉATION EN COURS...';
+            setTimeout(() => {
+                nav('view-login');
+                btn.innerHTML = '<span data-i18n="registerBtn">CRÉER MON COMPTE</span>';
+            }, 800);
+        }
+
+        /** Ferme la modale de confirmation nouveau chantier / suppression archive */
+        function closeConfirmNewJobModal() {
+            document.getElementById('confirmNewJobModal').classList.add('hidden');
+        }
+
+        /**
+         * Règle la puissance de la pompe et met à jour les boutons visuellement
+         * @param {number} power - Valeur en % (25, 50, 75 ou 100)
+         */
+        function setPumpPower(power) {
+            currentPumpPower = power;
+            [25, 50, 75, 100].forEach(p => {
+                const btn = document.getElementById(`btn-pwr-${p}`);
+                if (!btn) return;
+                if (p === power) {
+                    btn.className = 'power-btn active flex-1 py-3 bg-cyan-500 border border-cyan-400 text-white rounded-xl text-[0.65rem] md:text-xs font-black shadow-[0_0_15px_rgba(34,211,238,0.4)] transition-all';
+                } else {
+                    btn.className = 'power-btn flex-1 py-3 bg-white/5 hover:bg-white/10 border border-white/10 text-gray-400 rounded-xl text-[0.65rem] md:text-xs font-black transition-all';
+                }
+            });
+        }
+
         /** Fonction d'initialisation au chargement de la page */
-        window.onload = () => { 
-            updateInterfaceLanguage(); 
-            calculate(); 
+        window.onload = () => {
+            // Génère dynamiquement les options de langue depuis translations.js
+            // Ainsi, toute nouvelle langue ajoutée dans translations.js apparaît automatiquement
+            if (typeof translations !== 'undefined') {
+                const langs = Object.keys(translations);
+                document.querySelectorAll('.lang-selector').forEach(select => {
+                    select.innerHTML = langs.map(l =>
+                        `<option value="${l}" class="bg-[#111]">${l.toUpperCase()}</option>`
+                    ).join('');
+                    select.value = currentLang;
+                });
+            }
+            updateInterfaceLanguage();
+            calculate();
         }
     </script>
 </body>
