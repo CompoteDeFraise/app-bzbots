@@ -88,7 +88,6 @@ const translations = {
     confirmNewJob: "هل أنت متأكد من بدء مشروع جديد؟ سيتم فقدان جميع البيانات الحالية غير المؤرشفة.",
     jobHistory: "المشاريع", label: "التسمية"
 },
-
     hi: {
     loginTitle: "लॉगिन", accountName: "उपयोगकर्ता पहचान", password: "पासवर्ड", loginBtn: "लॉगिन करें",
     createAccount: "खाता बनाएं", hello: "सक्रिय सत्र", discoverRange: "हमारी उत्पाद श्रृंखला देखें",
