@@ -88,7 +88,6 @@ const translations = {
     confirmNewJob: "هل أنت متأكد من بدء مشروع جديد؟ سيتم فقدان جميع البيانات الحالية غير المؤرشفة.",
     jobHistory: "المشاريع", label: "التسمية"
 },
-
     hi: {
     loginTitle: "लॉगिन", accountName: "उपयोगकर्ता पहचान", password: "पासवर्ड", loginBtn: "लॉगिन करें",
     createAccount: "खाता बनाएं", hello: "सक्रिय सत्र", discoverRange: "हमारी उत्पाद श्रृंखला देखें",
@@ -116,6 +115,6 @@ const translations = {
     resinLeft: "शेष रेज़िन", tank: "(टैंक)", passNum: "पास संख्या", newJob: "नया कार्य",
     confirmNewJob: "क्या आप नया कार्य शुरू करना चाहते हैं? सभी वर्तमान असंग्रहीत डेटा खो जाएगा.",
     jobHistory: "कार्य इतिहास", label: "लेबल"
-},
+}
 };
 export default translations;
