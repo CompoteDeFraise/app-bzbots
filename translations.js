@@ -118,3 +118,4 @@ const translations = {
     jobHistory: "कार्य इतिहास", label: "लेबल"
 },
 };
+export default translations;
