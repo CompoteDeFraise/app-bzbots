@@ -12,7 +12,7 @@
     
     <!-- Fichier de traductions externe (GitHub via jsDelivr) -->
     <!-- "var translations = {...}" doit être utilisé dans translations.js (pas const/let) pour être global -->
-    <script defer src="https://cdn.jsdelivr.net/gh/CompoteDeFraise/app-bzbots@main/translations.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/CompoteDeFraise/app-bzbots@main/translations.js"></script>
     
     <!-- Styles CSS personnalisés -->
     <style>
@@ -1120,7 +1120,7 @@
     <!-- MODALS DIVERS                              -->
     <!-- ========================================== -->
 
-    <!-- Modal : Confirmer nouveau chantier (ou suppression archive) -->
+    <!-- Modal : Confirmer nouveau chantier / Suppression Archive / Suppression Chantier -->
     <div id="confirmNewJobModal" class="fixed inset-0 bg-[#050505]/90 z-[400] hidden flex items-center justify-center p-4 md:p-6 backdrop-blur-3xl">
         <div class="glass-panel w-full max-w-sm rounded-3xl overflow-hidden border border-red-500/30 shadow-[0_0_80px_rgba(239,68,68,0.2)] relative flex flex-col">
             <div class="p-6 md:p-8 text-center relative z-10">
@@ -1514,6 +1514,44 @@
             if(updateUI) loadJobHistory();
         }
 
+        // --- Suppression d'un Chantier depuis l'historique ---
+        let jobNameToDelete = null;
+
+        function deleteJobFromHistory(name, event) {
+            event.stopPropagation(); // Empêche le déclenchement de loadJobIntoForm
+            jobNameToDelete = name;
+            document.querySelector('#confirmNewJobModal h3').innerText = "Suppression du chantier";
+            document.querySelector('#confirmNewJobModal p').innerText = "Êtes-vous sûr de vouloir supprimer définitivement ce chantier de l'historique ?";
+            const confirmBtn = document.querySelector('#confirmNewJobModal button.bg-red-500');
+            confirmBtn.onclick = executeDeleteJob;
+            document.getElementById('confirmNewJobModal').classList.remove('hidden');
+        }
+
+        function executeDeleteJob() {
+            if (jobNameToDelete !== null) {
+                // Supprimer de l'historique des chantiers
+                let recentJobs = JSON.parse(localStorage.getItem('bz_job_history') || '[]');
+                recentJobs = recentJobs.filter(j => j.jobName !== jobNameToDelete);
+                localStorage.setItem('bz_job_history', JSON.stringify(recentJobs));
+
+                // Supprimer des archives aussi
+                let archives = JSON.parse(localStorage.getItem('bz_archives') || '[]');
+                archives = archives.filter(a => a.jobName !== jobNameToDelete);
+                localStorage.setItem('bz_archives', JSON.stringify(archives));
+
+                // Recharge l'interface
+                loadJobHistory();
+
+                // Si le chantier supprimé était celui actuellement ouvert
+                if (activeJobNameForHistory === jobNameToDelete) {
+                    activeJobNameForHistory = '';
+                }
+
+                jobNameToDelete = null;
+            }
+            closeConfirmNewJobModal();
+        }
+
         /**
          * Transition de l'étape 1 à l'étape 2 de la Pompe.
          * Pré-remplit les inputs de l'étape 2.
@@ -1655,8 +1693,7 @@
         }
 
         /**
-         * Sauvegarde le chantier courant (avec l'état de son tableau) dans le LocalStorage
-         * @param {boolean} updateUI - Mettre à jour la liste d'historique affichée à l'écran
+         * Charge la liste complète de l'historique et des archives
          */
         function loadJobHistory() {
             const container = document.getElementById('jobHistoryList');
@@ -1689,8 +1726,11 @@
                 let safeName = jName.replace(/'/g, "\\'").replace(/"/g, "&quot;");
                 
                 html += `
-                <div onclick="loadJobIntoForm('${safeName}')" class="bg-black/40 p-3 md:p-4 rounded-xl border border-white/5 hover:border-cyan-500/50 hover:bg-cyan-900/10 transition-all cursor-pointer group shadow-inner">
-                    <h4 class="text-white font-black text-xs md:text-sm uppercase tracking-wider mb-1 truncate group-hover:text-cyan-400 transition-colors">${jName}</h4>
+                <div onclick="loadJobIntoForm('${safeName}')" class="bg-black/40 p-3 md:p-4 rounded-xl border border-white/5 hover:border-cyan-500/50 hover:bg-cyan-900/10 transition-all cursor-pointer group shadow-inner relative">
+                    <button onclick="deleteJobFromHistory('${safeName}', event)" class="absolute top-2 right-2 text-red-500/50 hover:text-red-500 hover:bg-red-500/20 w-7 h-7 flex items-center justify-center rounded-lg transition-all z-10 opacity-0 group-hover:opacity-100">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                    <h4 class="text-white font-black text-xs md:text-sm uppercase tracking-wider mb-1 pr-6 truncate group-hover:text-cyan-400 transition-colors">${jName}</h4>
                     <p class="text-[0.6rem] text-gray-500 font-bold uppercase tracking-widest truncate"><i class="fas fa-map-marker-alt mr-1"></i> ${city || 'Lieu non renseigné'}</p>
                     <div class="text-[0.55rem] text-gray-600 mt-3 flex justify-between items-center">
                         <span class="font-bold">${arc.date}</span>
@@ -2905,14 +2945,11 @@
         }
 
         /** Génère des valeurs aléatoires dans la vue BzLight (Mockup) */
-        /** Génère des valeurs aléatoires dans la vue BzLight (Mockup) */
         function calculateBzLightSpecs() { 
             document.getElementById('bzLightResults').classList.remove('hidden'); 
             document.getElementById('bzResPressure').innerText = (Math.random() * 2 + 5).toFixed(1); 
             document.getElementById('bzResConsum').innerText = (Math.random() * 5 + 10).toFixed(1); 
         }
-
-        // === FONCTIONS MANQUANTES (ajoutées par correction) ===
 
         /** Gère la soumission du formulaire d'inscription (simulation) */
         function handleRegister() {
@@ -2924,7 +2961,7 @@
             }, 800);
         }
 
-        /** Ferme la modale de confirmation nouveau chantier / suppression archive */
+        /** Ferme la modale de confirmation nouveau chantier / suppression archive / chantier */
         function closeConfirmNewJobModal() {
             document.getElementById('confirmNewJobModal').classList.add('hidden');
         }
