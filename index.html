@@ -712,14 +712,15 @@
                             <i class="fas fa-barcode text-3xl md:text-4xl text-yellow-500 drop-shadow-[0_0_10px_rgba(234,179,8,0.5)]"></i>
                         </div>
                         <h2 class="text-xl md:text-2xl font-black text-white mb-2 uppercase tracking-tighter" data-i18n="robotSpecs">Authentification Robot</h2>
-                        <p class="text-[0.65rem] md:text-xs text-gray-400 font-medium" data-i18n="enterSerial">Scannez ou entrez le numéro de série pour la calibration</p>
+                        <p class="text-[0.65rem] md:text-xs text-gray-400 font-medium" data-i18n="enterSerial">Entrez le numéro de série de votre robot</p>
                     </div>
                     
                     <div class="space-y-5 md:space-y-6 relative z-10">
                         <div>
                             <label class="block text-[0.6rem] md:text-[0.65rem] font-bold text-gray-400 uppercase mb-2 tracking-[0.2em]" data-i18n="robotSerial">Serial Number</label>
                             <div class="relative">
-                                <input type="text" id="robotSerial" class="input-bz pl-12 border-yellow-500/30 focus:border-yellow-400 text-sm md:text-base" placeholder="BZL-2X-XXXXXX">
+                                <!-- Le BZL- est maintenant écrit en dur dès le chargement grâce à value="BZL-" -->
+                                <input type="text" id="robotSerial" oninput="formatRobotSerial(this)" class="input-bz pl-12 border-yellow-500/30 focus:border-yellow-400 text-sm md:text-base font-mono font-black tracking-widest uppercase" value="BZL-" placeholder="BZL-XX-XXXXX" maxlength="12">
                                 <i class="fas fa-microchip absolute left-4 top-1/2 -translate-y-1/2 text-gray-500"></i>
                             </div>
                         </div>
@@ -727,20 +728,77 @@
                             <i class="fas fa-sync-alt mr-2"></i> <span data-i18n="check">Synchroniser</span>
                         </button>
                     </div>
-                    
-                    <!-- Résultats de test (cachés par défaut) -->
-                    <div id="bzLightResults" class="mt-8 md:mt-10 pt-6 md:pt-8 border-t border-white/10 hidden relative z-10">
-                        <div class="grid grid-cols-2 gap-4 md:gap-6">
-                            <div class="bg-black/40 backdrop-blur-md p-4 md:p-6 rounded-2xl border border-white/10 text-center shadow-inner">
-                                <div class="text-[0.55rem] md:text-[0.6rem] text-gray-400 uppercase font-black mb-1 md:mb-2 tracking-widest" data-i18n="armPressure">Pression Levée</div>
-                                <div class="text-2xl md:text-4xl font-black text-white"><span id="bzResPressure">0.0</span><span class="text-xs md:text-sm text-yellow-500 ml-1">BAR</span></div>
-                            </div>
-                            <div class="bg-black/40 backdrop-blur-md p-4 md:p-6 rounded-2xl border border-white/10 text-center shadow-inner">
-                                <div class="text-[0.55rem] md:text-[0.6rem] text-gray-400 uppercase font-black mb-1 md:mb-2 tracking-widest" data-i18n="consumption">Energie</div>
-                                <div class="text-2xl md:text-4xl font-black text-white"><span id="bzResConsum">0.0</span><span class="text-xs md:text-sm text-yellow-500 ml-1">A</span></div>
-                            </div>
-                        </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- VUE 7.5 : BZLIGHT DASHBOARD (Résultat)     -->
+    <!-- ========================================== -->
+    <section id="view-bzlight-dashboard" class="view-section">
+        <header class="p-4 md:p-6 border-b border-white/10 flex justify-between items-center bg-black/40 backdrop-blur-xl">
+            <div class="flex items-center gap-3 md:gap-4">
+                <button onclick="nav('view-bzlight')" class="text-gray-400 hover:text-white transition-colors">
+                    <i class="fas fa-chevron-left text-lg md:text-xl"></i>
+                </button>
+                <h2 class="font-black text-lg md:text-xl uppercase tracking-widest text-white" data-i18n="robotSpecs">Authentification Robot</h2>
+            </div>
+            <!-- Sélecteur de langue -->
+            <div class="relative shrink-0">
+                <select onchange="changeLanguage(this.value)" class="lang-selector appearance-none bg-white/5 border border-white/10 text-gray-200 hover:bg-white/15 hover:border-white/30 transition-all rounded-full pl-8 pr-6 py-1.5 md:py-2 text-xs font-bold outline-none cursor-pointer backdrop-blur-md shadow-sm">
+                </select>
+                <i class="fas fa-globe absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400 text-xs"></i>
+                <i class="fas fa-chevron-down absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400 text-[0.55rem]"></i>
+            </div>
+        </header>
+        
+        <div class="flex-1 p-4 md:p-8 flex items-center justify-center overflow-y-auto">
+            <div class="w-full max-w-lg glass-panel p-8 md:p-12 rounded-[2rem] text-center border border-yellow-500/30 shadow-[0_0_50px_rgba(234,179,8,0.15)] relative overflow-hidden">
+                <div class="absolute top-0 left-1/2 -translate-x-1/2 w-40 h-40 bg-yellow-500/20 blur-[60px] rounded-full pointer-events-none"></div>
+                
+                <i class="fas fa-robot text-5xl md:text-7xl text-yellow-500 mb-6 drop-shadow-[0_0_15px_rgba(234,179,8,0.5)] relative z-10"></i>
+                
+                <div class="text-[0.65rem] md:text-xs text-gray-400 uppercase font-black mb-3 tracking-[0.3em] relative z-10">Série Validée</div>
+                
+                <div class="text-4xl md:text-5xl font-black text-white flex items-center justify-center gap-4 relative z-10">
+                    <span id="bzResSerie">--</span>
+                    <i class="fas fa-check-circle text-2xl md:text-3xl text-yellow-500"></i>
+                </div>
+                
+                <!-- NOUVELLE SECTION : État des composants -->
+                <div class="mt-8 pt-6 border-t border-white/10 relative z-10 text-left">
+                    <h3 class="text-[0.65rem] md:text-xs font-black text-gray-400 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
+                        <i class="fas fa-cogs text-yellow-500"></i> Historique des pièces
+                    </h3>
+                    <div class="grid grid-cols-2 gap-3 md:gap-4">
+                        <!-- Pièce BZL1 -->
+                        <button onclick="openInfoModal('Détails de la pièce BZL1 en cours de développement.')" class="w-full bg-black/40 border border-white/5 hover:border-white/20 hover:bg-white/5 transition-all rounded-xl p-3 md:p-4 flex flex-col items-center justify-center gap-2 shadow-inner cursor-pointer text-center">
+                            <span class="text-xs md:text-sm font-black text-white uppercase tracking-widest">BZL1</span>
+                            <span class="text-[0.55rem] font-bold text-green-400 bg-green-500/10 px-2 py-1 rounded-md border border-green-500/20 uppercase tracking-widest">Originale</span>
+                        </button>
+                        <!-- Pièce BZL2 (Exemple de pièce remplacée) -->
+                        <button onclick="openInfoModal('Historique de remplacement de la pièce BZL2 à venir.')" class="w-full bg-black/40 border border-white/5 hover:border-white/20 hover:bg-white/5 transition-all rounded-xl p-3 md:p-4 flex flex-col items-center justify-center gap-2 shadow-inner cursor-pointer text-center">
+                            <span class="text-xs md:text-sm font-black text-white uppercase tracking-widest">BZL2</span>
+                            <span class="text-[0.55rem] font-bold text-yellow-500 bg-yellow-500/10 px-2 py-1 rounded-md border border-yellow-500/20 uppercase tracking-widest">Remplacée</span>
+                        </button>
+                        <!-- Pièce BZL3 -->
+                        <button onclick="openInfoModal('Détails de la pièce BZL3 en cours de développement.')" class="w-full bg-black/40 border border-white/5 hover:border-white/20 hover:bg-white/5 transition-all rounded-xl p-3 md:p-4 flex flex-col items-center justify-center gap-2 shadow-inner cursor-pointer text-center">
+                            <span class="text-xs md:text-sm font-black text-white uppercase tracking-widest">BZL3</span>
+                            <span class="text-[0.55rem] font-bold text-green-400 bg-green-500/10 px-2 py-1 rounded-md border border-green-500/20 uppercase tracking-widest">Originale</span>
+                        </button>
+                        <!-- Pièce BZL4 -->
+                        <button onclick="openInfoModal('Détails de la pièce BZL4 en cours de développement.')" class="w-full bg-black/40 border border-white/5 hover:border-white/20 hover:bg-white/5 transition-all rounded-xl p-3 md:p-4 flex flex-col items-center justify-center gap-2 shadow-inner cursor-pointer text-center">
+                            <span class="text-xs md:text-sm font-black text-white uppercase tracking-widest">BZL4</span>
+                            <span class="text-[0.55rem] font-bold text-green-400 bg-green-500/10 px-2 py-1 rounded-md border border-green-500/20 uppercase tracking-widest">Originale</span>
+                        </button>
                     </div>
+                </div>
+                
+                <div class="mt-8 pt-8 border-t border-white/10 relative z-10">
+                    <button onclick="nav('view-home')" class="w-full py-4 bg-white/10 hover:bg-white/20 text-white font-black uppercase text-xs rounded-xl transition-all border border-white/10 backdrop-blur-md">
+                        Retour au menu principal
+                    </button>
                 </div>
             </div>
         </div>
@@ -2944,11 +3002,68 @@
             }
         }
 
-        /** Génère des valeurs aléatoires dans la vue BzLight (Mockup) */
+        /** Formate automatiquement la saisie du numéro de série (Force BZL et les tirets) */
+        function formatRobotSerial(input) {
+            // 1. On extrait uniquement les chiffres (le BZL et les tirets sont ignorés)
+            let digits = input.value.replace(/\D/g, '');
+            
+            // 2. La base "BZL-" est gravée dans le marbre, impossible à effacer
+            let formatted = 'BZL-';
+            
+            // 3. On ajoute l'année (ex: 25 ou 26)
+            if (digits.length > 0) {
+                formatted += digits.substring(0, 2);
+            }
+            
+            // 4. On ajoute automatiquement le second tiret dès qu'on a les 2 premiers chiffres
+            if (digits.length > 2) {
+                formatted += '-' + digits.substring(2, 7); // Ajoute la suite (max 5 chiffres)
+            }
+            
+            // 5. On applique la valeur forcée
+            input.value = formatted;
+        }
+
+        /** Vérifie le numéro de série et génère des valeurs aléatoires dans la vue BzLight (Mockup) */
         function calculateBzLightSpecs() { 
-            document.getElementById('bzLightResults').classList.remove('hidden'); 
-            document.getElementById('bzResPressure').innerText = (Math.random() * 2 + 5).toFixed(1); 
-            document.getElementById('bzResConsum').innerText = (Math.random() * 5 + 10).toFixed(1); 
+            const serialInput = document.getElementById('robotSerial').value.trim().toUpperCase();
+            
+            // Format attendu: BZL-25-XXXXX ou BZL-26-XXXXX (avec 5 chiffres à la fin)
+            const regex = /^BZL-(25|26)-(\d{5})$/;
+            const match = serialInput.match(regex);
+            
+            let isValid = false;
+            let number = 0; // On déclare la variable ici pour pouvoir s'en resservir plus bas
+            
+            // Si le format textuel correspond, on vérifie la logique des nombres
+            if (match) {
+                const year = match[1]; // Récupère le "25" ou "26"
+                number = parseInt(match[2], 10); // Transforme "00060" en 60
+                
+                if (year === "25" && number >= 1 && number <= 60) {
+                    isValid = true;
+                } else if (year === "26" && number >= 61 && number <= 120) {
+                    isValid = true;
+                }
+            }
+
+            // Affichage du résultat selon la validité
+            if (isValid) {
+                // Détermination de la série en fonction du numéro du robot
+                let serieLabel = "3"; // Par défaut, "le reste"
+                if (number >= 1 && number <= 30) {
+                    serieLabel = "1";
+                } else if (number >= 31 && number <= 60) {
+                    serieLabel = "2";
+                }
+                
+                document.getElementById('bzResSerie').innerText = "Série " + serieLabel; 
+                
+                // On navigue vers la nouvelle page au lieu d'afficher un bloc caché
+                nav('view-bzlight-dashboard');
+            } else {
+                openInfoModal("Numéro de série invalide. Formats acceptés : BZL-25-00001 à 00060 ou BZL-26-00061 à 00120.");
+            }
         }
 
         /** Gère la soumission du formulaire d'inscription (simulation) */
