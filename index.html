@@ -772,25 +772,41 @@
                         <i class="fas fa-cogs text-yellow-500"></i> Historique des pièces
                     </h3>
                     <div class="grid grid-cols-2 gap-3 md:gap-4">
-                        <!-- Pièce BZL1 -->
-                        <button onclick="openInfoModal('Détails de la pièce BZL1 en cours de développement.')" class="w-full bg-black/40 border border-white/5 hover:border-white/20 hover:bg-white/5 transition-all rounded-xl p-3 md:p-4 flex flex-col items-center justify-center gap-2 shadow-inner cursor-pointer text-center">
-                            <span class="text-xs md:text-sm font-black text-white uppercase tracking-widest">BZL1</span>
-                            <span class="text-[0.55rem] font-bold text-green-400 bg-green-500/10 px-2 py-1 rounded-md border border-green-500/20 uppercase tracking-widest">Originale</span>
+                        <!-- Pièce BZL1 (Modifiée pour ouvrir la nouvelle vue) -->
+                        <button onclick="openBzl1Modules()" class="w-full bg-black/40 border border-white/5 hover:border-white/20 hover:bg-white/5 transition-all rounded-xl p-3 md:p-4 flex flex-col items-center justify-center gap-2 shadow-inner cursor-pointer text-center group">
+                            <div class="w-full aspect-video bg-black/60 rounded-lg border border-white/5 overflow-hidden relative mb-1">
+                                <img src="BZL1.jpg" alt="BZL1" class="absolute inset-0 w-full h-full object-cover opacity-70 group-hover:opacity-100 group-hover:scale-110 transition-all duration-500">
+                            </div>
+                            <!-- Ajout de l'ID bzl1-name -->
+                            <span id="bzl1-name" class="text-xs md:text-sm font-black text-white uppercase tracking-widest relative z-10">BZL1</span>
+                            <span class="text-[0.55rem] font-bold text-green-400 bg-green-500/10 px-2 py-1 rounded-md border border-green-500/20 uppercase tracking-widest relative z-10">Originale</span>
                         </button>
-                        <!-- Pièce BZL2 (Exemple de pièce remplacée) -->
-                        <button onclick="openInfoModal('Historique de remplacement de la pièce BZL2 à venir.')" class="w-full bg-black/40 border border-white/5 hover:border-white/20 hover:bg-white/5 transition-all rounded-xl p-3 md:p-4 flex flex-col items-center justify-center gap-2 shadow-inner cursor-pointer text-center">
-                            <span class="text-xs md:text-sm font-black text-white uppercase tracking-widest">BZL2</span>
-                            <span class="text-[0.55rem] font-bold text-yellow-500 bg-yellow-500/10 px-2 py-1 rounded-md border border-yellow-500/20 uppercase tracking-widest">Remplacée</span>
+                        <!-- Pièce BZL2 (Modifiée pour ouvrir la nouvelle vue) -->
+                        <button onclick="openBzl2Modules()" class="w-full bg-black/40 border border-white/5 hover:border-white/20 hover:bg-white/5 transition-all rounded-xl p-3 md:p-4 flex flex-col items-center justify-center gap-2 shadow-inner cursor-pointer text-center group">
+                            <div class="w-full aspect-video bg-black/60 rounded-lg border border-white/5 overflow-hidden relative mb-1">
+                                <img src="BZL2.jpg" alt="BZL2" class="absolute inset-0 w-full h-full object-cover opacity-70 group-hover:opacity-100 group-hover:scale-110 transition-all duration-500">
+                            </div>
+                            <!-- Ajout de l'ID bzl2-name -->
+                            <span id="bzl2-name" class="text-xs md:text-sm font-black text-white uppercase tracking-widest relative z-10">BZL2</span>
+                            <span class="text-[0.55rem] font-bold text-yellow-500 bg-yellow-500/10 px-2 py-1 rounded-md border border-yellow-500/20 uppercase tracking-widest relative z-10">Remplacée</span>
                         </button>
                         <!-- Pièce BZL3 -->
-                        <button onclick="openInfoModal('Détails de la pièce BZL3 en cours de développement.')" class="w-full bg-black/40 border border-white/5 hover:border-white/20 hover:bg-white/5 transition-all rounded-xl p-3 md:p-4 flex flex-col items-center justify-center gap-2 shadow-inner cursor-pointer text-center">
-                            <span class="text-xs md:text-sm font-black text-white uppercase tracking-widest">BZL3</span>
-                            <span class="text-[0.55rem] font-bold text-green-400 bg-green-500/10 px-2 py-1 rounded-md border border-green-500/20 uppercase tracking-widest">Originale</span>
+                        <button onclick="openInfoModal('Détails de la pièce BZL3 en cours de développement.')" class="w-full bg-black/40 border border-white/5 hover:border-white/20 hover:bg-white/5 transition-all rounded-xl p-3 md:p-4 flex flex-col items-center justify-center gap-2 shadow-inner cursor-pointer text-center group">
+                            <div class="w-full aspect-video bg-black/60 rounded-lg border border-white/5 overflow-hidden relative mb-1">
+                                <img src="BZL3.jpg" alt="BZL3" class="absolute inset-0 w-full h-full object-cover opacity-70 group-hover:opacity-100 group-hover:scale-110 transition-all duration-500">
+                            </div>
+                            <!-- Ajout de l'ID bzl3-name -->
+                            <span id="bzl3-name" class="text-xs md:text-sm font-black text-white uppercase tracking-widest relative z-10">BZL3</span>
+                            <span class="text-[0.55rem] font-bold text-green-400 bg-green-500/10 px-2 py-1 rounded-md border border-green-500/20 uppercase tracking-widest relative z-10">Originale</span>
                         </button>
                         <!-- Pièce BZL4 -->
-                        <button onclick="openInfoModal('Détails de la pièce BZL4 en cours de développement.')" class="w-full bg-black/40 border border-white/5 hover:border-white/20 hover:bg-white/5 transition-all rounded-xl p-3 md:p-4 flex flex-col items-center justify-center gap-2 shadow-inner cursor-pointer text-center">
-                            <span class="text-xs md:text-sm font-black text-white uppercase tracking-widest">BZL4</span>
-                            <span class="text-[0.55rem] font-bold text-green-400 bg-green-500/10 px-2 py-1 rounded-md border border-green-500/20 uppercase tracking-widest">Originale</span>
+                        <button onclick="openInfoModal('Détails de la pièce BZL4 en cours de développement.')" class="w-full bg-black/40 border border-white/5 hover:border-white/20 hover:bg-white/5 transition-all rounded-xl p-3 md:p-4 flex flex-col items-center justify-center gap-2 shadow-inner cursor-pointer text-center group">
+                            <div class="w-full aspect-video bg-black/60 rounded-lg border border-white/5 overflow-hidden relative mb-1">
+                                <img src="BZL4.jpg" alt="BZL4" class="absolute inset-0 w-full h-full object-cover opacity-70 group-hover:opacity-100 group-hover:scale-110 transition-all duration-500">
+                            </div>
+                            <!-- Ajout de l'ID bzl4-name -->
+                            <span id="bzl4-name" class="text-xs md:text-sm font-black text-white uppercase tracking-widest relative z-10">BZL4</span>
+                            <span class="text-[0.55rem] font-bold text-green-400 bg-green-500/10 px-2 py-1 rounded-md border border-green-500/20 uppercase tracking-widest relative z-10">Originale</span>
                         </button>
                     </div>
                 </div>
@@ -799,6 +815,311 @@
                     <button onclick="nav('view-home')" class="w-full py-4 bg-white/10 hover:bg-white/20 text-white font-black uppercase text-xs rounded-xl transition-all border border-white/10 backdrop-blur-md">
                         Retour au menu principal
                     </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- VUE 7.6 : MODULES BZL1 INTERNES            -->
+    <!-- ========================================== -->
+    <section id="view-bzl1-modules" class="view-section">
+        <header class="p-4 md:p-6 border-b border-white/10 flex justify-between items-center bg-black/40 backdrop-blur-xl sticky top-0 z-40">
+            <div class="flex items-center gap-3 md:gap-4">
+                <button onclick="nav('view-bzlight-dashboard')" class="text-gray-400 hover:text-white transition-colors">
+                    <i class="fas fa-chevron-left text-lg md:text-xl"></i>
+                </button>
+                <h2 id="bzl1-module-title" class="font-black text-lg md:text-xl uppercase tracking-widest text-white truncate">Modules BZL1</h2>
+            </div>
+            <!-- Sélecteur de langue -->
+            <div class="relative shrink-0">
+                <select onchange="changeLanguage(this.value)" class="lang-selector appearance-none bg-white/5 border border-white/10 text-gray-200 hover:bg-white/15 hover:border-white/30 transition-all rounded-full pl-8 pr-6 py-1.5 md:py-2 text-xs font-bold outline-none cursor-pointer backdrop-blur-md shadow-sm">
+                </select>
+                <i class="fas fa-globe absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400 text-xs"></i>
+                <i class="fas fa-chevron-down absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400 text-[0.55rem]"></i>
+            </div>
+        </header>
+        
+        <div class="flex-1 p-4 md:p-8 overflow-y-auto custom-scrollbar">
+            <div class="max-w-6xl mx-auto">
+                <div class="mb-6 flex items-center gap-3">
+                    <i class="fas fa-microchip text-yellow-500 text-xl"></i>
+                    <h3 class="text-xs md:text-sm font-black text-gray-400 uppercase tracking-[0.2em]">Composants internes</h3>
+                </div>
+                
+                <!-- Grille des 18 Modules -->
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                    
+                    <!-- BZL-100 -->
+                    <div class="glass-panel p-3 rounded-xl flex flex-col items-center gap-2 hover:border-yellow-500/50 transition-colors group cursor-pointer">
+                        <div class="w-full aspect-square bg-black/50 rounded-lg border border-white/10 flex items-center justify-center overflow-hidden relative">
+                            <i class="fas fa-microchip text-3xl text-gray-600 group-hover:scale-110 group-hover:text-yellow-500/50 transition-all"></i>
+                            <!-- Pour ajouter une photo plus tard, décommente la ligne ci-dessous et change le src -->
+                            <!-- <img src="chemin/vers/photo.png" class="absolute inset-0 w-full h-full object-cover"> -->
+                        </div>
+                        <span class="text-[0.65rem] font-black text-white uppercase tracking-widest mt-1">BZL-100</span>
+                    </div>
+
+                    <!-- BZL-101 -->
+                    <div class="glass-panel p-3 rounded-xl flex flex-col items-center gap-2 hover:border-yellow-500/50 transition-colors group cursor-pointer">
+                        <div class="w-full aspect-square bg-black/50 rounded-lg border border-white/10 flex items-center justify-center overflow-hidden relative">
+                            <i class="fas fa-microchip text-3xl text-gray-600 group-hover:scale-110 group-hover:text-yellow-500/50 transition-all"></i>
+                            <!-- <img src="chemin/vers/photo.png" class="absolute inset-0 w-full h-full object-cover"> -->
+                        </div>
+                        <span class="text-[0.65rem] font-black text-white uppercase tracking-widest mt-1">BZL-101</span>
+                    </div>
+
+                    <!-- BZL-102 -->
+                    <div class="glass-panel p-3 rounded-xl flex flex-col items-center gap-2 hover:border-yellow-500/50 transition-colors group cursor-pointer">
+                        <div class="w-full aspect-square bg-black/50 rounded-lg border border-white/10 flex items-center justify-center overflow-hidden relative">
+                            <i class="fas fa-microchip text-3xl text-gray-600 group-hover:scale-110 group-hover:text-yellow-500/50 transition-all"></i>
+                            <!-- <img src="chemin/vers/photo.png" class="absolute inset-0 w-full h-full object-cover"> -->
+                        </div>
+                        <span class="text-[0.65rem] font-black text-white uppercase tracking-widest mt-1">BZL-102</span>
+                    </div>
+
+                    <!-- BZL-103 -->
+                    <div class="glass-panel p-3 rounded-xl flex flex-col items-center gap-2 hover:border-yellow-500/50 transition-colors group cursor-pointer">
+                        <div class="w-full aspect-square bg-black/50 rounded-lg border border-white/10 flex items-center justify-center overflow-hidden relative">
+                            <i class="fas fa-microchip text-3xl text-gray-600 group-hover:scale-110 group-hover:text-yellow-500/50 transition-all"></i>
+                            <!-- <img src="chemin/vers/photo.png" class="absolute inset-0 w-full h-full object-cover"> -->
+                        </div>
+                        <span class="text-[0.65rem] font-black text-white uppercase tracking-widest mt-1">BZL-103</span>
+                    </div>
+
+                    <!-- BZL-104 -->
+                    <div class="glass-panel p-3 rounded-xl flex flex-col items-center gap-2 hover:border-yellow-500/50 transition-colors group cursor-pointer">
+                        <div class="w-full aspect-square bg-black/50 rounded-lg border border-white/10 flex items-center justify-center overflow-hidden relative">
+                            <i class="fas fa-microchip text-3xl text-gray-600 group-hover:scale-110 group-hover:text-yellow-500/50 transition-all"></i>
+                            <!-- <img src="chemin/vers/photo.png" class="absolute inset-0 w-full h-full object-cover"> -->
+                        </div>
+                        <span class="text-[0.65rem] font-black text-white uppercase tracking-widest mt-1">BZL-104</span>
+                    </div>
+
+                    <!-- BZL-105 -->
+                    <div class="glass-panel p-3 rounded-xl flex flex-col items-center gap-2 hover:border-yellow-500/50 transition-colors group cursor-pointer">
+                        <div class="w-full aspect-square bg-black/50 rounded-lg border border-white/10 flex items-center justify-center overflow-hidden relative">
+                            <i class="fas fa-microchip text-3xl text-gray-600 group-hover:scale-110 group-hover:text-yellow-500/50 transition-all"></i>
+                            <!-- <img src="chemin/vers/photo.png" class="absolute inset-0 w-full h-full object-cover"> -->
+                        </div>
+                        <span class="text-[0.65rem] font-black text-white uppercase tracking-widest mt-1">BZL-105</span>
+                    </div>
+
+                    <!-- BZL-106 -->
+                    <div class="glass-panel p-3 rounded-xl flex flex-col items-center gap-2 hover:border-yellow-500/50 transition-colors group cursor-pointer">
+                        <div class="w-full aspect-square bg-black/50 rounded-lg border border-white/10 flex items-center justify-center overflow-hidden relative">
+                            <i class="fas fa-microchip text-3xl text-gray-600 group-hover:scale-110 group-hover:text-yellow-500/50 transition-all"></i>
+                            <!-- <img src="chemin/vers/photo.png" class="absolute inset-0 w-full h-full object-cover"> -->
+                        </div>
+                        <span class="text-[0.65rem] font-black text-white uppercase tracking-widest mt-1">BZL-106</span>
+                    </div>
+
+                    <!-- BZL-107 -->
+                    <div class="glass-panel p-3 rounded-xl flex flex-col items-center gap-2 hover:border-yellow-500/50 transition-colors group cursor-pointer">
+                        <div class="w-full aspect-square bg-black/50 rounded-lg border border-white/10 flex items-center justify-center overflow-hidden relative">
+                            <i class="fas fa-microchip text-3xl text-gray-600 group-hover:scale-110 group-hover:text-yellow-500/50 transition-all"></i>
+                            <!-- <img src="chemin/vers/photo.png" class="absolute inset-0 w-full h-full object-cover"> -->
+                        </div>
+                        <span class="text-[0.65rem] font-black text-white uppercase tracking-widest mt-1">BZL-107</span>
+                    </div>
+
+                    <!-- BZL-108 -->
+                    <div class="glass-panel p-3 rounded-xl flex flex-col items-center gap-2 hover:border-yellow-500/50 transition-colors group cursor-pointer">
+                        <div class="w-full aspect-square bg-black/50 rounded-lg border border-white/10 flex items-center justify-center overflow-hidden relative">
+                            <i class="fas fa-microchip text-3xl text-gray-600 group-hover:scale-110 group-hover:text-yellow-500/50 transition-all"></i>
+                            <!-- <img src="chemin/vers/photo.png" class="absolute inset-0 w-full h-full object-cover"> -->
+                        </div>
+                        <span class="text-[0.65rem] font-black text-white uppercase tracking-widest mt-1">BZL-108</span>
+                    </div>
+
+                    <!-- BZL-109 -->
+                    <div class="glass-panel p-3 rounded-xl flex flex-col items-center gap-2 hover:border-yellow-500/50 transition-colors group cursor-pointer">
+                        <div class="w-full aspect-square bg-black/50 rounded-lg border border-white/10 flex items-center justify-center overflow-hidden relative">
+                            <i class="fas fa-microchip text-3xl text-gray-600 group-hover:scale-110 group-hover:text-yellow-500/50 transition-all"></i>
+                            <!-- <img src="chemin/vers/photo.png" class="absolute inset-0 w-full h-full object-cover"> -->
+                        </div>
+                        <span class="text-[0.65rem] font-black text-white uppercase tracking-widest mt-1">BZL-109</span>
+                    </div>
+
+                    <!-- BZL-110 -->
+                    <div class="glass-panel p-3 rounded-xl flex flex-col items-center gap-2 hover:border-yellow-500/50 transition-colors group cursor-pointer">
+                        <div class="w-full aspect-square bg-black/50 rounded-lg border border-white/10 flex items-center justify-center overflow-hidden relative">
+                            <i class="fas fa-microchip text-3xl text-gray-600 group-hover:scale-110 group-hover:text-yellow-500/50 transition-all"></i>
+                            <!-- <img src="chemin/vers/photo.png" class="absolute inset-0 w-full h-full object-cover"> -->
+                        </div>
+                        <span class="text-[0.65rem] font-black text-white uppercase tracking-widest mt-1">BZL-110</span>
+                    </div>
+
+                    <!-- BZL-111 -->
+                    <div class="glass-panel p-3 rounded-xl flex flex-col items-center gap-2 hover:border-yellow-500/50 transition-colors group cursor-pointer">
+                        <div class="w-full aspect-square bg-black/50 rounded-lg border border-white/10 flex items-center justify-center overflow-hidden relative">
+                            <i class="fas fa-microchip text-3xl text-gray-600 group-hover:scale-110 group-hover:text-yellow-500/50 transition-all"></i>
+                            <!-- <img src="chemin/vers/photo.png" class="absolute inset-0 w-full h-full object-cover"> -->
+                        </div>
+                        <span class="text-[0.65rem] font-black text-white uppercase tracking-widest mt-1">BZL-111</span>
+                    </div>
+
+                    <!-- BZL-112 -->
+                    <div class="glass-panel p-3 rounded-xl flex flex-col items-center gap-2 hover:border-yellow-500/50 transition-colors group cursor-pointer">
+                        <div class="w-full aspect-square bg-black/50 rounded-lg border border-white/10 flex items-center justify-center overflow-hidden relative">
+                            <i class="fas fa-microchip text-3xl text-gray-600 group-hover:scale-110 group-hover:text-yellow-500/50 transition-all"></i>
+                            <!-- <img src="chemin/vers/photo.png" class="absolute inset-0 w-full h-full object-cover"> -->
+                        </div>
+                        <span class="text-[0.65rem] font-black text-white uppercase tracking-widest mt-1">BZL-112</span>
+                    </div>
+
+                    <!-- BZL-113 -->
+                    <div class="glass-panel p-3 rounded-xl flex flex-col items-center gap-2 hover:border-yellow-500/50 transition-colors group cursor-pointer">
+                        <div class="w-full aspect-square bg-black/50 rounded-lg border border-white/10 flex items-center justify-center overflow-hidden relative">
+                            <i class="fas fa-microchip text-3xl text-gray-600 group-hover:scale-110 group-hover:text-yellow-500/50 transition-all"></i>
+                            <!-- <img src="chemin/vers/photo.png" class="absolute inset-0 w-full h-full object-cover"> -->
+                        </div>
+                        <span class="text-[0.65rem] font-black text-white uppercase tracking-widest mt-1">BZL-113</span>
+                    </div>
+
+                    <!-- BZL-114 -->
+                    <div class="glass-panel p-3 rounded-xl flex flex-col items-center gap-2 hover:border-yellow-500/50 transition-colors group cursor-pointer">
+                        <div class="w-full aspect-square bg-black/50 rounded-lg border border-white/10 flex items-center justify-center overflow-hidden relative">
+                            <i class="fas fa-microchip text-3xl text-gray-600 group-hover:scale-110 group-hover:text-yellow-500/50 transition-all"></i>
+                            <!-- <img src="chemin/vers/photo.png" class="absolute inset-0 w-full h-full object-cover"> -->
+                        </div>
+                        <span class="text-[0.65rem] font-black text-white uppercase tracking-widest mt-1">BZL-114</span>
+                    </div>
+
+                    <!-- BZL-115 -->
+                    <div class="glass-panel p-3 rounded-xl flex flex-col items-center gap-2 hover:border-yellow-500/50 transition-colors group cursor-pointer">
+                        <div class="w-full aspect-square bg-black/50 rounded-lg border border-white/10 flex items-center justify-center overflow-hidden relative">
+                            <i class="fas fa-microchip text-3xl text-gray-600 group-hover:scale-110 group-hover:text-yellow-500/50 transition-all"></i>
+                            <!-- <img src="chemin/vers/photo.png" class="absolute inset-0 w-full h-full object-cover"> -->
+                        </div>
+                        <span class="text-[0.65rem] font-black text-white uppercase tracking-widest mt-1">BZL-115</span>
+                    </div>
+
+                    <!-- BZL-116 -->
+                    <div class="glass-panel p-3 rounded-xl flex flex-col items-center gap-2 hover:border-yellow-500/50 transition-colors group cursor-pointer">
+                        <div class="w-full aspect-square bg-black/50 rounded-lg border border-white/10 flex items-center justify-center overflow-hidden relative">
+                            <i class="fas fa-microchip text-3xl text-gray-600 group-hover:scale-110 group-hover:text-yellow-500/50 transition-all"></i>
+                            <!-- <img src="chemin/vers/photo.png" class="absolute inset-0 w-full h-full object-cover"> -->
+                        </div>
+                        <span class="text-[0.65rem] font-black text-white uppercase tracking-widest mt-1">BZL-116</span>
+                    </div>
+
+                    <!-- BZL-117 -->
+                    <div class="glass-panel p-3 rounded-xl flex flex-col items-center gap-2 hover:border-yellow-500/50 transition-colors group cursor-pointer">
+                        <div class="w-full aspect-square bg-black/50 rounded-lg border border-white/10 flex items-center justify-center overflow-hidden relative">
+                            <i class="fas fa-microchip text-3xl text-gray-600 group-hover:scale-110 group-hover:text-yellow-500/50 transition-all"></i>
+                            <!-- <img src="chemin/vers/photo.png" class="absolute inset-0 w-full h-full object-cover"> -->
+                        </div>
+                        <span class="text-[0.65rem] font-black text-white uppercase tracking-widest mt-1">BZL-117</span>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- VUE 7.7 : MODULES BZL2 INTERNES            -->
+    <!-- ========================================== -->
+    <section id="view-bzl2-modules" class="view-section">
+        <header class="p-4 md:p-6 border-b border-white/10 flex justify-between items-center bg-black/40 backdrop-blur-xl sticky top-0 z-40">
+            <div class="flex items-center gap-3 md:gap-4">
+                <button onclick="nav('view-bzlight-dashboard')" class="text-gray-400 hover:text-white transition-colors">
+                    <i class="fas fa-chevron-left text-lg md:text-xl"></i>
+                </button>
+                <h2 id="bzl2-module-title" class="font-black text-lg md:text-xl uppercase tracking-widest text-white truncate">Modules BZL2</h2>
+            </div>
+            <!-- Sélecteur de langue -->
+            <div class="relative shrink-0">
+                <select onchange="changeLanguage(this.value)" class="lang-selector appearance-none bg-white/5 border border-white/10 text-gray-200 hover:bg-white/15 hover:border-white/30 transition-all rounded-full pl-8 pr-6 py-1.5 md:py-2 text-xs font-bold outline-none cursor-pointer backdrop-blur-md shadow-sm">
+                </select>
+                <i class="fas fa-globe absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400 text-xs"></i>
+                <i class="fas fa-chevron-down absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400 text-[0.55rem]"></i>
+            </div>
+        </header>
+        
+        <div class="flex-1 p-4 md:p-8 overflow-y-auto custom-scrollbar">
+            <div class="max-w-6xl mx-auto">
+                <div class="mb-6 flex items-center gap-3">
+                    <i class="fas fa-microchip text-yellow-500 text-xl"></i>
+                    <h3 class="text-xs md:text-sm font-black text-gray-400 uppercase tracking-[0.2em]">Composants internes</h3>
+                </div>
+                
+                <!-- Grille des 8 Modules BZL2 -->
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                    
+                    <!-- BZL-200 -->
+                    <div class="glass-panel p-3 rounded-xl flex flex-col items-center gap-2 hover:border-yellow-500/50 transition-colors group cursor-pointer">
+                        <div class="w-full aspect-square bg-black/50 rounded-lg border border-white/10 flex items-center justify-center overflow-hidden relative">
+                            <i class="fas fa-microchip text-3xl text-gray-600 group-hover:scale-110 group-hover:text-yellow-500/50 transition-all"></i>
+                            <!-- <img src="chemin/vers/photo.png" class="absolute inset-0 w-full h-full object-cover"> -->
+                        </div>
+                        <span class="text-[0.65rem] font-black text-white uppercase tracking-widest mt-1">BZL-200</span>
+                    </div>
+
+                    <!-- BZL-201 -->
+                    <div class="glass-panel p-3 rounded-xl flex flex-col items-center gap-2 hover:border-yellow-500/50 transition-colors group cursor-pointer">
+                        <div class="w-full aspect-square bg-black/50 rounded-lg border border-white/10 flex items-center justify-center overflow-hidden relative">
+                            <i class="fas fa-microchip text-3xl text-gray-600 group-hover:scale-110 group-hover:text-yellow-500/50 transition-all"></i>
+                            <!-- <img src="chemin/vers/photo.png" class="absolute inset-0 w-full h-full object-cover"> -->
+                        </div>
+                        <span class="text-[0.65rem] font-black text-white uppercase tracking-widest mt-1">BZL-201</span>
+                    </div>
+
+                    <!-- BZL-202 -->
+                    <div class="glass-panel p-3 rounded-xl flex flex-col items-center gap-2 hover:border-yellow-500/50 transition-colors group cursor-pointer">
+                        <div class="w-full aspect-square bg-black/50 rounded-lg border border-white/10 flex items-center justify-center overflow-hidden relative">
+                            <i class="fas fa-microchip text-3xl text-gray-600 group-hover:scale-110 group-hover:text-yellow-500/50 transition-all"></i>
+                            <!-- <img src="chemin/vers/photo.png" class="absolute inset-0 w-full h-full object-cover"> -->
+                        </div>
+                        <span class="text-[0.65rem] font-black text-white uppercase tracking-widest mt-1">BZL-202</span>
+                    </div>
+
+                    <!-- BZL-203 -->
+                    <div class="glass-panel p-3 rounded-xl flex flex-col items-center gap-2 hover:border-yellow-500/50 transition-colors group cursor-pointer">
+                        <div class="w-full aspect-square bg-black/50 rounded-lg border border-white/10 flex items-center justify-center overflow-hidden relative">
+                            <i class="fas fa-microchip text-3xl text-gray-600 group-hover:scale-110 group-hover:text-yellow-500/50 transition-all"></i>
+                            <!-- <img src="chemin/vers/photo.png" class="absolute inset-0 w-full h-full object-cover"> -->
+                        </div>
+                        <span class="text-[0.65rem] font-black text-white uppercase tracking-widest mt-1">BZL-203</span>
+                    </div>
+
+                    <!-- BZL-204 -->
+                    <div class="glass-panel p-3 rounded-xl flex flex-col items-center gap-2 hover:border-yellow-500/50 transition-colors group cursor-pointer">
+                        <div class="w-full aspect-square bg-black/50 rounded-lg border border-white/10 flex items-center justify-center overflow-hidden relative">
+                            <i class="fas fa-microchip text-3xl text-gray-600 group-hover:scale-110 group-hover:text-yellow-500/50 transition-all"></i>
+                            <!-- <img src="chemin/vers/photo.png" class="absolute inset-0 w-full h-full object-cover"> -->
+                        </div>
+                        <span class="text-[0.65rem] font-black text-white uppercase tracking-widest mt-1">BZL-204</span>
+                    </div>
+
+                    <!-- BZL-205-A -->
+                    <div class="glass-panel p-3 rounded-xl flex flex-col items-center gap-2 hover:border-yellow-500/50 transition-colors group cursor-pointer">
+                        <div class="w-full aspect-square bg-black/50 rounded-lg border border-white/10 flex items-center justify-center overflow-hidden relative">
+                            <i class="fas fa-microchip text-3xl text-gray-600 group-hover:scale-110 group-hover:text-yellow-500/50 transition-all"></i>
+                            <!-- <img src="chemin/vers/photo.png" class="absolute inset-0 w-full h-full object-cover"> -->
+                        </div>
+                        <span class="text-[0.65rem] font-black text-white uppercase tracking-widest mt-1">BZL-205-A</span>
+                    </div>
+
+                    <!-- BZL-205-B -->
+                    <div class="glass-panel p-3 rounded-xl flex flex-col items-center gap-2 hover:border-yellow-500/50 transition-colors group cursor-pointer">
+                        <div class="w-full aspect-square bg-black/50 rounded-lg border border-white/10 flex items-center justify-center overflow-hidden relative">
+                            <i class="fas fa-microchip text-3xl text-gray-600 group-hover:scale-110 group-hover:text-yellow-500/50 transition-all"></i>
+                            <!-- <img src="chemin/vers/photo.png" class="absolute inset-0 w-full h-full object-cover"> -->
+                        </div>
+                        <span class="text-[0.65rem] font-black text-white uppercase tracking-widest mt-1">BZL-205-B</span>
+                    </div>
+
+                    <!-- BZL-206 -->
+                    <div class="glass-panel p-3 rounded-xl flex flex-col items-center gap-2 hover:border-yellow-500/50 transition-colors group cursor-pointer">
+                        <div class="w-full aspect-square bg-black/50 rounded-lg border border-white/10 flex items-center justify-center overflow-hidden relative">
+                            <i class="fas fa-microchip text-3xl text-gray-600 group-hover:scale-110 group-hover:text-yellow-500/50 transition-all"></i>
+                            <!-- <img src="chemin/vers/photo.png" class="absolute inset-0 w-full h-full object-cover"> -->
+                        </div>
+                        <span class="text-[0.65rem] font-black text-white uppercase tracking-widest mt-1">BZL-206</span>
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -1688,6 +2009,26 @@
         }
         function closeNewJobModal() {
             document.getElementById('newJobModal').classList.add('hidden');
+        }
+
+        /** Ouvre la page détaillée des modules de la pièce BZL1 */
+        function openBzl1Modules() {
+            // Récupère le nom généré dynamiquement (ex: BZL1-26-00085)
+            const pieceName = document.getElementById('bzl1-name').innerText;
+            // Met à jour le titre de la nouvelle page
+            document.getElementById('bzl1-module-title').innerText = "Modules " + pieceName;
+            // Navigue vers la nouvelle page
+            nav('view-bzl1-modules');
+        }
+
+        /** Ouvre la page détaillée des modules de la pièce BZL2 */
+        function openBzl2Modules() {
+            // Récupère le nom généré dynamiquement (ex: BZL2-26-00085)
+            const pieceName = document.getElementById('bzl2-name').innerText;
+            // Met à jour le titre de la nouvelle page
+            document.getElementById('bzl2-module-title').innerText = "Modules " + pieceName;
+            // Navigue vers la nouvelle page
+            nav('view-bzl2-modules');
         }
 
         // --- Variables d'état pour la gestion du chantier/de la pompe ---
@@ -3058,6 +3399,15 @@
                 }
                 
                 document.getElementById('bzResSerie').innerText = "Série " + serieLabel; 
+                
+                // --- NOUVEAU : Transmission du numéro de série aux pièces ---
+                const yearStr = match[1]; // L'année (ex: "25" ou "26")
+                const numStr = match[2];  // La suite exacte avec les zéros (ex: "00060")
+                
+                document.getElementById('bzl1-name').innerText = `BZL1-${yearStr}-${numStr}`;
+                document.getElementById('bzl2-name').innerText = `BZL2-${yearStr}-${numStr}`;
+                document.getElementById('bzl3-name').innerText = `BZL3-${yearStr}-${numStr}`;
+                document.getElementById('bzl4-name').innerText = `BZL4-${yearStr}-${numStr}`;
                 
                 // On navigue vers la nouvelle page au lieu d'afficher un bloc caché
                 nav('view-bzlight-dashboard');
