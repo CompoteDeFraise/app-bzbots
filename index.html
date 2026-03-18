@@ -302,7 +302,7 @@
         <div class="ambient-blob-1"></div>
         <div class="ambient-blob-2"></div>
         <!-- NOUVEAU : Logo BZ en filigrane global ultra-discret -->
-        <div class="absolute inset-0 flex items-center justify-center opacity-[0.15]">
+        <div class="absolute inset-0 flex items-center justify-center opacity-[0.09]">
             <svg viewBox="0 0 100 100" fill="none" class="w-[150vw] md:w-[70vw] max-w-[800px]">
                 <text x="50" y="52" text-anchor="middle" font-weight="900" font-size="48" fill="white" letter-spacing="-2">BZ</text>
                 <rect x="15" y="58" width="70" height="4" fill="white"/>
@@ -731,6 +731,18 @@
                                 <input type="text" id="robotSerial" oninput="formatRobotSerial(this)" class="input-bz pl-12 border-yellow-500/30 focus:border-yellow-400 text-sm md:text-base font-mono font-black tracking-widest uppercase" value="BZL-" placeholder="BZL-XX-XXXXX" maxlength="12">
                                 <i class="fas fa-microchip absolute left-4 top-1/2 -translate-y-1/2 text-gray-500"></i>
                             </div>
+                             <div>
+        <label class="block text-[0.6rem] md:text-[0.65rem] font-bold text-gray-400 uppercase mb-2 tracking-[0.2em]">Entreprise</label>
+        <div class="relative">
+            <input 
+                type="text" 
+                id="companyName" 
+                class="input-bz pl-12 border-white/10 focus:border-yellow-400 text-sm md:text-base font-bold" 
+                placeholder="Nom de votre entreprise"
+            >
+            <i class="fas fa-building absolute left-4 top-1/2 -translate-y-1/2 text-gray-500"></i>
+        </div>
+    </div>
                         </div>
                         <button onclick="calculateBzLightSpecs()" class="w-full py-3.5 md:py-4 bg-yellow-500 text-black text-xs md:text-sm font-black uppercase tracking-widest hover:bg-yellow-400 transition rounded-xl shadow-[0_10px_20px_rgba(234,179,8,0.3)]">
                             <i class="fas fa-sync-alt mr-2"></i> <span data-i18n="check">Synchroniser</span>
