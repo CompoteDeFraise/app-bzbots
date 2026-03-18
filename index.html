@@ -841,16 +841,20 @@
                     </h3>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
                         <div class="w-full bg-black/40 border border-white/5 rounded-xl p-3 flex flex-col gap-2 shadow-inner">
-                            <div class="w-full aspect-video bg-black/60 rounded-lg border border-white/10 overflow-hidden relative">
-                                <!-- Remplace VIDEO_ID_1 par l'identifiant YouTube réel -->
-                                <iframe class="w-full h-full" src="https://www.youtube.com/embed/KrNA8CR_x9E" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                            <div onclick="openVideoModal('KrNA8CR_x9E', 'Nettoyage')" class="w-full aspect-video bg-black/60 rounded-lg border border-white/10 overflow-hidden relative group cursor-pointer flex items-center justify-center">
+                                <img src="https://img.youtube.com/vi/KrNA8CR_x9E/hqdefault.jpg" class="absolute inset-0 w-full h-full object-cover opacity-50 group-hover:opacity-30 transition-opacity" alt="Miniature Vidéo">
+                                <div class="w-12 h-12 md:w-16 md:h-16 bg-blue-600/80 rounded-full flex items-center justify-center text-white text-xl md:text-2xl shadow-[0_0_20px_rgba(37,99,235,0.6)] group-hover:scale-110 transition-transform relative z-10 backdrop-blur-sm border border-white/20">
+                                    <i class="fas fa-play ml-1"></i>
+                                </div>
                             </div>
                             <span class="text-[0.65rem] font-bold text-gray-300 uppercase tracking-widest text-center mt-1">Nettoyage</span>
                         </div>
                         <div class="w-full bg-black/40 border border-white/5 rounded-xl p-3 flex flex-col gap-2 shadow-inner">
-                            <div class="w-full aspect-video bg-black/60 rounded-lg border border-white/10 overflow-hidden relative">
-                                <!-- Remplace VIDEO_ID_2 par l'identifiant YouTube réel -->
-                                <iframe class="w-full h-full" src="https://www.youtube.com/embed/eARLGuMHqLU" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                            <div onclick="openVideoModal('eARLGuMHqLU', 'Nettoyage en profondeur')" class="w-full aspect-video bg-black/60 rounded-lg border border-white/10 overflow-hidden relative group cursor-pointer flex items-center justify-center">
+                                <img src="https://img.youtube.com/vi/eARLGuMHqLU/hqdefault.jpg" class="absolute inset-0 w-full h-full object-cover opacity-50 group-hover:opacity-30 transition-opacity" alt="Miniature Vidéo">
+                                <div class="w-12 h-12 md:w-16 md:h-16 bg-blue-600/80 rounded-full flex items-center justify-center text-white text-xl md:text-2xl shadow-[0_0_20px_rgba(37,99,235,0.6)] group-hover:scale-110 transition-transform relative z-10 backdrop-blur-sm border border-white/20">
+                                    <i class="fas fa-play ml-1"></i>
+                                </div>
                             </div>
                             <span class="text-[0.65rem] font-bold text-gray-300 uppercase tracking-widest text-center mt-1">Nettoyage en profondeur</span>
                         </div>
@@ -1925,6 +1929,19 @@
         }
         function closeInfoModal() { 
             document.getElementById('infoModal').classList.add('hidden'); 
+        }
+
+        /** Gestion Modale Vidéo */
+        function openVideoModal(videoId, title) {
+            document.getElementById('videoModalTitle').innerHTML = `<i class="fas fa-play-circle text-blue-400"></i> ${title}`;
+            // On ajoute autoplay=1 pour que la vidéo se lance dès qu'on ouvre la modale
+            document.getElementById('videoModalIframe').src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+            document.getElementById('videoModal').classList.remove('hidden');
+        }
+        function closeVideoModal() {
+            document.getElementById('videoModal').classList.add('hidden');
+            // On vide la source pour arrêter la lecture en arrière-plan quand on ferme
+            document.getElementById('videoModalIframe').src = "";
         }
 
         /** Gestion Modale Nouveau Chantier */
