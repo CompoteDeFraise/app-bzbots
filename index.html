@@ -3419,6 +3419,17 @@
             updateInterfaceLanguage();
             calculate();
         }
+        /** Gestion Modale Vidéo */
+        function openVideoModal(videoId, title) {
+             document.getElementById('videoModalTitle').innerHTML = `<i class="fas fa-play-circle text-blue-400"></i> ${title}`;
+             document.getElementById('videoModalIframe').src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+              document.getElementById('videoModal').classList.remove('hidden');
+}
+
+        function closeVideoModal() {
+            document.getElementById('videoModal').classList.add('hidden');
+              document.getElementById('videoModalIframe').src = "";
+}
     </script>
 </body>
 </html>
