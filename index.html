@@ -1536,6 +1536,17 @@
         </div>
     </div>
 
+    <div id="videoModal" class="fixed inset-0 bg-[#050505]/95 z-[500] hidden flex items-center justify-center p-4 md:p-6 backdrop-blur-3xl">
+        <div class="glass-panel w-full max-w-5xl rounded-3xl md:rounded-[2rem] overflow-hidden border border-blue-500/30 shadow-[0_0_80px_rgba(59,130,246,0.15)] relative flex flex-col">
+            <div class="p-4 border-b border-white/10 flex justify-between items-center bg-black/40 backdrop-blur-md relative z-10 shrink-0">
+                <h3 id="videoModalTitle" class="text-white font-black uppercase tracking-widest text-[0.65rem] md:text-xs flex items-center gap-2"><i class="fas fa-play-circle text-blue-400"></i> Tutoriel Vidéo</h3>
+                <button onclick="closeVideoModal()" class="text-gray-400 hover:text-white transition-colors w-8 h-8 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/10"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="w-full aspect-video bg-black relative z-10 shadow-inner">
+                <iframe id="videoModalIframe" class="w-full h-full" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+        </div>
+    </div>
     <!-- Modal : Nouveau Chantier -->
     <div id="newJobModal" class="fixed inset-0 bg-[#050505]/90 z-[400] hidden flex items-center justify-center p-4 md:p-6 backdrop-blur-3xl">
         <div class="glass-panel w-full max-w-lg rounded-3xl overflow-hidden border border-cyan-500/30 shadow-[0_0_80px_rgba(34,211,238,0.2)] relative flex flex-col max-h-[95vh]">
