@@ -298,18 +298,18 @@
     position: absolute;
     width: 28px;
     height: 28px;
-    background: rgba(34, 211, 238, 0.4);
-    border: 2px solid #22d3ee;
+    background: rgba(255, 255, 255, 0.3); /* Blanc très transparent */
+    border: 2px solid rgba(255, 255, 255, 0.8); /* Bordure blanche solide */
     border-radius: 50%;
     transform: translate(-50%, -50%);
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 0 20px rgba(34, 211, 238, 0.6);
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.4); /* Halo lumineux blanc */
     z-index: 20;
 }
 
 .hotspot-btn:hover {
-    background: #22d3ee;
+    background: #F8F8FB;
     transform: translate(-50%, -50%) scale(1.3);
 }
 
@@ -318,7 +318,7 @@
     position: absolute;
     inset: -4px;
     border-radius: 50%;
-    border: 2px solid #22d3ee;
+    border: 2px solid #F8F8FB;
     animation: pulse-hotspot 2s infinite;
 }
 
