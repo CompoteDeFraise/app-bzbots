@@ -3428,7 +3428,7 @@
         }
         // --- GESTION CAMERA RASPBERRY PI ---
 let isCameraStreaming = false;
-const piAddress = "http://192.168.1.18";
+const piAddress = "http://pompe.local"; // Ou "http://192.168.1.18" si .local te fait des misères
 
 function toggleCameraStream() {
     const btn = document.getElementById('btn-camera-toggle');
@@ -3436,50 +3436,31 @@ function toggleCameraStream() {
     const text = document.getElementById('camera-text');
 
     if (!isCameraStreaming) {
-        // 1. Visuel d'attente
-        icon.className = "fas fa-spinner fa-spin";
-        text.innerText = "Connexion...";
+        // Mode ON : On passe directement à l'affichage, sans API !
+        isCameraStreaming = true;
+        
+        // 1. Transformation du bouton en mode "STOP" (Rouge)
+        btn.className = "flex-1 min-w-[80px] py-3 bg-red-900/30 hover:bg-red-900/50 border border-red-500/30 text-red-400 rounded-xl text-[0.6rem] font-black uppercase tracking-widest transition-all flex flex-col items-center gap-1.5";
+        icon.className = "fas fa-stop-circle";
+        text.innerText = "Couper Caméra";
 
-        // 2. Appel à l'API de la Pi pour démarrer
-        fetch(`${piAddress}:5000/start`, { mode: 'no-cors' })
-            .then(() => {
-                isCameraStreaming = true;
-                
-                // 3. Transformation du bouton en mode "STOP" (Rouge)
-                btn.className = "flex-1 min-w-[80px] py-3 bg-red-900/30 hover:bg-red-900/50 border border-red-500/30 text-red-400 rounded-xl text-[0.6rem] font-black uppercase tracking-widest transition-all flex flex-col items-center gap-1.5";
-                icon.className = "fas fa-stop-circle";
-                text.innerText = "Couper Caméra";
+        // 2. Ouverture de la modale avec le bon lien vers le flux vidéo
+        document.getElementById('videoModalTitle').innerHTML = `<i class="fas fa-satellite-dish text-red-500 animate-pulse"></i> Direct Miniflex2`;
+        document.getElementById('videoModalIframe').src = `${piAddress}:8080/stream.html`;
+        document.getElementById('videoModal').classList.remove('hidden');
 
-                // 4. Ouverture de la modale avec le flux vidéo
-                document.getElementById('videoModalTitle').innerHTML = `<i class="fas fa-satellite-dish text-red-500 animate-pulse"></i> Direct Miniflex2`;
-                document.getElementById('videoModalIframe').src = `${piAddress}:8080/?action=stream`;
-                document.getElementById('videoModal').classList.remove('hidden');
-            })
-            .catch(err => {
-                // En cas d'erreur réseau
-                icon.className = "fas fa-exclamation-triangle text-yellow-500";
-                text.innerText = "Erreur Wi-Fi";
-                setTimeout(() => {
-                    icon.className = "fas fa-video";
-                    text.innerText = "Caméra Live";
-                }, 3000);
-                openInfoModal("Impossible de joindre la pompe. Vérifiez que la Raspberry Pi est branchée et sur le même réseau Wi-Fi.");
-            });
     } else {
-        // 1. Appel à l'API pour tuer le flux
-        fetch(`${piAddress}:5000/stop`, { mode: 'no-cors' })
-            .then(() => {
-                isCameraStreaming = false;
-                
-                // 2. Retour au visuel normal (Cyan)
-                btn.className = "flex-1 min-w-[80px] py-3 bg-cyan-900/30 hover:bg-cyan-900/50 border border-cyan-500/30 text-cyan-400 rounded-xl text-[0.6rem] font-black uppercase tracking-widest transition-all flex flex-col items-center gap-1.5";
-                icon.className = "fas fa-video";
-                text.innerText = "Caméra Live";
-                
-                // 3. Fermeture de la fenêtre
-                document.getElementById('videoModalIframe').src = "";
-                document.getElementById('videoModal').classList.add('hidden');
-            });
+        // Mode OFF : On referme la fenêtre et on remet le bouton à zéro
+        isCameraStreaming = false;
+        
+        // 1. Retour au visuel normal (Cyan)
+        btn.className = "flex-1 min-w-[80px] py-3 bg-cyan-900/30 hover:bg-cyan-900/50 border border-cyan-500/30 text-cyan-400 rounded-xl text-[0.6rem] font-black uppercase tracking-widest transition-all flex flex-col items-center gap-1.5";
+        icon.className = "fas fa-video";
+        text.innerText = "Caméra Live";
+        
+        // 2. Fermeture de la fenêtre et coupure du flux dans l'iframe
+        document.getElementById('videoModalIframe').src = "";
+        document.getElementById('videoModal').classList.add('hidden');
     }
 }
     </script>
