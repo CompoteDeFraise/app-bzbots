@@ -295,6 +295,27 @@
         }
     </style>
 </head>
+<!-- Modal : Flux Caméra Live Raspberry Pi -->
+<div id="videoModal" class="fixed inset-0 bg-[#050505]/90 z-[500] hidden flex items-center justify-center p-4 backdrop-blur-3xl">
+    <div class="glass-panel w-full max-w-3xl rounded-3xl overflow-hidden border border-red-500/30 shadow-[0_0_80px_rgba(239,68,68,0.2)] relative flex flex-col">
+        <div class="p-4 md:p-6 border-b border-white/10 flex justify-between items-center bg-black/40 backdrop-blur-md shrink-0">
+            <h3 id="videoModalTitle" class="text-white font-black uppercase text-xs tracking-widest flex items-center gap-2">
+                <i class="fas fa-video text-cyan-400"></i> Caméra Live
+            </h3>
+            <button onclick="closeVideoModal()" class="text-gray-400 hover:text-white transition-colors">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
+        <div class="bg-black flex items-center justify-center relative" style="min-height: 300px;">
+            <!-- ICI : balise img pour le flux MJPEG (pas iframe) -->
+            <img id="videoModalIframe" src="" class="w-full rounded-b-3xl" alt="Flux caméra" style="display:none;">
+            <div id="cameraLoadingMsg" class="absolute text-gray-500 text-xs font-bold uppercase tracking-widest flex flex-col items-center gap-3">
+                <i class="fas fa-spinner fa-spin text-2xl text-cyan-400"></i>
+                Connexion au flux...
+            </div>
+        </div>
+    </div>
+</div>
 <body>
 
     <!-- Arrière-plan animé global -->
@@ -1944,10 +1965,11 @@
         function closeVideoModal() {
     document.getElementById('videoModal').classList.add('hidden');
     document.getElementById('videoModalIframe').src = "";
-    
-    // Si on ferme la modale alors que la caméra tourne, on coupe le flux pour économiser la batterie
+    document.getElementById('videoModalIframe').style.display = 'none';
+    document.getElementById('cameraLoadingMsg').style.display = 'flex';
+
     if (isCameraStreaming) {
-        toggleCameraStream(); 
+        toggleCameraStream();
     }
 }
 
@@ -3432,56 +3454,53 @@
         const piAddress = "http://192.168.1.18"; // L'adresse IP brute pour éviter les bugs réseau
 
         function toggleCameraStream() {
-            const btn = document.getElementById('btn-camera-toggle');
-            const icon = document.getElementById('camera-icon');
-            const text = document.getElementById('camera-text');
+    const btn = document.getElementById('btn-camera-toggle');
+    const icon = document.getElementById('camera-icon');
+    const text = document.getElementById('camera-text');
 
-            if (!isCameraStreaming) {
-                // Mode ON : On lance la vidéo
-                isCameraStreaming = true;
-                
-                // 1. Bouton en mode "STOP" (Rouge)
-                btn.className = "flex-1 min-w-[80px] py-3 bg-red-900/30 hover:bg-red-900/50 border border-red-500/30 text-red-400 rounded-xl text-[0.6rem] font-black uppercase tracking-widest transition-all flex flex-col items-center gap-1.5";
-                icon.className = "fas fa-stop-circle";
-                text.innerText = "Couper Caméra";
+    if (!isCameraStreaming) {
+        isCameraStreaming = true;
 
-                // 2. Modification du titre de la fenêtre modale
-                const modalTitle = document.getElementById('videoModalTitle');
-                if (modalTitle) {
-                    modalTitle.innerHTML = `<i class="fas fa-satellite-dish text-red-500 animate-pulse"></i> Direct Miniflex2`;
-                }
+        btn.className = "flex-1 min-w-[80px] py-3 bg-red-900/30 hover:bg-red-900/50 border border-red-500/30 text-red-400 rounded-xl text-[0.6rem] font-black uppercase tracking-widest transition-all flex flex-col items-center gap-1.5";
+        icon.className = "fas fa-stop-circle";
+        text.innerText = "Couper Caméra";
 
-                // 3. Affichage du flux dans l'Iframe
-                const videoIframe = document.getElementById('videoModalIframe');
-                const videoModal = document.getElementById('videoModal');
-                
-                if (videoIframe && videoModal) {
-                    // On utilise /?action=stream qui est le flux brut et propre
-                    videoIframe.src = `${piAddress}:8080/?action=stream`; 
-                    videoModal.classList.remove('hidden');
-                } else {
-                    console.error("Fenêtre modale introuvable dans le HTML !");
-                }
-
-            } else {
-                // Mode OFF : On coupe la vidéo
-                isCameraStreaming = false;
-                
-                // 1. Bouton en mode normal (Cyan)
-                btn.className = "flex-1 min-w-[80px] py-3 bg-cyan-900/30 hover:bg-cyan-900/50 border border-cyan-500/30 text-cyan-400 rounded-xl text-[0.6rem] font-black uppercase tracking-widest transition-all flex flex-col items-center gap-1.5";
-                icon.className = "fas fa-video";
-                text.innerText = "Caméra Live";
-                
-                // 2. Fermeture et nettoyage de la modale
-                const videoIframe = document.getElementById('videoModalIframe');
-                const videoModal = document.getElementById('videoModal');
-                
-                if (videoIframe && videoModal) {
-                    videoIframe.src = "";
-                    videoModal.classList.add('hidden');
-                }
-            }
+        const modalTitle = document.getElementById('videoModalTitle');
+        if (modalTitle) {
+            modalTitle.innerHTML = `<i class="fas fa-satellite-dish text-red-500 animate-pulse"></i> Direct Miniflex2`;
         }
+
+        const videoImg = document.getElementById('videoModalIframe');
+        const videoModal = document.getElementById('videoModal');
+
+        if (videoImg && videoModal) {
+            // Balise <img> avec le flux MJPEG brut — fonctionne nativement dans tous les navigateurs
+            videoImg.src = `${piAddress}:8080/?action=stream`;
+            videoImg.onload = () => {
+    document.getElementById('cameraLoadingMsg').style.display = 'none';
+};
+            videoImg.style.display = 'block';
+            videoModal.classList.remove('hidden');
+        }
+
+    } else {
+        isCameraStreaming = false;
+
+        btn.className = "flex-1 min-w-[80px] py-3 bg-cyan-900/30 hover:bg-cyan-900/50 border border-cyan-500/30 text-cyan-400 rounded-xl text-[0.6rem] font-black uppercase tracking-widest transition-all flex flex-col items-center gap-1.5";
+        icon.className = "fas fa-video";
+        text.innerText = "Caméra Live";
+
+        const videoImg = document.getElementById('videoModalIframe');
+        const videoModal = document.getElementById('videoModal');
+
+        if (videoImg && videoModal) {
+            // Vider le src IMMÉDIATEMENT coupe le flux réseau
+            videoImg.src = "";
+            videoImg.style.display = 'none';
+            videoModal.classList.add('hidden');
+        }
+    }
+}
 
     </script>
 </body>
