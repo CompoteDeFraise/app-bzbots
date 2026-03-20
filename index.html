@@ -13,7 +13,6 @@
     <!-- Fichier de traductions local (On retire jsDelivr pour éviter le cache agressif) -->
     <!-- "var translations = {...}" doit être utilisé dans translations.js (pas const/let) pour être global -->
     <script src="./translations.js"></script>
-    <script src="BzLightData.js"></script>
     
     <!-- Styles CSS personnalisés -->
     <style>
@@ -294,60 +293,6 @@
                 max-height: none !important;
             }
         }
-        .hotspot-btn {
-    position: absolute;
-    width: 28px;
-    height: 28px;
-    background: rgba(255, 255, 255, 0.3); /* Blanc très transparent */
-    border: 2px solid rgba(255, 255, 255, 0.8); /* Bordure blanche solide */
-    border-radius: 50%;
-    transform: translate(-50%, -50%);
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 0 20px rgba(255, 255, 255, 0.4); /* Halo lumineux blanc */
-    z-index: 20;
-}
-
-.hotspot-btn:hover {
-    background: #F8F8FB;
-    transform: translate(-50%, -50%) scale(1.3);
-}
-
-.hotspot-btn::after {
-    content: '';
-    position: absolute;
-    inset: -4px;
-    border-radius: 50%;
-    border: 2px solid #F8F8FB;
-    animation: pulse-hotspot 2s infinite;
-}
-
-@keyframes pulse-hotspot {
-    0% { transform: scale(1); opacity: 1; }
-    100% { transform: scale(2.2); opacity: 0; }
-}
-
-.hotspot-label {
-    position: absolute;
-    top: -30px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(0,0,0,0.9);
-    color: white;
-    font-size: 10px;
-    font-weight: 900;
-    padding: 3px 8px;
-    border-radius: 4px;
-    white-space: nowrap;
-    opacity: 0;
-    transition: opacity 0.3s;
-    pointer-events: none;
-    border: 1px solid rgba(255,255,255,0.1);
-}
-
-.hotspot-btn:hover .hotspot-label {
-    opacity: 1;
-}
     </style>
 </head>
 <body>
@@ -832,41 +777,63 @@
             <div class="w-full max-w-lg glass-panel p-8 md:p-12 rounded-[2rem] text-center border border-yellow-500/30 shadow-[0_0_50px_rgba(234,179,8,0.15)] relative overflow-hidden">
                 <div class="absolute top-0 left-1/2 -translate-x-1/2 w-40 h-40 bg-yellow-500/20 blur-[60px] rounded-full pointer-events-none"></div>
                 
-               <div class="mt-8 pt-6 border-t border-white/10 relative z-10 text-left">
-    <h3 class="text-[0.65rem] md:text-xs font-black text-gray-400 uppercase tracking-[0.2em] mb-6 flex items-center gap-2">
-        <i class="fas fa-microchip text-cyan-400"></i> Analyse interactive de la machine
-    </h3>
-    <!-- Données cachées générées par calculateBzLightSpecs -->
-<span id="bzResSerie" class="hidden"></span>
-<span id="bzl1-name" class="hidden"></span>
-<span id="bzl2-name" class="hidden"></span>
-<span id="bzl3-name" class="hidden"></span>
-<span id="bzl4-name" class="hidden"></span>
-    <div id="robot-container" class="relative w-full max-w-4xl mx-auto bg-black/30 rounded-3xl border border-white/5 p-3 overflow-hidden shadow-inner backdrop-blur-sm">
-    
-    <img id="robot-image" src="bzlight_render.png" class="w-full h-auto rounded-2xl" alt="BZLight Robot View">
+                <!-- NOUVELLE IMAGE BZLIGHT (Remplace l'ancienne ligne BZL2 erronée) -->
+                <div class="w-40 md:w-56 mx-auto mb-6 relative z-10 drop-shadow-[0_0_25px_rgba(255,255,255,0.15)] cursor-default">
+                    <img src="BZLIGHT.png" alt="Robot BZLight" class="w-full h-auto object-contain hover:scale-105 transition-transform duration-500">
+                </div>
+                
+                <div class="text-[0.65rem] md:text-xs text-gray-400 uppercase font-black mb-3 tracking-[0.3em] relative z-10">Série Validée</div>
+                
+                <div class="text-4xl md:text-5xl font-black text-white flex items-center justify-center gap-4 relative z-10">
+                    <span id="bzResSerie">--</span>
+                    <i class="fas fa-check-circle text-2xl md:text-3xl text-yellow-500"></i>
+                </div>
+                
+                <!-- NOUVELLE SECTION : État des composants -->
+                <div class="mt-8 pt-6 border-t border-white/10 relative z-10 text-left">
+                    <h3 class="text-[0.65rem] md:text-xs font-black text-gray-400 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
+                        <i class="fas fa-cogs text-yellow-500"></i> Historique des pièces
+                    </h3>
+                    <div class="grid grid-cols-2 gap-3 md:gap-4">
+                        <!-- Pièce BZL1 (Modifiée pour ouvrir la nouvelle vue) -->
+                        <button onclick="openBzl1Modules()" class="w-full bg-black/40 border border-white/5 hover:border-white/20 hover:bg-white/5 transition-all rounded-xl p-3 md:p-4 flex flex-col items-center justify-center gap-2 shadow-inner cursor-pointer text-center group">
+                            <div class="w-full aspect-video bg-black/60 rounded-lg border border-white/5 overflow-hidden relative mb-1">
+                                <img src="BZL1.png" alt="BZL1" class="absolute inset-0 w-full h-full object-cover opacity-70 group-hover:opacity-100 group-hover:scale-110 transition-all duration-500">
+                            </div>
+                            <!-- Ajout de l'ID bzl1-name -->
+                            <span id="bzl1-name" class="text-xs md:text-sm font-black text-white uppercase tracking-widest relative z-10">BZL1</span>
+                            <span class="text-[0.55rem] font-bold text-green-400 bg-green-500/10 px-2 py-1 rounded-md border border-green-500/20 uppercase tracking-widest relative z-10">Originale</span>
+                        </button>
+                        <!-- Pièce BZL2 (Modifiée pour ouvrir la nouvelle vue) -->
+                        <button onclick="openBzl2Modules()" class="w-full bg-black/40 border border-white/5 hover:border-white/20 hover:bg-white/5 transition-all rounded-xl p-3 md:p-4 flex flex-col items-center justify-center gap-2 shadow-inner cursor-pointer text-center group">
+                            <div class="w-full aspect-video bg-black/60 rounded-lg border border-white/5 overflow-hidden relative mb-1">
+                                <img src="BZL2.png" alt="BZL2" class="absolute inset-0 w-full h-full object-cover opacity-70 group-hover:opacity-100 group-hover:scale-110 transition-all duration-500">
+                            </div>
+                            <!-- Ajout de l'ID bzl2-name -->
+                            <span id="bzl2-name" class="text-xs md:text-sm font-black text-white uppercase tracking-widest relative z-10">BZL2</span>
+                            <span class="text-[0.55rem] font-bold text-yellow-500 bg-yellow-500/10 px-2 py-1 rounded-md border border-yellow-500/20 uppercase tracking-widest relative z-10">Remplacée</span>
+                        </button>
+                        <!-- Pièce BZL3 -->
+                        <button onclick="openBzl3Modules()" class="w-full bg-black/40 border border-white/5 hover:border-white/20 hover:bg-white/5 transition-all rounded-xl p-3 md:p-4 flex flex-col items-center justify-center gap-2 shadow-inner cursor-pointer text-center group">
+                            <div class="w-full aspect-video bg-black/60 rounded-lg border border-white/5 overflow-hidden relative mb-1">
+                                <img src="BZL3.png" alt="BZL3" class="absolute inset-0 w-full h-full object-cover opacity-70 group-hover:opacity-100 group-hover:scale-110 transition-all duration-500">
+                            </div>
+                            <!-- Ajout de l'ID bzl3-name -->
+                            <span id="bzl3-name" class="text-xs md:text-sm font-black text-white uppercase tracking-widest relative z-10">BZL3</span>
+                            <span class="text-[0.55rem] font-bold text-green-400 bg-green-500/10 px-2 py-1 rounded-md border border-green-500/20 uppercase tracking-widest relative z-10">Originale</span>
+                        </button>
+                        <!-- Pièce BZL4 -->
+                        <button onclick="openBzl4Modules()" class="w-full bg-black/40 border border-white/5 hover:border-white/20 hover:bg-white/5 transition-all rounded-xl p-3 md:p-4 flex flex-col items-center justify-center gap-2 shadow-inner cursor-pointer text-center group">
+                            <div class="w-full aspect-video bg-black/60 rounded-lg border border-white/5 overflow-hidden relative mb-1">
+                                <img src="BZL4.png" alt="BZL4" class="absolute inset-0 w-full h-full object-cover opacity-70 group-hover:opacity-100 group-hover:scale-110 transition-all duration-500">
+                            </div>
+                            <!-- Ajout de l'ID bzl4-name -->
+                            <span id="bzl4-name" class="text-xs md:text-sm font-black text-white uppercase tracking-widest relative z-10">BZL4</span>
+                            <span class="text-[0.55rem] font-bold text-green-400 bg-green-500/10 px-2 py-1 rounded-md border border-green-500/20 uppercase tracking-widest relative z-10">Originale</span>
+                        </button>
+                    </div>
+                </div>
 
-    <!-- BZL1 : Pince noire à gauche -->
-    <button onclick="openBzl1Modules()" class="hotspot-btn" style="top: 52%; left: 17%;">
-        <span class="hotspot-label">BZL1 - Module de fraisage</span>
-    </button>
-
-    <!-- BZL2 : Bloc blanc central bas -->
-    <button onclick="openBzl2Modules()" class="hotspot-btn" style="top: 57%; left: 40%;">
-        <span class="hotspot-label">BZL2 - Module piston</span>
-    </button>
-
-    <!-- BZL4 : Petite pièce noire en haut -->
-    <button onclick="openBzl4Modules()" class="hotspot-btn" style="top: 35%; left: 38%;">
-        <span class="hotspot-label">BZL4 - Module caméra</span>
-    </button>
-
-    <!-- BZL3 : Long tube à droite -->
-    <button onclick="openBzl3Modules()" class="hotspot-btn" style="top: 47%; left: 78%;">
-        <span class="hotspot-label">BZL3 - Module arrière</span>
-    </button>
-</div>
-</div>
                 <!-- NOUVELLE SECTION : Tutoriels Vidéos -->
                 <div class="mt-8 pt-6 border-t border-white/10 relative z-10 text-left">
                     <h3 class="text-[0.65rem] md:text-xs font-black text-gray-400 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
@@ -1418,7 +1385,10 @@
                     <!-- Barre d'outils Simulation -->
                     <div class="glass-panel p-2 rounded-2xl flex flex-wrap gap-2 justify-center md:justify-between">
                         <button onclick="resetCurrentPass()" class="flex-1 min-w-[80px] py-3 bg-white/5 hover:bg-white/10 border border-white/5 text-gray-300 rounded-xl text-[0.6rem] font-black uppercase tracking-widest transition-all flex flex-col items-center gap-1.5"><i class="fas fa-undo"></i> <span data-i18n="resetZero">Reset 0</span></button>
-                        <button onclick="" class="flex-1 min-w-[80px] py-3 bg-cyan-900/30 hover:bg-cyan-900/50 border border-cyan-500/30 text-cyan-400 rounded-xl text-[0.6rem] font-black uppercase tracking-widest transition-all flex flex-col items-center gap-1.5"><i class="fas fa-video"></i> <span data-i18n="recordVideo">Enregistrer un flux vidéo</span></button>
+                        <button id="btn-camera-toggle" onclick="toggleCameraStream()" class="flex-1 min-w-[80px] py-3 bg-cyan-900/30 hover:bg-cyan-900/50 border border-cyan-500/30 text-cyan-400 rounded-xl text-[0.6rem] font-black uppercase tracking-widest transition-all flex flex-col items-center gap-1.5">
+                            <i id="camera-icon" class="fas fa-video"></i> 
+                             <span id="camera-text">Caméra Live</span>
+                        </button>
                         <button id="btn-pause-resume" onclick="togglePause()" class="flex-1 min-w-[80px] py-3 bg-red-900/30 hover:bg-red-900/50 border border-red-500/30 text-red-400 rounded-xl text-[0.6rem] font-black uppercase tracking-widest transition-all flex flex-col items-center gap-1.5"><i class="fas fa-stop"></i> <span data-i18n="stop">Stop</span></button>
                     </div>
                     
@@ -1569,17 +1539,6 @@
         </div>
     </div>
 
-    <div id="videoModal" class="fixed inset-0 bg-[#050505]/95 z-[500] hidden flex items-center justify-center p-4 md:p-6 backdrop-blur-3xl">
-        <div class="glass-panel w-full max-w-5xl rounded-3xl md:rounded-[2rem] overflow-hidden border border-blue-500/30 shadow-[0_0_80px_rgba(59,130,246,0.15)] relative flex flex-col">
-            <div class="p-4 border-b border-white/10 flex justify-between items-center bg-black/40 backdrop-blur-md relative z-10 shrink-0">
-                <h3 id="videoModalTitle" class="text-white font-black uppercase tracking-widest text-[0.65rem] md:text-xs flex items-center gap-2"><i class="fas fa-play-circle text-blue-400"></i> Tutoriel Vidéo</h3>
-                <button onclick="closeVideoModal()" class="text-gray-400 hover:text-white transition-colors w-8 h-8 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/10"><i class="fas fa-times"></i></button>
-            </div>
-            <div class="w-full aspect-video bg-black relative z-10 shadow-inner">
-                <iframe id="videoModalIframe" class="w-full h-full" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-            </div>
-        </div>
-    </div>
     <!-- Modal : Nouveau Chantier -->
     <div id="newJobModal" class="fixed inset-0 bg-[#050505]/90 z-[400] hidden flex items-center justify-center p-4 md:p-6 backdrop-blur-3xl">
         <div class="glass-panel w-full max-w-lg rounded-3xl overflow-hidden border border-cyan-500/30 shadow-[0_0_80px_rgba(34,211,238,0.2)] relative flex flex-col max-h-[95vh]">
@@ -1983,9 +1942,14 @@
             document.getElementById('videoModal').classList.remove('hidden');
         }
         function closeVideoModal() {
-            document.getElementById('videoModal').classList.add('hidden');
-            // On vide la source pour arrêter la lecture en arrière-plan quand on ferme
-            document.getElementById('videoModalIframe').src = "";
+    document.getElementById('videoModal').classList.add('hidden');
+    document.getElementById('videoModalIframe').src = "";
+    
+    // Si on ferme la modale alors que la caméra tourne, on coupe le flux pour économiser la batterie
+    if (isCameraStreaming) {
+        toggleCameraStream(); 
+    }
+}
         }
 
         /** Gestion Modale Nouveau Chantier */
@@ -3366,50 +3330,54 @@
 
         /** Vérifie le numéro de série et génère des valeurs aléatoires dans la vue BzLight (Mockup) */
         function calculateBzLightSpecs() { 
-    const serialInput = document.getElementById('robotSerial').value.trim().toUpperCase();
-    const regex = /^BZL-(25|26)-(\d{5})$/;
-    const match = serialInput.match(regex);
-    
-    let isValid = false;
-    let number = 0;
-    
-    if (match) {
-        const year = match[1];
-        number = parseInt(match[2], 10);
-        
-        if (year === "25" && number >= 1 && number <= 60) isValid = true;
-        else if (year === "26" && number >= 61 && number <= 120) isValid = true;
-    }
+            const serialInput = document.getElementById('robotSerial').value.trim().toUpperCase();
+            
+            // Format attendu: BZL-25-XXXXX ou BZL-26-XXXXX (avec 5 chiffres à la fin)
+            const regex = /^BZL-(25|26)-(\d{5})$/;
+            const match = serialInput.match(regex);
+            
+            let isValid = false;
+            let number = 0; // On déclare la variable ici pour pouvoir s'en resservir plus bas
+            
+            // Si le format textuel correspond, on vérifie la logique des nombres
+            if (match) {
+                const year = match[1]; // Récupère le "25" ou "26"
+                number = parseInt(match[2], 10); // Transforme "00060" en 60
+                
+                if (year === "25" && number >= 1 && number <= 60) {
+                    isValid = true;
+                } else if (year === "26" && number >= 61 && number <= 120) {
+                    isValid = true;
+                }
+            }
 
-    if (isValid) {
-        // On navigue D'ABORD pour que les éléments existent dans le DOM
-        nav('view-bzlight-dashboard');
-
-        // ENSUITE seulement on écrit dedans
-        const yearStr = match[1];
-        const numStr = match[2];
-
-        let serieLabel = "3";
-        if (number >= 1 && number <= 30) serieLabel = "1";
-        else if (number >= 31 && number <= 60) serieLabel = "2";
-
-        const bzResSerie = document.getElementById('bzResSerie');
-        if (bzResSerie) bzResSerie.innerText = "Série " + serieLabel;
-        
-        const n1 = document.getElementById('bzl1-name');
-        const n2 = document.getElementById('bzl2-name');
-        const n3 = document.getElementById('bzl3-name');
-        const n4 = document.getElementById('bzl4-name');
-
-        if (n1) n1.innerText = `BZL1-${yearStr}-${numStr}`;
-        if (n2) n2.innerText = `BZL2-${yearStr}-${numStr}`;
-        if (n3) n3.innerText = `BZL3-${yearStr}-${numStr}`;
-        if (n4) n4.innerText = `BZL4-${yearStr}-${numStr}`;
-
-    } else {
-        openInfoModal("Numéro de série invalide. Formats acceptés : BZL-25-00001 à 00060 ou BZL-26-00061 à 00120.");
-    }
-}
+            // Affichage du résultat selon la validité
+            if (isValid) {
+                // Détermination de la série en fonction du numéro du robot
+                let serieLabel = "3"; // Par défaut, "le reste"
+                if (number >= 1 && number <= 30) {
+                    serieLabel = "1";
+                } else if (number >= 31 && number <= 60) {
+                    serieLabel = "2";
+                }
+                
+                document.getElementById('bzResSerie').innerText = "Série " + serieLabel; 
+                
+                // --- NOUVEAU : Transmission du numéro de série aux pièces ---
+                const yearStr = match[1]; // L'année (ex: "25" ou "26")
+                const numStr = match[2];  // La suite exacte avec les zéros (ex: "00060")
+                
+                document.getElementById('bzl1-name').innerText = `BZL1-${yearStr}-${numStr}`;
+                document.getElementById('bzl2-name').innerText = `BZL2-${yearStr}-${numStr}`;
+                document.getElementById('bzl3-name').innerText = `BZL3-${yearStr}-${numStr}`;
+                document.getElementById('bzl4-name').innerText = `BZL4-${yearStr}-${numStr}`;
+                
+                // On navigue vers la nouvelle page au lieu d'afficher un bloc caché
+                nav('view-bzlight-dashboard');
+            } else {
+                openInfoModal("Numéro de série invalide. Formats acceptés : BZL-25-00001 à 00060 ou BZL-26-00061 à 00120.");
+            }
+        }
 
         /** Gère la soumission du formulaire d'inscription (simulation) */
         function handleRegister() {
@@ -3459,16 +3427,61 @@
             updateInterfaceLanguage();
             calculate();
         }
-        /** Gestion Modale Vidéo */
-        function openVideoModal(videoId, title) {
-             document.getElementById('videoModalTitle').innerHTML = `<i class="fas fa-play-circle text-blue-400"></i> ${title}`;
-             document.getElementById('videoModalIframe').src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
-              document.getElementById('videoModal').classList.remove('hidden');
-}
+        // --- GESTION CAMERA RASPBERRY PI ---
+let isCameraStreaming = false;
+const piAddress = "http://pompe.local"; // L'adresse réseau de ta Pi
 
-        function closeVideoModal() {
-            document.getElementById('videoModal').classList.add('hidden');
-              document.getElementById('videoModalIframe').src = "";
+function toggleCameraStream() {
+    const btn = document.getElementById('btn-camera-toggle');
+    const icon = document.getElementById('camera-icon');
+    const text = document.getElementById('camera-text');
+
+    if (!isCameraStreaming) {
+        // 1. Visuel d'attente
+        icon.className = "fas fa-spinner fa-spin";
+        text.innerText = "Connexion...";
+
+        // 2. Appel à l'API de la Pi pour démarrer
+        fetch(`${piAddress}:5000/start`, { mode: 'no-cors' })
+            .then(() => {
+                isCameraStreaming = true;
+                
+                // 3. Transformation du bouton en mode "STOP" (Rouge)
+                btn.className = "flex-1 min-w-[80px] py-3 bg-red-900/30 hover:bg-red-900/50 border border-red-500/30 text-red-400 rounded-xl text-[0.6rem] font-black uppercase tracking-widest transition-all flex flex-col items-center gap-1.5";
+                icon.className = "fas fa-stop-circle";
+                text.innerText = "Couper Caméra";
+
+                // 4. Ouverture de la modale avec le flux vidéo
+                document.getElementById('videoModalTitle').innerHTML = `<i class="fas fa-satellite-dish text-red-500 animate-pulse"></i> Direct Miniflex2`;
+                document.getElementById('videoModalIframe').src = `${piAddress}:8080/?action=stream`;
+                document.getElementById('videoModal').classList.remove('hidden');
+            })
+            .catch(err => {
+                // En cas d'erreur réseau
+                icon.className = "fas fa-exclamation-triangle text-yellow-500";
+                text.innerText = "Erreur Wi-Fi";
+                setTimeout(() => {
+                    icon.className = "fas fa-video";
+                    text.innerText = "Caméra Live";
+                }, 3000);
+                openInfoModal("Impossible de joindre la pompe. Vérifiez que la Raspberry Pi est branchée et sur le même réseau Wi-Fi.");
+            });
+    } else {
+        // 1. Appel à l'API pour tuer le flux
+        fetch(`${piAddress}:5000/stop`, { mode: 'no-cors' })
+            .then(() => {
+                isCameraStreaming = false;
+                
+                // 2. Retour au visuel normal (Cyan)
+                btn.className = "flex-1 min-w-[80px] py-3 bg-cyan-900/30 hover:bg-cyan-900/50 border border-cyan-500/30 text-cyan-400 rounded-xl text-[0.6rem] font-black uppercase tracking-widest transition-all flex flex-col items-center gap-1.5";
+                icon.className = "fas fa-video";
+                text.innerText = "Caméra Live";
+                
+                // 3. Fermeture de la fenêtre
+                document.getElementById('videoModalIframe').src = "";
+                document.getElementById('videoModal').classList.add('hidden');
+            });
+    }
 }
     </script>
 </body>
