@@ -3430,11 +3430,59 @@
 let isCameraStreaming = false;
 const piAddress = "http://192.168.1.18"; // Ou "http://192.168.1.18" si .local te fait des misères
 
+let isCameraStreaming = false;
+const piAddress = "http://192.168.1.18"; // On garde l'IP directe pour la fiabilité
+
 function toggleCameraStream() {
     const btn = document.getElementById('btn-camera-toggle');
     const icon = document.getElementById('camera-icon');
     const text = document.getElementById('camera-text');
 
+    if (!isCameraStreaming) {
+        // Mode ON : On lance la caméra
+        isCameraStreaming = true;
+        
+        // 1. Transformation du bouton en mode "STOP" (Rouge)
+        btn.className = "flex-1 min-w-[80px] py-3 bg-red-900/30 hover:bg-red-900/50 border border-red-500/30 text-red-400 rounded-xl text-[0.6rem] font-black uppercase tracking-widest transition-all flex flex-col items-center gap-1.5";
+        icon.className = "fas fa-stop-circle";
+        text.innerText = "Couper Caméra";
+
+        // 2. Modification du titre (uniquement s'il existe dans le HTML)
+        const modalTitle = document.getElementById('videoModalTitle');
+        if (modalTitle) {
+            modalTitle.innerHTML = `<i class="fas fa-satellite-dish text-red-500 animate-pulse"></i> Direct Miniflex2`;
+        }
+
+        // 3. Affichage de la vidéo (uniquement si la fenêtre existe)
+        const videoIframe = document.getElementById('videoModalIframe');
+        const videoModal = document.getElementById('videoModal');
+        
+        if (videoIframe && videoModal) {
+            videoIframe.src = `${piAddress}:8080/?action=stream`; // ou /stream.html
+            videoModal.classList.remove('hidden');
+        } else {
+            console.error("Oups : La fenêtre pour afficher la vidéo est introuvable dans le code HTML !");
+        }
+
+    } else {
+        // Mode OFF : On coupe tout
+        isCameraStreaming = false;
+        
+        // 1. Retour au visuel normal du bouton (Cyan)
+        btn.className = "flex-1 min-w-[80px] py-3 bg-cyan-900/30 hover:bg-cyan-900/50 border border-cyan-500/30 text-cyan-400 rounded-xl text-[0.6rem] font-black uppercase tracking-widest transition-all flex flex-col items-center gap-1.5";
+        icon.className = "fas fa-video";
+        text.innerText = "Caméra Live";
+        
+        // 2. Fermeture de la fenêtre
+        const videoIframe = document.getElementById('videoModalIframe');
+        const videoModal = document.getElementById('videoModal');
+        
+        if (videoIframe && videoModal) {
+            videoIframe.src = "";
+            videoModal.classList.add('hidden');
+        }
+    }
+}
     if (!isCameraStreaming) {
         // Mode ON : On passe directement à l'affichage, sans API !
         isCameraStreaming = true;
