@@ -1136,7 +1136,7 @@
                     </div>
                 </div>
 
-                <!-- ÉTAPE 2 : Dashboard chantier + Flux vidéo -->
+                <!-- ÉTAPE 2 : Tableau des canalisations -->
                 <div id="bzVisionStep2" class="max-w-5xl mx-auto hidden flex-col space-y-4 md:space-y-6">
                     <div class="flex justify-start">
                         <button onclick="goToBzVisionStep1()" class="text-gray-400 hover:text-white transition-colors flex items-center gap-2 text-[0.65rem] md:text-xs font-bold uppercase tracking-widest bg-white/5 px-4 py-2.5 rounded-xl border border-white/10 hover:bg-white/10 backdrop-blur-md">
@@ -1154,86 +1154,172 @@
                                 <span id="bzVisionJobAddressDisplay"><i class="fas fa-map-marker-alt mr-1"></i> Adresse</span>
                             </div>
                         </div>
+                        <div class="flex items-center gap-2 shrink-0">
+                            <span class="text-[0.6rem] font-black text-gray-400 uppercase tracking-widest bg-white/5 px-3 py-1.5 rounded-lg border border-white/10">
+                                <span id="bzVisionCanalCount">0</span> canalisation(s)
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Tableau canalisations -->
+                    <div class="glass-panel rounded-2xl md:rounded-3xl overflow-hidden border border-cyan-500/20">
+                        <div class="p-4 md:p-5 border-b border-white/10 flex justify-between items-center bg-black/30">
+                            <h3 class="text-[0.65rem] md:text-xs font-black text-white uppercase tracking-widest flex items-center gap-2">
+                                <i class="fas fa-list text-cyan-400"></i> Canalisations à inspecter
+                            </h3>
+                            <button onclick="bzVisionAddCanal()" class="flex items-center gap-2 px-4 py-2 bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-500/40 text-cyan-400 rounded-xl text-[0.65rem] font-black uppercase tracking-widest transition-all">
+                                <i class="fas fa-plus"></i> Ajouter
+                            </button>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-xs text-left whitespace-nowrap">
+                                <thead class="text-[0.55rem] uppercase bg-white/5 text-white font-black tracking-widest border-b border-white/10">
+                                    <tr>
+                                        <th class="px-4 py-3">#</th>
+                                        <th class="px-4 py-3">Libellé</th>
+                                        <th class="px-4 py-3">Longueur (m)</th>
+                                        <th class="px-4 py-3">Diamètre (mm)</th>
+                                        <th class="px-4 py-3 text-center">Statut</th>
+                                        <th class="px-4 py-3 text-center sticky right-0 bg-[#0a0a0a] border-l border-white/5">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="bzVisionCanalTable" class="divide-y divide-white/5">
+                                    <!-- Injecté par JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <div id="bzVisionCanalEmpty" class="flex flex-col items-center justify-center py-14 text-center">
+                            <i class="fas fa-pipe text-4xl text-gray-700 mb-4"></i>
+                            <p class="text-gray-500 text-[0.65rem] font-bold uppercase tracking-widest">Aucune canalisation ajoutée</p>
+                            <p class="text-gray-600 text-[0.6rem] mt-1">Cliquez sur "Ajouter" pour commencer</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ÉTAPE 3 : Inspection vidéo d'une canalisation -->
+                <div id="bzVisionStep3" class="max-w-5xl mx-auto hidden flex-col space-y-4 md:space-y-6">
+                    <div class="flex justify-start">
+                        <button onclick="goToBzVisionStep2()" class="text-gray-400 hover:text-white transition-colors flex items-center gap-2 text-[0.65rem] md:text-xs font-bold uppercase tracking-widest bg-white/5 px-4 py-2.5 rounded-xl border border-white/10 hover:bg-white/10 backdrop-blur-md">
+                            <i class="fas fa-arrow-left"></i> Retour aux canalisations
+                        </button>
+                    </div>
+
+                    <!-- En-tête canalisation inspectée -->
+                    <div class="glass-panel p-5 md:p-6 rounded-2xl md:rounded-3xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-l-4 border-l-cyan-400">
+                        <div>
+                            <div class="text-[0.6rem] font-black text-cyan-400 uppercase tracking-widest mb-1" id="bzVisionInspJobName">Chantier</div>
+                            <h2 id="bzVisionInspCanalName" class="text-xl md:text-2xl font-black text-white mb-1">Canalisation #1</h2>
+                            <div class="flex flex-wrap items-center gap-3 text-xs text-gray-400">
+                                <span id="bzVisionInspLen"><i class="fas fa-ruler-horizontal mr-1"></i> — m</span>
+                                <span>•</span>
+                                <span id="bzVisionInspDia"><i class="fas fa-circle-notch mr-1"></i> DN —</span>
+                            </div>
+                        </div>
                         <div id="bzVisionLiveIndicator" class="hidden items-center gap-2 bg-red-500/20 text-red-400 px-3 py-1.5 rounded-lg border border-red-500/30 text-[0.65rem] font-black uppercase animate-pulse">
                             <div class="w-2 h-2 bg-red-500 rounded-full"></div> EN DIRECT
                         </div>
                     </div>
 
-                    <!-- Zone vidéo principale -->
-                    <div class="glass-panel rounded-2xl md:rounded-3xl overflow-hidden border border-cyan-500/20">
-
-                        <!-- État : Bouton démarrage -->
-                        <div id="bzVisionStartPrompt" class="flex flex-col items-center justify-center p-10 md:p-16 text-center">
-                            <div class="w-20 h-20 bg-cyan-500/10 rounded-full flex items-center justify-center mb-6 border border-cyan-500/20">
-                                <i class="fas fa-camera text-3xl text-cyan-400"></i>
-                            </div>
-                            <h3 class="text-lg md:text-xl font-black text-white mb-2 uppercase tracking-widest">Dossier prêt</h3>
-                            <p class="text-xs text-gray-500 font-bold uppercase tracking-widest mb-8">Initialise la connexion avec le tracteur</p>
-                            <button onclick="startBzVisionStream()" class="px-8 py-4 bg-gradient-to-r from-cyan-600 to-blue-600 text-white font-black uppercase text-sm rounded-2xl shadow-[0_10px_30px_rgba(34,211,238,0.4)] hover:from-cyan-500 hover:to-blue-500 transition-all flex items-center gap-3">
-                                <i class="fas fa-play-circle text-xl"></i> DÉMARRER LA VIDÉO
-                            </button>
-                        </div>
-
-                        <!-- État : Player actif -->
-                        <div id="bzVisionPlayer" class="hidden flex-col">
-                            <!-- Barre de contrôle -->
-                            <div class="p-4 flex justify-between items-center bg-black/60 border-b border-white/10">
-                                <div class="flex items-center gap-3">
-                                    <div class="flex items-center gap-2 bg-red-500/20 text-red-400 px-3 py-1.5 rounded-lg border border-red-500/30 text-[0.65rem] font-black uppercase animate-pulse">
-                                        <div class="w-2 h-2 bg-red-500 rounded-full"></div> EN DIRECT
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
+                        <!-- Zone vidéo (2/3) -->
+                        <div class="lg:col-span-2 flex flex-col gap-4">
+                            <div class="glass-panel rounded-2xl md:rounded-3xl overflow-hidden border border-cyan-500/20">
+                                <!-- Bouton démarrage -->
+                                <div id="bzVisionStartPrompt" class="flex flex-col items-center justify-center p-10 text-center">
+                                    <div class="w-16 h-16 bg-cyan-500/10 rounded-full flex items-center justify-center mb-5 border border-cyan-500/20">
+                                        <i class="fas fa-camera text-2xl text-cyan-400"></i>
                                     </div>
-                                    <span id="bzVisionElapsed" class="text-gray-400 font-mono text-xs font-bold">00:00</span>
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    <button onclick="takeBzVisionSnapshot()" class="px-3 py-1.5 bg-white/5 hover:bg-white/15 border border-white/10 text-gray-300 hover:text-white rounded-lg text-[0.65rem] font-black uppercase transition-colors flex items-center gap-2">
-                                        <i class="fas fa-camera"></i> Capture
-                                    </button>
-                                    <button onclick="stopBzVisionStream()" class="px-3 py-1.5 bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 text-red-400 rounded-lg text-[0.65rem] font-black uppercase transition-colors flex items-center gap-2">
-                                        <i class="fas fa-stop"></i> Arrêter
+                                    <h3 class="text-base font-black text-white mb-2 uppercase tracking-widest">Prêt pour l'inspection</h3>
+                                    <p class="text-xs text-gray-500 font-bold uppercase tracking-widest mb-6">Démarre le flux caméra du tracteur</p>
+                                    <button onclick="startBzVisionStream()" class="px-6 py-3 bg-gradient-to-r from-cyan-600 to-blue-600 text-white font-black uppercase text-xs rounded-xl shadow-[0_10px_25px_rgba(34,211,238,0.4)] hover:from-cyan-500 hover:to-blue-500 transition-all flex items-center gap-2">
+                                        <i class="fas fa-play-circle"></i> DÉMARRER LA VIDÉO
                                     </button>
                                 </div>
-                            </div>
-                            <!-- Flux vidéo -->
-                            <div class="relative bg-black flex items-center justify-center" style="min-height: 360px;">
-                                <img id="bzVisionStream" src="" alt="Flux BzVision" class="w-full h-auto hidden" style="max-height: 500px; object-fit: contain;">
-                                <div id="bzVisionLoadingMsg" class="absolute flex flex-col items-center gap-3 text-gray-500 text-xs font-bold uppercase tracking-widest">
-                                    <i class="fas fa-spinner fa-spin text-2xl text-cyan-400"></i>
-                                    Connexion au flux caméra...
+                                <!-- Player actif -->
+                                <div id="bzVisionPlayer" class="hidden flex-col">
+                                    <div class="p-3 flex justify-between items-center bg-black/60 border-b border-white/10">
+                                        <div class="flex items-center gap-3">
+                                            <div class="flex items-center gap-2 bg-red-500/20 text-red-400 px-2.5 py-1 rounded-lg border border-red-500/30 text-[0.6rem] font-black uppercase animate-pulse">
+                                                <div class="w-1.5 h-1.5 bg-red-500 rounded-full"></div> LIVE
+                                            </div>
+                                            <span id="bzVisionElapsed" class="text-gray-400 font-mono text-xs font-bold">00:00</span>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <button onclick="takeBzVisionSnapshot()" class="px-2.5 py-1.5 bg-white/5 hover:bg-white/15 border border-white/10 text-gray-300 hover:text-white rounded-lg text-[0.6rem] font-black uppercase transition-colors flex items-center gap-1.5">
+                                                <i class="fas fa-camera"></i> Capture
+                                            </button>
+                                            <button onclick="stopBzVisionStream()" class="px-2.5 py-1.5 bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 text-red-400 rounded-lg text-[0.6rem] font-black uppercase transition-colors flex items-center gap-1.5">
+                                                <i class="fas fa-stop"></i> Stop
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="relative bg-black flex items-center justify-center" style="min-height:300px;">
+                                        <img id="bzVisionStream" src="" alt="Flux BzVision" class="w-full h-auto hidden" style="max-height:420px;object-fit:contain;">
+                                        <div id="bzVisionLoadingMsg" class="absolute flex flex-col items-center gap-3 text-gray-500 text-xs font-bold uppercase tracking-widest">
+                                            <i class="fas fa-spinner fa-spin text-2xl text-cyan-400"></i>
+                                            Connexion au flux caméra...
+                                        </div>
+                                        <div class="absolute bottom-3 right-3 text-white font-mono text-[0.55rem] bg-black/60 px-2 py-0.5 rounded border border-white/10 hidden" id="bzVisionResLabel">1080p / 30fps</div>
+                                    </div>
+                                    <!-- Captures -->
+                                    <div id="bzVisionSnapshots" class="p-3 bg-black/40 border-t border-white/10 hidden">
+                                        <h4 class="text-[0.55rem] font-black text-gray-400 uppercase tracking-widest mb-2 flex items-center gap-2">
+                                            <i class="fas fa-images text-cyan-400"></i> Captures (<span id="bzVisionSnapCount">0</span>)
+                                        </h4>
+                                        <div id="bzVisionSnapshotList" class="flex gap-2 overflow-x-auto pb-1 hide-scrollbar"></div>
+                                    </div>
                                 </div>
-                                <div class="absolute bottom-4 left-4 text-cyan-400 font-mono text-xs bg-black/60 px-2 py-1 rounded border border-cyan-500/30 hidden" id="bzVisionDistLabel">
-                                    DIST: <span id="bzVisionDist">—</span> m
-                                </div>
-                                <div class="absolute bottom-4 right-4 text-white font-mono text-xs bg-black/60 px-2 py-1 rounded border border-white/10 hidden" id="bzVisionResLabel">
-                                    1080p / 30fps
-                                </div>
                             </div>
-                            <!-- Captures -->
-                            <div id="bzVisionSnapshots" class="p-4 bg-black/40 border-t border-white/10 hidden">
-                                <h4 class="text-[0.6rem] font-black text-gray-400 uppercase tracking-widest mb-3 flex items-center gap-2">
-                                    <i class="fas fa-images text-cyan-400"></i> Captures de session
-                                </h4>
-                                <div id="bzVisionSnapshotList" class="flex gap-3 overflow-x-auto pb-2 hide-scrollbar"></div>
-                            </div>
-                        </div>
-                    </div>
 
-                    <!-- Métriques session -->
-                    <div id="bzVisionMetrics" class="hidden grid grid-cols-2 md:grid-cols-4 gap-4">
-                        <div class="glass-panel p-4 rounded-2xl text-center border border-cyan-500/10">
-                            <div class="text-[0.55rem] font-bold text-gray-500 uppercase tracking-widest mb-1">Durée session</div>
-                            <div class="text-xl font-black text-white"><span id="bzVisionSessionTime">00:00</span></div>
+                            <!-- Métriques rapides -->
+                            <div class="grid grid-cols-3 gap-3">
+                                <div class="glass-panel p-3 rounded-xl text-center border border-cyan-500/10">
+                                    <div class="text-[0.5rem] font-bold text-gray-500 uppercase tracking-widest mb-1">Durée</div>
+                                    <div class="text-base font-black text-white"><span id="bzVisionSessionTime">00:00</span></div>
+                                </div>
+                                <div class="glass-panel p-3 rounded-xl text-center border border-cyan-500/10">
+                                    <div class="text-[0.5rem] font-bold text-gray-500 uppercase tracking-widest mb-1">Captures</div>
+                                    <div class="text-base font-black text-cyan-400" id="bzVisionSnapCountDisplay">0</div>
+                                </div>
+                                <div class="glass-panel p-3 rounded-xl text-center border border-cyan-500/10">
+                                    <div class="text-[0.5rem] font-bold text-gray-500 uppercase tracking-widest mb-1">Statut flux</div>
+                                    <div class="text-xs font-black" id="bzVisionStatusText"><span class="text-gray-500">Inactif</span></div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="glass-panel p-4 rounded-2xl text-center border border-cyan-500/10">
-                            <div class="text-[0.55rem] font-bold text-gray-500 uppercase tracking-widest mb-1">Captures</div>
-                            <div class="text-xl font-black text-cyan-400"><span id="bzVisionSnapCount">0</span></div>
-                        </div>
-                        <div class="glass-panel p-4 rounded-2xl text-center border border-cyan-500/10">
-                            <div class="text-[0.55rem] font-bold text-gray-500 uppercase tracking-widest mb-1">Statut flux</div>
-                            <div class="text-sm font-black" id="bzVisionStatusText"><span class="text-gray-500">Inactif</span></div>
-                        </div>
-                        <div class="glass-panel p-4 rounded-2xl text-center border border-cyan-500/10">
-                            <div class="text-[0.55rem] font-bold text-gray-500 uppercase tracking-widest mb-1">IP Tracteur</div>
-                            <div class="text-xs font-black text-gray-400 font-mono">192.168.5.70</div>
+
+                        <!-- Panneau latéral : notes + statut + validation (1/3) -->
+                        <div class="flex flex-col gap-4">
+                            <!-- Statut de la canalisation -->
+                            <div class="glass-panel p-4 md:p-5 rounded-2xl border border-white/10">
+                                <h4 class="text-[0.6rem] font-black text-gray-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+                                    <i class="fas fa-traffic-light text-white"></i> Statut inspection
+                                </h4>
+                                <div class="flex flex-col gap-2">
+                                    <button onclick="setBzVisionStatus('ok')" id="bzVisionStatusOk" class="bzvision-status-btn flex items-center gap-3 px-3 py-2.5 rounded-xl border text-[0.65rem] font-black uppercase tracking-widest transition-all bg-green-500/10 border-green-500/30 text-green-400 hover:bg-green-500/20">
+                                        <i class="fas fa-check-circle text-base"></i> OK — Aucun défaut
+                                    </button>
+                                    <button onclick="setBzVisionStatus('watch')" id="bzVisionStatusWatch" class="bzvision-status-btn flex items-center gap-3 px-3 py-2.5 rounded-xl border text-[0.65rem] font-black uppercase tracking-widest transition-all bg-yellow-500/10 border-yellow-500/30 text-yellow-400 hover:bg-yellow-500/20">
+                                        <i class="fas fa-exclamation-circle text-base"></i> À surveiller
+                                    </button>
+                                    <button onclick="setBzVisionStatus('defaut')" id="bzVisionStatusDefaut" class="bzvision-status-btn flex items-center gap-3 px-3 py-2.5 rounded-xl border text-[0.65rem] font-black uppercase tracking-widest transition-all bg-red-500/10 border-red-500/30 text-red-400 hover:bg-red-500/20">
+                                        <i class="fas fa-times-circle text-base"></i> Défaut constaté
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Notes -->
+                            <div class="glass-panel p-4 md:p-5 rounded-2xl border border-white/10 flex flex-col gap-2">
+                                <h4 class="text-[0.6rem] font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">
+                                    <i class="fas fa-pen text-white"></i> Observations
+                                </h4>
+                                <textarea id="bzVisionNotes" rows="5" class="input-bz text-xs font-medium resize-none mt-1" placeholder="Notez vos observations sur cette canalisation..."></textarea>
+                            </div>
+
+                            <!-- Bouton Terminer -->
+                            <button onclick="bzVisionFinishInspection()" class="w-full py-4 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white font-black uppercase text-xs tracking-widest rounded-2xl shadow-[0_10px_25px_rgba(34,197,94,0.3)] transition-all flex items-center justify-center gap-2">
+                                <i class="fas fa-check-circle text-base"></i> Terminer l'inspection
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -3667,26 +3753,50 @@
         // BZVISION — Gestion Inspection Vidéo
         // ==========================================
 
-        let activeBzVisionJob = null;
+        let activeBzVisionJob = null;      // Chantier actif
+        let activeBzVisionCanal = null;    // Canalisation en cours d'inspection
+        let bzVisionCanals = [];           // Liste des canalisations du chantier
         let bzVisionTimer = null;
         let bzVisionElapsedSeconds = 0;
         let bzVisionSnapCount = 0;
+        let bzVisionCurrentStatus = null;  // 'ok' | 'watch' | 'defaut'
+        let bzVisionSnapData = [];         // dataURLs des captures de la session
         let isBzVisionStreaming = false;
         const BZ_VISION_CAM_URL = "http://192.168.5.70:8080/?action=stream";
 
+        // ---- Navigation ----
+
         function handleBzVisionBack() {
-            const step2 = document.getElementById('bzVisionStep2');
-            if (!step2.classList.contains('hidden')) { goToBzVisionStep1(); } else { nav('view-home'); }
+            const s3 = document.getElementById('bzVisionStep3');
+            const s2 = document.getElementById('bzVisionStep2');
+            if (!s3.classList.contains('hidden')) { goToBzVisionStep2(); }
+            else if (!s2.classList.contains('hidden')) { goToBzVisionStep1(); }
+            else { nav('view-home'); }
+        }
+
+        function showBzVisionStep(step) {
+            ['bzVisionStep1','bzVisionStep2','bzVisionStep3'].forEach(id => {
+                const el = document.getElementById(id);
+                el.classList.add('hidden'); el.classList.remove('flex');
+            });
+            const target = document.getElementById('bzVisionStep' + step);
+            target.classList.remove('hidden'); target.classList.add('flex');
+            window.scrollTo(0, 0);
         }
 
         function goToBzVisionStep1() {
             stopBzVisionStream();
-            document.getElementById('bzVisionStep2').classList.add('hidden');
-            document.getElementById('bzVisionStep2').classList.remove('flex');
-            document.getElementById('bzVisionStep1').classList.remove('hidden');
+            showBzVisionStep(1);
             loadBzVisionHistory();
-            window.scrollTo(0, 0);
         }
+
+        function goToBzVisionStep2() {
+            stopBzVisionStream();
+            showBzVisionStep(2);
+            renderBzVisionCanalTable();
+        }
+
+        // ---- Création de chantier ----
 
         function openNewBzVisionJobModal() {
             document.getElementById('bzVisionJobDate').value = new Date().toISOString().split('T')[0];
@@ -3695,7 +3805,7 @@
             document.getElementById('bzVisionJobStreet').value = '';
             document.getElementById('bzVisionJobNum').value = '';
             document.getElementById('bzVisionJobNameError').classList.add('hidden');
-            document.getElementById('bzVisionJobName').classList.remove('!border-red-500', '!bg-red-500/10');
+            document.getElementById('bzVisionJobName').classList.remove('!border-red-500','!bg-red-500/10');
             document.getElementById('newBzVisionJobModal').classList.remove('hidden');
         }
 
@@ -3707,7 +3817,7 @@
             const name = document.getElementById('bzVisionJobName').value.trim();
             if (!name) {
                 document.getElementById('bzVisionJobNameError').classList.remove('hidden');
-                document.getElementById('bzVisionJobName').classList.add('!border-red-500', '!bg-red-500/10');
+                document.getElementById('bzVisionJobName').classList.add('!border-red-500','!bg-red-500/10');
                 return;
             }
             const date = document.getElementById('bzVisionJobDate').value;
@@ -3716,77 +3826,228 @@
             const num = document.getElementById('bzVisionJobNum').value.trim();
             const dateFormatted = date ? new Date(date).toLocaleDateString('fr-FR') : new Date().toLocaleDateString('fr-FR');
 
-            // Sauvegarde dans l'historique partagé
             let history = JSON.parse(localStorage.getItem('bz_job_history') || '[]');
             history = history.filter(h => h.jobName !== name);
-            history.push({ jobName: name, city, street, building: num, date: dateFormatted, source: 'bzvision' });
+            history.push({ jobName: name, city, street, building: num, date: dateFormatted, source: 'bzvision', canals: [] });
             localStorage.setItem('bz_job_history', JSON.stringify(history));
 
             closeNewBzVisionJobModal();
-            openBzVisionJob(name, dateFormatted, city, street, num);
+            openBzVisionJob(name, dateFormatted, city, street, num, []);
         }
 
-        function openBzVisionJob(name, date, city, street, num) {
+        function openBzVisionJob(name, date, city, street, num, canals) {
             activeBzVisionJob = { name, date, city, street, num };
-            document.getElementById('bzVisionJobNameDisplay').innerText = name;
-            document.getElementById('bzVisionJobDateDisplay').innerHTML = `<i class="far fa-calendar-alt mr-1"></i> ${date || 'Date non renseignée'}`;
-            const address = [num, street, city].filter(Boolean).join(' ');
-            document.getElementById('bzVisionJobAddressDisplay').innerHTML = `<i class="fas fa-map-marker-alt mr-1"></i> ${address || 'Adresse non renseignée'}`;
+            bzVisionCanals = canals || [];
 
-            // Reset UI
+            document.getElementById('bzVisionJobNameDisplay').innerText = name;
+            document.getElementById('bzVisionJobDateDisplay').innerHTML = `<i class="far fa-calendar-alt mr-1"></i> ${date || 'Non renseignée'}`;
+            const address = [num, street, city].filter(Boolean).join(' ');
+            document.getElementById('bzVisionJobAddressDisplay').innerHTML = `<i class="fas fa-map-marker-alt mr-1"></i> ${address || 'Non renseignée'}`;
+
+            renderBzVisionCanalTable();
+            showBzVisionStep(2);
+        }
+
+        // ---- Gestion des canalisations ----
+
+        function bzVisionAddCanal() {
+            bzVisionCanals.push({
+                id: Date.now(),
+                label: '',
+                length: '',
+                diameter: '',
+                status: null,       // 'ok' | 'watch' | 'defaut' | null
+                notes: '',
+                duration: '00:00',
+                snapshots: [],
+                done: false
+            });
+            saveBzVisionCanals();
+            renderBzVisionCanalTable();
+        }
+
+        function bzVisionDeleteCanal(id) {
+            bzVisionCanals = bzVisionCanals.filter(c => c.id !== id);
+            saveBzVisionCanals();
+            renderBzVisionCanalTable();
+        }
+
+        function bzVisionCanalFieldChange(id, field, value) {
+            const canal = bzVisionCanals.find(c => c.id === id);
+            if (canal) { canal[field] = value; saveBzVisionCanals(); }
+        }
+
+        function saveBzVisionCanals() {
+            if (!activeBzVisionJob) return;
+            let history = JSON.parse(localStorage.getItem('bz_job_history') || '[]');
+            const idx = history.findIndex(h => h.jobName === activeBzVisionJob.name);
+            if (idx >= 0) { history[idx].canals = bzVisionCanals; }
+            localStorage.setItem('bz_job_history', JSON.stringify(history));
+            document.getElementById('bzVisionCanalCount').innerText = bzVisionCanals.length;
+        }
+
+        function renderBzVisionCanalTable() {
+            const tbody = document.getElementById('bzVisionCanalTable');
+            const empty = document.getElementById('bzVisionCanalEmpty');
+            document.getElementById('bzVisionCanalCount').innerText = bzVisionCanals.length;
+
+            if (bzVisionCanals.length === 0) {
+                tbody.innerHTML = '';
+                empty.classList.remove('hidden');
+                return;
+            }
+            empty.classList.add('hidden');
+
+            tbody.innerHTML = bzVisionCanals.map((c, i) => {
+                const statusBadge = c.done
+                    ? bzVisionStatusBadge(c.status)
+                    : `<span class="text-[0.55rem] font-black text-gray-500 bg-white/5 border border-white/10 px-2 py-1 rounded uppercase">En attente</span>`;
+
+                const actionBtn = c.done
+                    ? `<div class="flex gap-1.5 px-2 py-1">
+                           <button onclick="bzVisionViewReport(${c.id})" class="px-2 py-1.5 bg-blue-500/20 hover:bg-blue-500/30 border border-blue-500/30 text-blue-400 rounded-lg text-[0.55rem] font-black uppercase transition-colors flex items-center gap-1"><i class="fas fa-file-alt"></i> Rapport</button>
+                           <button onclick="bzVisionReopenCanal(${c.id})" class="px-2 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 text-gray-400 rounded-lg text-[0.55rem] font-black uppercase transition-colors"><i class="fas fa-redo"></i></button>
+                       </div>`
+                    : `<div class="flex gap-1.5 px-2 py-1">
+                           <button onclick="bzVisionStartInspection(${c.id})" class="px-2 py-1.5 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white rounded-lg text-[0.55rem] font-black uppercase transition-all shadow-[0_4px_12px_rgba(34,211,238,0.3)] flex items-center gap-1"><i class="fas fa-play"></i> Inspecter</button>
+                           <button onclick="bzVisionDeleteCanal(${c.id})" class="px-2 py-1.5 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 text-red-400 rounded-lg text-[0.55rem] transition-colors"><i class="fas fa-trash-alt"></i></button>
+                       </div>`;
+
+                const rowClass = c.done ? 'opacity-70 bg-green-900/10' : 'hover:bg-white/5';
+
+                return `<tr class="${rowClass} transition-colors" id="bzv-canal-row-${c.id}">
+                    <td class="px-4 py-3 font-mono font-bold text-gray-400 text-xs">#${i+1}</td>
+                    <td class="px-2 py-2 min-w-[140px]">
+                        <input type="text" value="${c.label}" placeholder="Libellé..." onchange="bzVisionCanalFieldChange(${c.id},'label',this.value)"
+                            class="bg-transparent border border-transparent focus:border-white/20 focus:bg-white/5 outline-none text-white font-bold text-xs px-2 py-1.5 rounded-lg w-full transition-colors ${c.done ? 'pointer-events-none opacity-50' : ''}">
+                    </td>
+                    <td class="px-2 py-2">
+                        <input type="number" value="${c.length}" placeholder="—" onchange="bzVisionCanalFieldChange(${c.id},'length',this.value)"
+                            class="bg-transparent border border-transparent focus:border-white/20 focus:bg-white/5 outline-none text-white font-bold text-xs px-2 py-1.5 rounded-lg w-20 text-center transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${c.done ? 'pointer-events-none opacity-50' : ''}">
+                    </td>
+                    <td class="px-2 py-2">
+                        <input type="number" value="${c.diameter}" placeholder="—" onchange="bzVisionCanalFieldChange(${c.id},'diameter',this.value)"
+                            class="bg-transparent border border-transparent focus:border-white/20 focus:bg-white/5 outline-none text-white font-bold text-xs px-2 py-1.5 rounded-lg w-20 text-center transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${c.done ? 'pointer-events-none opacity-50' : ''}">
+                    </td>
+                    <td class="px-4 py-3 text-center">${statusBadge}</td>
+                    <td class="sticky right-0 bg-[#0a0a0a] border-l border-white/5 shadow-[-8px_0_15px_rgba(0,0,0,0.5)]">${actionBtn}</td>
+                </tr>`;
+            }).join('');
+        }
+
+        function bzVisionStatusBadge(status) {
+            const map = {
+                ok:     `<span class="text-[0.55rem] font-black text-green-400 bg-green-500/10 border border-green-500/30 px-2 py-1 rounded uppercase flex items-center gap-1 justify-center"><i class="fas fa-check-circle"></i> OK</span>`,
+                watch:  `<span class="text-[0.55rem] font-black text-yellow-400 bg-yellow-500/10 border border-yellow-500/30 px-2 py-1 rounded uppercase flex items-center gap-1 justify-center"><i class="fas fa-exclamation-circle"></i> À surveiller</span>`,
+                defaut: `<span class="text-[0.55rem] font-black text-red-400 bg-red-500/10 border border-red-500/30 px-2 py-1 rounded uppercase flex items-center gap-1 justify-center"><i class="fas fa-times-circle"></i> Défaut</span>`,
+            };
+            return map[status] || `<span class="text-[0.55rem] font-black text-gray-500 bg-white/5 border border-white/10 px-2 py-1 rounded uppercase">—</span>`;
+        }
+
+        // ---- Lancement d'une inspection ----
+
+        function bzVisionStartInspection(id) {
+            activeBzVisionCanal = bzVisionCanals.find(c => c.id === id);
+            if (!activeBzVisionCanal) return;
+
+            // Reset session
+            bzVisionSnapCount = 0;
+            bzVisionSnapData = [];
+            bzVisionCurrentStatus = activeBzVisionCanal.status;
+            bzVisionElapsedSeconds = 0;
+
+            // Remplir l'en-tête
+            const idx = bzVisionCanals.indexOf(activeBzVisionCanal);
+            const label = activeBzVisionCanal.label || `Canalisation #${idx+1}`;
+            document.getElementById('bzVisionInspJobName').innerText = activeBzVisionJob?.name || '';
+            document.getElementById('bzVisionInspCanalName').innerText = label;
+            document.getElementById('bzVisionInspLen').innerHTML = `<i class="fas fa-ruler-horizontal mr-1"></i> ${activeBzVisionCanal.length || '—'} m`;
+            document.getElementById('bzVisionInspDia').innerHTML = `<i class="fas fa-circle-notch mr-1"></i> DN ${activeBzVisionCanal.diameter || '—'}`;
+
+            // Reset UI vidéo
             document.getElementById('bzVisionStartPrompt').classList.remove('hidden');
             document.getElementById('bzVisionPlayer').classList.add('hidden');
             document.getElementById('bzVisionPlayer').classList.remove('flex');
-            document.getElementById('bzVisionMetrics').classList.add('hidden');
-            document.getElementById('bzVisionLiveIndicator').classList.add('hidden');
             document.getElementById('bzVisionSnapshots').classList.add('hidden');
             document.getElementById('bzVisionSnapshotList').innerHTML = '';
-            bzVisionSnapCount = 0;
-            bzVisionElapsedSeconds = 0;
             document.getElementById('bzVisionSnapCount').innerText = '0';
+            document.getElementById('bzVisionSnapCountDisplay').innerText = '0';
             document.getElementById('bzVisionSessionTime').innerText = '00:00';
+            document.getElementById('bzVisionElapsed').innerText = '00:00';
             document.getElementById('bzVisionStatusText').innerHTML = '<span class="text-gray-500">Inactif</span>';
+            document.getElementById('bzVisionLiveIndicator').classList.add('hidden');
 
-            document.getElementById('bzVisionStep1').classList.add('hidden');
-            document.getElementById('bzVisionStep2').classList.remove('hidden');
-            document.getElementById('bzVisionStep2').classList.add('flex');
-            window.scrollTo(0, 0);
+            // Notes pré-remplies si déjà renseignées
+            document.getElementById('bzVisionNotes').value = activeBzVisionCanal.notes || '';
+
+            // Statut pré-sélectionné
+            updateBzVisionStatusButtons(bzVisionCurrentStatus);
+
+            showBzVisionStep(3);
         }
+
+        function bzVisionReopenCanal(id) {
+            const canal = bzVisionCanals.find(c => c.id === id);
+            if (!canal) return;
+            canal.done = false;
+            saveBzVisionCanals();
+            renderBzVisionCanalTable();
+        }
+
+        // ---- Statut ----
+
+        function setBzVisionStatus(status) {
+            bzVisionCurrentStatus = status;
+            updateBzVisionStatusButtons(status);
+        }
+
+        function updateBzVisionStatusButtons(status) {
+            const configs = {
+                ok:     { id: 'bzVisionStatusOk',     active: 'bg-green-500/30 border-green-400 ring-2 ring-green-500/30',  inactive: 'bg-green-500/10 border-green-500/30 text-green-400 hover:bg-green-500/20' },
+                watch:  { id: 'bzVisionStatusWatch',  active: 'bg-yellow-500/30 border-yellow-400 ring-2 ring-yellow-500/30', inactive: 'bg-yellow-500/10 border-yellow-500/30 text-yellow-400 hover:bg-yellow-500/20' },
+                defaut: { id: 'bzVisionStatusDefaut', active: 'bg-red-500/30 border-red-400 ring-2 ring-red-500/30',        inactive: 'bg-red-500/10 border-red-500/30 text-red-400 hover:bg-red-500/20' },
+            };
+            Object.entries(configs).forEach(([key, cfg]) => {
+                const btn = document.getElementById(cfg.id);
+                if (!btn) return;
+                btn.className = `bzvision-status-btn flex items-center gap-3 px-3 py-2.5 rounded-xl border text-[0.65rem] font-black uppercase tracking-widest transition-all ${key === status ? cfg.active : cfg.inactive}`;
+            });
+        }
+
+        // ---- Flux vidéo ----
 
         function startBzVisionStream() {
             isBzVisionStreaming = true;
             document.getElementById('bzVisionStartPrompt').classList.add('hidden');
-
-            const player = document.getElementById('bzVisionPlayer');
-            player.classList.remove('hidden');
-            player.classList.add('flex');
-            player.style.flexDirection = 'column';
-
-            document.getElementById('bzVisionMetrics').classList.remove('hidden');
             document.getElementById('bzVisionLiveIndicator').classList.remove('hidden');
             document.getElementById('bzVisionLiveIndicator').classList.add('flex');
 
+            const player = document.getElementById('bzVisionPlayer');
+            player.classList.remove('hidden'); player.classList.add('flex');
+            player.style.flexDirection = 'column';
+
             const streamImg = document.getElementById('bzVisionStream');
             const loadingMsg = document.getElementById('bzVisionLoadingMsg');
+            loadingMsg.innerHTML = '<i class="fas fa-spinner fa-spin text-2xl text-cyan-400"></i><span class="mt-2">Connexion au flux caméra...</span>';
+            loadingMsg.classList.remove('hidden');
 
             streamImg.src = BZ_VISION_CAM_URL;
             streamImg.onload = () => {
                 streamImg.classList.remove('hidden');
                 loadingMsg.classList.add('hidden');
-                document.getElementById('bzVisionDistLabel').classList.remove('hidden');
                 document.getElementById('bzVisionResLabel').classList.remove('hidden');
                 document.getElementById('bzVisionStatusText').innerHTML = '<span class="text-green-400">● Connecté</span>';
             };
             streamImg.onerror = () => {
-                loadingMsg.innerHTML = '<i class="fas fa-exclamation-triangle text-2xl text-red-400"></i><span class="text-red-400 text-xs font-bold uppercase tracking-widest mt-2">Connexion impossible<br>Vérifiez le réseau du tracteur</span>';
-                document.getElementById('bzVisionStatusText').innerHTML = '<span class="text-red-400">✕ Erreur réseau</span>';
+                loadingMsg.innerHTML = '<i class="fas fa-exclamation-triangle text-2xl text-red-400"></i><span class="text-red-400 text-xs font-bold uppercase tracking-widest mt-2 text-center">Connexion impossible<br>Vérifiez le réseau du tracteur</span>';
+                document.getElementById('bzVisionStatusText').innerHTML = '<span class="text-red-400">✕ Erreur</span>';
             };
 
             bzVisionElapsedSeconds = 0;
             bzVisionTimer = setInterval(() => {
                 bzVisionElapsedSeconds++;
-                const m = Math.floor(bzVisionElapsedSeconds / 60).toString().padStart(2, '0');
-                const s = (bzVisionElapsedSeconds % 60).toString().padStart(2, '0');
+                const m = Math.floor(bzVisionElapsedSeconds / 60).toString().padStart(2,'0');
+                const s = (bzVisionElapsedSeconds % 60).toString().padStart(2,'0');
                 const t = `${m}:${s}`;
                 document.getElementById('bzVisionElapsed').innerText = t;
                 document.getElementById('bzVisionSessionTime').innerText = t;
@@ -3797,91 +4058,164 @@
             if (!isBzVisionStreaming) return;
             isBzVisionStreaming = false;
             if (bzVisionTimer) { clearInterval(bzVisionTimer); bzVisionTimer = null; }
-
             const streamImg = document.getElementById('bzVisionStream');
-            streamImg.src = '';
-            streamImg.classList.add('hidden');
-
-            document.getElementById('bzVisionLoadingMsg').innerHTML = '<i class="fas fa-spinner fa-spin text-2xl text-cyan-400"></i>Connexion au flux caméra...';
-            document.getElementById('bzVisionLoadingMsg').classList.remove('hidden');
-            document.getElementById('bzVisionPlayer').classList.add('hidden');
-            document.getElementById('bzVisionPlayer').classList.remove('flex');
-            document.getElementById('bzVisionStartPrompt').classList.remove('hidden');
-            document.getElementById('bzVisionLiveIndicator').classList.add('hidden');
-            document.getElementById('bzVisionDistLabel').classList.add('hidden');
-            document.getElementById('bzVisionResLabel').classList.add('hidden');
-            document.getElementById('bzVisionStatusText').innerHTML = '<span class="text-gray-500">Inactif</span>';
+            if (streamImg) { streamImg.src = ''; streamImg.classList.add('hidden'); }
+            const lm = document.getElementById('bzVisionLoadingMsg');
+            if (lm) { lm.innerHTML = '<i class="fas fa-spinner fa-spin text-2xl text-cyan-400"></i><span class="mt-2">Connexion au flux caméra...</span>'; lm.classList.remove('hidden'); }
+            const player = document.getElementById('bzVisionPlayer');
+            if (player) { player.classList.add('hidden'); player.classList.remove('flex'); }
+            const sp = document.getElementById('bzVisionStartPrompt');
+            if (sp) sp.classList.remove('hidden');
+            const li = document.getElementById('bzVisionLiveIndicator');
+            if (li) li.classList.add('hidden');
+            const rl = document.getElementById('bzVisionResLabel');
+            if (rl) rl.classList.add('hidden');
+            const st = document.getElementById('bzVisionStatusText');
+            if (st) st.innerHTML = '<span class="text-gray-500">Inactif</span>';
         }
 
-        async function takeBzVisionSnapshot() {
-            if (!isBzVisionStreaming) return;
+        // ---- Capture ----
 
-            const timeStr = document.getElementById('bzVisionElapsed').innerText;
-            const snapList = document.getElementById('bzVisionSnapshotList');
-
-            // --- Placeholder "chargement" immédiat pendant le fetch ---
-            const snapNum = bzVisionSnapCount + 1;
-            const placeholderId = `snap-placeholder-${Date.now()}`;
-            const placeholder = document.createElement('div');
-            placeholder.id = placeholderId;
-            placeholder.className = 'shrink-0 h-16 w-28 rounded-lg border border-cyan-500/30 bg-cyan-900/20 flex flex-col items-center justify-center gap-1 animate-pulse';
-            placeholder.innerHTML = `<i class="fas fa-spinner fa-spin text-cyan-400"></i><span class="text-[0.45rem] text-gray-500 uppercase">Capture...</span>`;
-            snapList.prepend(placeholder);
+        function takeBzVisionSnapshot() {
+            const streamImg = document.getElementById('bzVisionStream');
+            if (!streamImg || streamImg.classList.contains('hidden')) return;
+            bzVisionSnapCount++;
+            document.getElementById('bzVisionSnapCount').innerText = bzVisionSnapCount;
+            document.getElementById('bzVisionSnapCountDisplay').innerText = bzVisionSnapCount;
             document.getElementById('bzVisionSnapshots').classList.remove('hidden');
+            const snapList = document.getElementById('bzVisionSnapshotList');
+            const timeStr = document.getElementById('bzVisionElapsed').innerText;
 
+            const canvas = document.createElement('canvas');
             try {
-                // mjpeg-streamer retourne un JPEG brut sur ?action=snapshot
-                // On ajoute un timestamp pour éviter le cache navigateur
-                const snapshotUrl = `http://192.168.5.70:8080/?action=snapshot&t=${Date.now()}`;
-
-                const response = await fetch(snapshotUrl);
-                if (!response.ok) throw new Error(`HTTP ${response.status}`);
-
-                // Convertit le blob JPEG en base64 pour l'afficher et le sauvegarder
-                const blob = await response.blob();
-                const dataUrl = await new Promise((resolve, reject) => {
-                    const reader = new FileReader();
-                    reader.onload = () => resolve(reader.result);
-                    reader.onerror = reject;
-                    reader.readAsDataURL(blob);
-                });
-
-                // Incrémente seulement si la capture a réussi
-                bzVisionSnapCount++;
-                document.getElementById('bzVisionSnapCount').innerText = bzVisionSnapCount;
-                document.getElementById('bzVisionSnapCountDisplay').innerText = bzVisionSnapCount;
-
-                // Sauvegarde dans la session courante
+                canvas.width = streamImg.naturalWidth || 320;
+                canvas.height = streamImg.naturalHeight || 180;
+                canvas.getContext('2d').drawImage(streamImg, 0, 0);
+                const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
                 bzVisionSnapData.push({ dataUrl, time: timeStr });
-
-                // Remplace le placeholder par la vraie image
-                const snapEl = document.createElement('div');
-                snapEl.className = 'shrink-0 relative group cursor-pointer';
-                snapEl.innerHTML = `
-                    <img src="${dataUrl}" class="h-16 w-28 object-cover rounded-lg border border-white/10 group-hover:border-cyan-500/50 transition-colors" alt="Capture ${bzVisionSnapCount}">
+                const el = document.createElement('div');
+                el.className = 'shrink-0 relative group cursor-pointer';
+                el.innerHTML = `
+                    <img src="${dataUrl}" class="h-16 w-28 object-cover rounded-lg border border-white/10 group-hover:border-cyan-500/50 transition-colors">
                     <span class="absolute bottom-1 right-1 text-[0.45rem] font-bold bg-black/70 text-cyan-400 px-1 py-0.5 rounded font-mono">${timeStr}</span>
-                    <a href="${dataUrl}" download="capture_bzvision_${bzVisionSnapCount}_${timeStr.replace(':','-')}.jpg"
-                       onclick="event.stopPropagation()"
-                       class="absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg">
+                    <a href="${dataUrl}" download="capture_${bzVisionSnapCount}.jpg" class="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 rounded-lg transition-opacity">
                         <i class="fas fa-download text-white text-sm"></i>
                     </a>`;
-
-                placeholder.replaceWith(snapEl);
-
-            } catch (err) {
-                // Échec réseau : remplace par un placeholder d'erreur avec message
-                const errEl = document.createElement('div');
-                errEl.className = 'shrink-0 h-16 w-28 rounded-lg border border-red-500/30 bg-red-900/10 flex flex-col items-center justify-center gap-1 cursor-pointer group relative';
-                errEl.title = err.message;
-                errEl.innerHTML = `
-                    <i class="fas fa-exclamation-triangle text-red-400 text-sm"></i>
-                    <span class="text-[0.45rem] text-red-400 uppercase font-bold">Erreur réseau</span>
-                    <span class="text-[0.4rem] text-gray-600">${timeStr}</span>`;
-                placeholder.replaceWith(errEl);
-
-                console.warn('[BzVision] Snapshot failed:', err.message);
+                snapList.prepend(el);
+            } catch(e) {
+                bzVisionSnapData.push({ dataUrl: null, time: timeStr });
+                const el = document.createElement('div');
+                el.className = 'shrink-0 h-16 w-28 rounded-lg border border-cyan-500/30 bg-cyan-900/20 flex flex-col items-center justify-center gap-1';
+                el.innerHTML = `<i class="fas fa-camera text-cyan-400"></i><span class="text-[0.45rem] font-black text-cyan-400 font-mono">${timeStr}</span><span class="text-[0.4rem] text-gray-500">#${bzVisionSnapCount}</span>`;
+                snapList.prepend(el);
             }
         }
+
+        // ---- Terminer l'inspection ----
+
+        function bzVisionFinishInspection() {
+            if (!activeBzVisionCanal) return;
+            const notes = document.getElementById('bzVisionNotes').value.trim();
+            const duration = document.getElementById('bzVisionSessionTime').innerText;
+
+            activeBzVisionCanal.notes = notes;
+            activeBzVisionCanal.status = bzVisionCurrentStatus;
+            activeBzVisionCanal.duration = duration;
+            activeBzVisionCanal.snapshots = bzVisionSnapData;
+            activeBzVisionCanal.done = true;
+
+            stopBzVisionStream();
+            saveBzVisionCanals();
+            goToBzVisionStep2();
+        }
+
+        // ---- Rapport par canalisation ----
+
+        function bzVisionViewReport(id) {
+            const canal = bzVisionCanals.find(c => c.id === id);
+            if (!canal || !activeBzVisionJob) return;
+
+            const idx = bzVisionCanals.indexOf(canal);
+            const label = canal.label || `Canalisation #${idx+1}`;
+            const statusLabel = { ok: 'OK — Aucun défaut', watch: 'À surveiller', defaut: 'Défaut constaté' }[canal.status] || '—';
+            const statusColor = { ok: '#22c55e', watch: '#eab308', defaut: '#ef4444' }[canal.status] || '#6b7280';
+            const date = new Date().toLocaleString('fr-FR', { dateStyle: 'long', timeStyle: 'short' });
+
+            // Génère les miniatures captures
+            const snapHtml = canal.snapshots && canal.snapshots.length > 0
+                ? canal.snapshots.filter(s => s.dataUrl).map((s, i) =>
+                    `<div style="display:inline-block;margin:4px;">
+                        <img src="${s.dataUrl}" style="height:80px;width:130px;object-fit:cover;border-radius:8px;border:1px solid #e5e7eb;">
+                        <div style="font-size:9px;color:#6b7280;text-align:center;margin-top:3px;font-family:monospace;">${s.time}</div>
+                    </div>`
+                  ).join('')
+                : '<p style="color:#9ca3af;font-size:11px;font-style:italic;">Aucune capture effectuée</p>';
+
+            const reportHtml = `
+                <div style="font-family:'Segoe UI',sans-serif;color:#111;padding:8px 0;">
+                    <div style="display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid #111;padding-bottom:16px;margin-bottom:20px;">
+                        <div>
+                            <h1 style="font-size:22px;font-weight:900;text-transform:uppercase;letter-spacing:-0.5px;margin:0;">Rapport d'inspection</h1>
+                            <p style="font-size:11px;color:#6b7280;font-weight:700;text-transform:uppercase;letter-spacing:2px;margin:4px 0 0;">BzVision — BZBots</p>
+                        </div>
+                        <div style="text-align:right;">
+                            <p style="font-size:12px;font-weight:700;color:#374151;">${date}</p>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom:16px;">
+                        <p style="font-size:9px;font-weight:900;color:#2563eb;text-transform:uppercase;letter-spacing:2px;border-left:3px solid #2563eb;padding-left:8px;margin-bottom:10px;">Informations chantier</p>
+                        <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;background:#f9fafb;padding:12px;border-radius:10px;border:1px solid #e5e7eb;">
+                            <div><span style="display:block;font-size:9px;color:#9ca3af;font-weight:700;text-transform:uppercase;">Chantier</span><span style="font-weight:900;font-size:13px;">${activeBzVisionJob.name}</span></div>
+                            <div><span style="display:block;font-size:9px;color:#9ca3af;font-weight:700;text-transform:uppercase;">Ville</span><span style="font-weight:900;font-size:13px;">${activeBzVisionJob.city || '—'}</span></div>
+                            <div><span style="display:block;font-size:9px;color:#9ca3af;font-weight:700;text-transform:uppercase;">Rue</span><span style="font-weight:900;font-size:13px;">${activeBzVisionJob.street || '—'}</span></div>
+                            <div><span style="display:block;font-size:9px;color:#9ca3af;font-weight:700;text-transform:uppercase;">Date</span><span style="font-weight:900;font-size:13px;">${activeBzVisionJob.date || '—'}</span></div>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom:16px;">
+                        <p style="font-size:9px;font-weight:900;color:#111;text-transform:uppercase;letter-spacing:2px;border-left:3px solid #111;padding-left:8px;margin-bottom:10px;">Détails canalisation</p>
+                        <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;background:#f9fafb;padding:12px;border-radius:10px;border:1px solid #e5e7eb;">
+                            <div><span style="display:block;font-size:9px;color:#9ca3af;font-weight:700;text-transform:uppercase;">ID</span><span style="font-weight:900;font-size:14px;">#${idx+1} ${canal.label ? '('+canal.label+')' : ''}</span></div>
+                            <div><span style="display:block;font-size:9px;color:#9ca3af;font-weight:700;text-transform:uppercase;">Longueur</span><span style="font-weight:900;font-size:14px;">${canal.length || '—'} m</span></div>
+                            <div><span style="display:block;font-size:9px;color:#9ca3af;font-weight:700;text-transform:uppercase;">Diamètre</span><span style="font-weight:900;font-size:14px;">DN ${canal.diameter || '—'}</span></div>
+                            <div><span style="display:block;font-size:9px;color:#9ca3af;font-weight:700;text-transform:uppercase;">Durée inspection</span><span style="font-weight:900;font-size:14px;">${canal.duration || '—'}</span></div>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom:16px;display:grid;grid-template-columns:1fr 2fr;gap:12px;">
+                        <div style="background:#f9fafb;padding:12px;border-radius:10px;border:1px solid #e5e7eb;">
+                            <p style="font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:1px;color:#6b7280;margin:0 0 8px;">Statut</p>
+                            <div style="display:flex;align-items:center;gap:8px;">
+                                <div style="width:10px;height:10px;border-radius:50%;background:${statusColor};flex-shrink:0;"></div>
+                                <span style="font-weight:900;font-size:13px;color:${statusColor};">${statusLabel}</span>
+                            </div>
+                            <p style="font-size:9px;color:#9ca3af;margin:8px 0 0;">${canal.snapshots?.length || 0} capture(s)</p>
+                        </div>
+                        <div style="background:#f9fafb;padding:12px;border-radius:10px;border:1px solid #e5e7eb;">
+                            <p style="font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:1px;color:#6b7280;margin:0 0 8px;">Observations</p>
+                            <p style="font-size:12px;color:#374151;font-weight:500;line-height:1.5;margin:0;">${canal.notes || '<em style="color:#9ca3af;">Aucune observation renseignée</em>'}</p>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom:16px;">
+                        <p style="font-size:9px;font-weight:900;color:#7c3aed;text-transform:uppercase;letter-spacing:2px;border-left:3px solid #7c3aed;padding-left:8px;margin-bottom:10px;">Captures vidéo (${canal.snapshots?.filter(s=>s.dataUrl).length || 0})</p>
+                        <div style="background:#f9fafb;padding:12px;border-radius:10px;border:1px solid #e5e7eb;">
+                            ${snapHtml}
+                        </div>
+                    </div>
+
+                    <div style="border-top:1px solid #e5e7eb;padding-top:16px;text-align:center;">
+                        <p style="font-size:10px;color:#374151;font-weight:900;">Inspection validée et clôturée</p>
+                        <p style="font-size:9px;color:#9ca3af;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-top:4px;">BZBots Systems — BzVision</p>
+                    </div>
+                </div>`;
+
+            document.getElementById('aiAnalysisContent').innerHTML = reportHtml;
+            document.getElementById('aiAnalysisModal').classList.remove('hidden');
+        }
+
+        // ---- Historique ----
 
         function loadBzVisionHistory() {
             const container = document.getElementById('bzVisionHistoryList');
@@ -3895,11 +4229,16 @@
             [...allJobs].reverse().forEach(job => {
                 const name = job.jobName || 'Chantier inconnu';
                 const city = job.city || '';
-                const safeName = name.replace(/'/g, "\\'").replace(/"/g, "&quot;");
+                const safeName = name.replace(/'/g,"\\'").replace(/"/g,"&quot;");
                 const source = job.source || 'pompe';
+                const canals = job.canals || [];
+                const done = canals.filter(c => c.done).length;
                 const badge = source === 'bzvision'
                     ? `<span class="text-[0.5rem] font-black text-cyan-400 bg-cyan-500/10 border border-cyan-500/20 px-1.5 py-0.5 rounded uppercase shrink-0">Vision</span>`
                     : `<span class="text-[0.5rem] font-black text-purple-400 bg-purple-500/10 border border-purple-500/20 px-1.5 py-0.5 rounded uppercase shrink-0">Pompe</span>`;
+                const canalInfo = source === 'bzvision' && canals.length > 0
+                    ? `<p class="text-[0.55rem] text-gray-600 font-bold uppercase tracking-widest mt-1"><i class="fas fa-pipe mr-1"></i>${done}/${canals.length} inspecté(s)</p>`
+                    : '';
                 html += `
                 <div onclick="loadBzVisionJobIntoView('${safeName}')" class="bg-black/40 p-3 md:p-4 rounded-xl border border-white/5 hover:border-cyan-500/50 hover:bg-cyan-900/10 transition-all cursor-pointer group shadow-inner">
                     <div class="flex items-start justify-between gap-2 mb-1">
@@ -3907,7 +4246,8 @@
                         ${badge}
                     </div>
                     <p class="text-[0.6rem] text-gray-500 font-bold uppercase tracking-widest truncate"><i class="fas fa-map-marker-alt mr-1"></i>${city || 'Lieu non renseigné'}</p>
-                    <div class="text-[0.55rem] text-gray-600 mt-3 flex justify-between items-center">
+                    ${canalInfo}
+                    <div class="text-[0.55rem] text-gray-600 mt-2 flex justify-between items-center">
                         <span class="font-bold">${job.date || ''}</span>
                         <span class="text-cyan-500 font-black opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1 bg-cyan-500/10 px-2 py-1 rounded">OUVRIR <i class="fas fa-arrow-right text-[0.5rem]"></i></span>
                     </div>
@@ -3930,7 +4270,7 @@
             const allJobs = JSON.parse(localStorage.getItem('bz_job_history') || '[]');
             const job = allJobs.find(j => j.jobName === name);
             if (!job) return;
-            openBzVisionJob(job.jobName, job.date, job.city, job.street, job.building || '');
+            openBzVisionJob(job.jobName, job.date, job.city, job.street, job.building || '', job.canals || []);
         }
 
         // ==========================================
