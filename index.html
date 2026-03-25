@@ -316,13 +316,6 @@
         </div>
     </div>
 </div>
-<div class="glass-panel p-4 rounded-2xl">
-    <h4 class="text-xs font-bold uppercase tracking-widest text-cyan-400 mb-3">Aperçu en direct</h4>
-    <img id="piSnapshot" src="http://192.168.5.70:8080/?action=snapshot" class="w-full rounded-lg border border-white/10" alt="Capture Pi">
-    <button onclick="updateSnapshot()" class="mt-3 w-full py-2 bg-white/5 hover:bg-white/10 text-[0.6rem] font-black uppercase tracking-widest rounded-xl transition-all">
-        <i class="fas fa-sync-alt mr-2"></i> Actualiser l'image
-    </button>
-</div>
 <body>
 
     <!-- Arrière-plan animé global -->
@@ -4218,16 +4211,7 @@
         }
     }
 }
-function updateSnapshot() {
-    const piAddress = "http://192.168.5.70"; 
-    const snapshotImg = document.getElementById('piSnapshot');
-    
-    if (snapshotImg) {
-        // Le timestamp force le navigateur à ignorer le cache
-        const timestamp = new Date().getTime();
-        snapshotImg.src = `${piAddress}:8080/?action=snapshot&t=${timestamp}`;
-    }
-}
+
     </script>
 </body>
 </html>
