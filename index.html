@@ -316,6 +316,13 @@
         </div>
     </div>
 </div>
+<div class="glass-panel p-4 rounded-2xl">
+    <h4 class="text-xs font-bold uppercase tracking-widest text-cyan-400 mb-3">Aperçu en direct</h4>
+    <img id="piSnapshot" src="http://192.168.5.70:8080/?action=snapshot" class="w-full rounded-lg border border-white/10" alt="Capture Pi">
+    <button onclick="updateSnapshot()" class="mt-3 w-full py-2 bg-white/5 hover:bg-white/10 text-[0.6rem] font-black uppercase tracking-widest rounded-xl transition-all">
+        <i class="fas fa-sync-alt mr-2"></i> Actualiser l'image
+    </button>
+</div>
 <body>
 
     <!-- Arrière-plan animé global -->
@@ -1236,6 +1243,14 @@
                             <div class="text-xs font-black text-gray-400 font-mono">192.168.5.70</div>
                         </div>
                     </div>
+
+                    <!-- Bouton Générer rapport (visible quand au moins 1 capture) -->
+                    <div id="bzVisionReportBtn" class="hidden">
+                        <button onclick="bzVisionGenerateReport()"
+                            class="w-full py-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-black uppercase text-xs tracking-widest rounded-2xl shadow-[0_10px_25px_rgba(59,130,246,0.3)] transition-all flex items-center justify-center gap-2">
+                            <i class="fas fa-file-alt text-base"></i> Générer le rapport d'inspection
+                        </button>
+                    </div>
                 </div>
 
             </div>
@@ -1716,6 +1731,48 @@
                     </a>
                     <a id="pcWebLink" href="#" target="_blank" class="w-full flex items-center justify-center gap-2 md:gap-3 bg-white/90 text-black hover:bg-white transition-all p-3.5 md:p-4 rounded-xl font-black uppercase text-[0.65rem] md:text-xs tracking-widest shadow-[0_5px_15px_rgba(255,255,255,0.2)]"><i class="fas fa-globe"></i> Visiter le site web</a>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal : Observation après capture BzVision -->
+    <div id="bzVisionObsModal" class="fixed inset-0 bg-[#050505]/90 z-[600] hidden flex items-center justify-center p-4 backdrop-blur-3xl">
+        <div class="glass-panel w-full max-w-xl rounded-3xl overflow-hidden border border-cyan-500/30 shadow-[0_0_80px_rgba(34,211,238,0.2)] flex flex-col">
+            <!-- Header -->
+            <div class="p-5 border-b border-white/10 bg-black/40 flex items-center justify-between shrink-0">
+                <h3 class="text-white font-black uppercase tracking-widest text-xs flex items-center gap-2">
+                    <i class="fas fa-pen text-cyan-400"></i> Description de l'observation
+                </h3>
+                <button onclick="bzVisionObsSkip()" class="text-gray-500 hover:text-white transition-colors text-xs font-bold uppercase tracking-widest">
+                    Passer <i class="fas fa-forward ml-1"></i>
+                </button>
+            </div>
+            <!-- Aperçu de la capture + champ texte -->
+            <div class="p-5 flex flex-col sm:flex-row gap-4">
+                <!-- Miniature de la capture -->
+                <div class="shrink-0 flex flex-col items-center gap-2">
+                    <img id="bzVisionObsPreview" src="" alt="Capture"
+                        class="w-36 h-24 object-cover rounded-xl border border-cyan-500/30 bg-black">
+                    <span id="bzVisionObsTime" class="text-[0.55rem] font-bold font-mono text-cyan-400 bg-black/40 px-2 py-0.5 rounded">00:00</span>
+                </div>
+                <!-- Zone de saisie -->
+                <div class="flex-1 flex flex-col gap-3">
+                    <label class="text-[0.6rem] font-black text-gray-400 uppercase tracking-widest">Que montre cette capture ?</label>
+                    <textarea id="bzVisionObsText" rows="4"
+                        class="input-bz text-sm font-medium resize-none flex-1"
+                        placeholder="Ex: Fissure longitudinale à 4m du regard, infiltration visible en haut de voûte..."></textarea>
+                </div>
+            </div>
+            <!-- Boutons -->
+            <div class="p-5 pt-0 flex gap-3">
+                <button onclick="bzVisionObsSkip()"
+                    class="flex-1 py-3 bg-white/5 hover:bg-white/10 border border-white/10 text-gray-400 hover:text-white rounded-xl text-xs font-black uppercase tracking-widest transition-colors">
+                    Sans description
+                </button>
+                <button onclick="bzVisionObsConfirm()"
+                    class="flex-1 py-3 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white rounded-xl text-xs font-black uppercase tracking-widest transition-all shadow-[0_8px_20px_rgba(34,211,238,0.3)] flex items-center justify-center gap-2">
+                    <i class="fas fa-check"></i> Valider
+                </button>
             </div>
         </div>
     </div>
@@ -3742,10 +3799,14 @@
             document.getElementById('bzVisionSnapshots').classList.add('hidden');
             document.getElementById('bzVisionSnapshotList').innerHTML = '';
             bzVisionSnapCount = 0;
+            bzVisionSnapData = [];
+            bzVisionPendingSnap = null;
             bzVisionElapsedSeconds = 0;
             document.getElementById('bzVisionSnapCount').innerText = '0';
             document.getElementById('bzVisionSessionTime').innerText = '00:00';
             document.getElementById('bzVisionStatusText').innerHTML = '<span class="text-gray-500">Inactif</span>';
+            const reportBtn = document.getElementById('bzVisionReportBtn');
+            if (reportBtn) reportBtn.classList.add('hidden');
 
             document.getElementById('bzVisionStep1').classList.add('hidden');
             document.getElementById('bzVisionStep2').classList.remove('hidden');
@@ -3813,6 +3874,11 @@
             document.getElementById('bzVisionStatusText').innerHTML = '<span class="text-gray-500">Inactif</span>';
         }
 
+        // Stockage temporaire de la capture en attente de description
+        let bzVisionPendingSnap = null;
+        // Tableau des captures de la session : { dataUrl, time, obs, snapEl }
+        let bzVisionSnapData = [];
+
         async function takeBzVisionSnapshot() {
             if (!isBzVisionStreaming) return;
 
@@ -3820,20 +3886,18 @@
             const snapList = document.getElementById('bzVisionSnapshotList');
             document.getElementById('bzVisionSnapshots').classList.remove('hidden');
 
-            // Crée un placeholder spinner immédiat
+            // Placeholder spinner pendant le chargement
             const placeholder = document.createElement('div');
             placeholder.className = 'shrink-0 h-16 w-28 rounded-lg border border-cyan-500/30 bg-cyan-900/20 flex flex-col items-center justify-center gap-1 animate-pulse';
             placeholder.innerHTML = `<i class="fas fa-spinner fa-spin text-cyan-400"></i><span class="text-[0.45rem] text-gray-500 uppercase">Capture...</span>`;
             snapList.prepend(placeholder);
 
-            // Charge le snapshot via une balise <img> — contourne le CORS nativement
-            // mjpeg-streamer sert ?action=snapshot sans restriction sur les balises img
             const snapshotUrl = `http://192.168.5.70:8080/?action=snapshot&t=${Date.now()}`;
             const img = new Image();
-            img.crossOrigin = 'anonymous'; // tente CORS, sinon on bascule sur affichage direct
+            img.crossOrigin = 'anonymous';
 
             img.onload = () => {
-                // Tente de convertir en base64 via canvas pour pouvoir télécharger et sauvegarder
+                // Tentative canvas → base64 pour download + rapport
                 let dataUrl = null;
                 try {
                     const canvas = document.createElement('canvas');
@@ -3842,29 +3906,33 @@
                     canvas.getContext('2d').drawImage(img, 0, 0);
                     dataUrl = canvas.toDataURL('image/jpeg', 0.92);
                 } catch(e) {
-                    // CORS bloque canvas.toDataURL → on affiche quand même l'image via src direct
                     dataUrl = null;
                 }
 
+                const displaySrc = dataUrl || snapshotUrl;
+
+                // Incrémente le compteur
                 bzVisionSnapCount++;
                 document.getElementById('bzVisionSnapCount').innerText = bzVisionSnapCount;
-                document.getElementById('bzVisionSnapCountDisplay').innerText = bzVisionSnapCount;
+                if (document.getElementById('bzVisionSnapCountDisplay'))
+                    document.getElementById('bzVisionSnapCountDisplay').innerText = bzVisionSnapCount;
 
-                // Sauvegarde (dataUrl null si canvas bloqué, l'image reste visible mais non téléchargeable)
-                bzVisionSnapData.push({ dataUrl: dataUrl || snapshotUrl, time: timeStr });
-
-                const displaySrc = dataUrl || snapshotUrl;
+                // Crée l'élément miniature (sans descriptif pour l'instant)
                 const snapEl = document.createElement('div');
                 snapEl.className = 'shrink-0 relative group cursor-pointer';
-                snapEl.innerHTML = `
-                    <img src="${displaySrc}" class="h-16 w-28 object-cover rounded-lg border border-white/10 group-hover:border-cyan-500/50 transition-colors" alt="Capture ${bzVisionSnapCount}">
-                    <span class="absolute bottom-1 right-1 text-[0.45rem] font-bold bg-black/70 text-cyan-400 px-1 py-0.5 rounded font-mono">${timeStr}</span>
-                    ${dataUrl ? `<a href="${dataUrl}" download="capture_${bzVisionSnapCount}_${timeStr.replace(':','-')}.jpg"
-                       onclick="event.stopPropagation()"
-                       class="absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg">
-                        <i class="fas fa-download text-white text-sm"></i>
-                    </a>` : ''}`;
+                snapEl.dataset.snapIndex = bzVisionSnapData.length; // référence à l'index dans bzVisionSnapData
+                snapEl.innerHTML = buildSnapThumbnailHTML(displaySrc, timeStr, '', bzVisionSnapCount, dataUrl);
                 placeholder.replaceWith(snapEl);
+
+                // Stocke la capture en attente de description
+                const snapIndex = bzVisionSnapData.length;
+                bzVisionSnapData.push({ dataUrl: displaySrc, time: timeStr, obs: '' });
+
+                // Stockage temporaire pour le modal
+                bzVisionPendingSnap = { snapEl, snapIndex, displaySrc, timeStr, dataUrl };
+
+                // Ouvre le modal de description
+                openBzVisionObsModal(displaySrc, timeStr);
             };
 
             img.onerror = () => {
@@ -3875,11 +3943,78 @@
                     <span class="text-[0.45rem] text-red-400 uppercase font-bold">Erreur réseau</span>
                     <span class="text-[0.4rem] text-gray-600">${timeStr}</span>`;
                 placeholder.replaceWith(errEl);
-                console.warn('[BzVision] Snapshot unreachable:', snapshotUrl);
             };
 
             img.src = snapshotUrl;
         }
+
+        function buildSnapThumbnailHTML(src, time, obs, num, dataUrl) {
+            const hasObs = obs && obs.trim() !== '';
+            const downloadBtn = dataUrl
+                ? `<a href="${dataUrl}" download="capture_${num}_${time.replace(':','-')}.jpg"
+                      onclick="event.stopPropagation()"
+                      class="absolute top-1 right-1 w-5 h-5 bg-black/70 rounded flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                       <i class="fas fa-download text-white text-[0.5rem]"></i>
+                   </a>` : '';
+            const obsBadge = hasObs
+                ? `<div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 to-transparent px-1.5 py-1 rounded-b-lg">
+                       <p class="text-[0.4rem] text-white font-medium leading-tight line-clamp-2">${obs}</p>
+                   </div>` : '';
+            return `
+                <img src="${src}" class="h-16 w-28 object-cover rounded-lg border ${hasObs ? 'border-cyan-500/60' : 'border-white/10'} group-hover:border-cyan-500/50 transition-colors" alt="Capture ${num}">
+                <span class="absolute top-1 left-1 text-[0.4rem] font-bold bg-black/70 text-cyan-400 px-1 py-0.5 rounded font-mono">${time}</span>
+                ${obsBadge}
+                ${downloadBtn}`;
+        }
+
+        // ---- Modal observation ----
+
+        function openBzVisionObsModal(src, time) {
+            document.getElementById('bzVisionObsPreview').src = src;
+            document.getElementById('bzVisionObsTime').innerText = time;
+            document.getElementById('bzVisionObsText').value = '';
+            document.getElementById('bzVisionObsModal').classList.remove('hidden');
+            setTimeout(() => document.getElementById('bzVisionObsText').focus(), 100);
+        }
+
+        function bzVisionObsConfirm() {
+            const obs = document.getElementById('bzVisionObsText').value.trim();
+            bzVisionApplyObservation(obs);
+        }
+
+        function bzVisionObsSkip() {
+            bzVisionApplyObservation('');
+        }
+
+        function bzVisionApplyObservation(obs) {
+            document.getElementById('bzVisionObsModal').classList.add('hidden');
+            if (!bzVisionPendingSnap) return;
+
+            const { snapEl, snapIndex, displaySrc, timeStr, dataUrl } = bzVisionPendingSnap;
+
+            // Met à jour le tableau des captures
+            if (bzVisionSnapData[snapIndex] !== undefined) {
+                bzVisionSnapData[snapIndex].obs = obs;
+            }
+
+            // Met à jour la miniature avec le descriptif
+            snapEl.innerHTML = buildSnapThumbnailHTML(displaySrc, timeStr, obs, snapIndex + 1, dataUrl);
+
+            // Affiche le bouton "Générer rapport" dès la 1ère capture
+            const reportBtn = document.getElementById('bzVisionReportBtn');
+            if (reportBtn) reportBtn.classList.remove('hidden');
+
+            bzVisionPendingSnap = null;
+        }
+
+        // Entrée clavier sur le modal observation : Enter = valider, Echap = passer
+        document.addEventListener('keydown', (e) => {
+            const modal = document.getElementById('bzVisionObsModal');
+            if (modal && !modal.classList.contains('hidden')) {
+                if (e.key === 'Escape') bzVisionObsSkip();
+                if (e.key === 'Enter' && e.ctrlKey) bzVisionObsConfirm();
+            }
+        });
 
         function loadBzVisionHistory() {
             const container = document.getElementById('bzVisionHistoryList');
@@ -3929,6 +4064,101 @@
             const job = allJobs.find(j => j.jobName === name);
             if (!job) return;
             openBzVisionJob(job.jobName, job.date, job.city, job.street, job.building || '');
+        }
+
+        // ---- Rapport d'inspection par canalisation ----
+
+        function bzVisionGenerateReport() {
+            if (!activeBzVisionJob) return;
+
+            const job = activeBzVisionJob;
+            const date = new Date().toLocaleString('fr-FR', { dateStyle: 'long', timeStyle: 'short' });
+            const duration = document.getElementById('bzVisionSessionTime')
+                ? document.getElementById('bzVisionSessionTime').innerText : '—';
+            const totalSnaps = bzVisionSnapData.length;
+
+            // Génère les blocs capture+observation
+            const snapBlocksHTML = bzVisionSnapData.length > 0
+                ? bzVisionSnapData.map((snap, i) => {
+                    const imgHTML = snap.dataUrl
+                        ? `<img src="${snap.dataUrl}" style="width:220px;height:150px;object-fit:cover;border-radius:10px;border:1px solid #e5e7eb;flex-shrink:0;">`
+                        : `<div style="width:220px;height:150px;border-radius:10px;border:1px solid #e5e7eb;background:#f9fafb;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                               <span style="font-size:10px;color:#9ca3af;">Image non disponible</span>
+                           </div>`;
+                    const obsHTML = snap.obs && snap.obs.trim()
+                        ? `<p style="font-size:13px;color:#1f2937;line-height:1.6;margin:0;font-weight:500;">${snap.obs}</p>`
+                        : `<p style="font-size:12px;color:#9ca3af;font-style:italic;margin:0;">Aucune observation renseignée</p>`;
+                    return `
+                        <div style="display:flex;gap:16px;align-items:flex-start;padding:14px;border-radius:12px;border:1px solid #e5e7eb;background:#fafafa;margin-bottom:12px;">
+                            <div style="display:flex;flex-direction:column;align-items:center;gap:6px;flex-shrink:0;">
+                                ${imgHTML}
+                                <span style="font-size:9px;font-weight:700;color:#6b7280;font-family:monospace;text-transform:uppercase;">t = ${snap.time}</span>
+                            </div>
+                            <div style="flex:1;min-width:0;">
+                                <div style="font-size:9px;font-weight:900;color:#2563eb;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px;">
+                                    Observation #${i + 1}
+                                </div>
+                                ${obsHTML}
+                            </div>
+                        </div>`;
+                }).join('')
+                : `<p style="font-size:12px;color:#9ca3af;font-style:italic;padding:16px;text-align:center;border:1px dashed #e5e7eb;border-radius:10px;">Aucune capture effectuée lors de cette inspection.</p>`;
+
+            const address = [job.num, job.street, job.city].filter(Boolean).join(' ') || '—';
+
+            const reportHTML = `
+                <div style="font-family:'Segoe UI',Helvetica,Arial,sans-serif;color:#111;padding:4px 0;">
+
+                    <!-- En-tête -->
+                    <div style="display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid #111;padding-bottom:16px;margin-bottom:20px;">
+                        <div>
+                            <h1 style="font-size:22px;font-weight:900;text-transform:uppercase;letter-spacing:-0.5px;margin:0 0 4px;">Rapport d'inspection vidéo</h1>
+                            <p style="font-size:10px;color:#6b7280;font-weight:700;text-transform:uppercase;letter-spacing:2px;margin:0;">BzVision — BZBots Systems</p>
+                        </div>
+                        <div style="text-align:right;">
+                            <p style="font-size:11px;font-weight:700;color:#374151;margin:0;">${date}</p>
+                        </div>
+                    </div>
+
+                    <!-- Infos chantier -->
+                    <div style="margin-bottom:18px;">
+                        <p style="font-size:9px;font-weight:900;color:#2563eb;text-transform:uppercase;letter-spacing:2px;border-left:3px solid #2563eb;padding-left:8px;margin:0 0 10px;">Informations chantier</p>
+                        <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;background:#f9fafb;padding:12px;border-radius:10px;border:1px solid #e5e7eb;">
+                            <div><span style="display:block;font-size:8px;color:#9ca3af;font-weight:700;text-transform:uppercase;margin-bottom:3px;">Chantier</span><span style="font-weight:900;font-size:13px;">${job.name}</span></div>
+                            <div><span style="display:block;font-size:8px;color:#9ca3af;font-weight:700;text-transform:uppercase;margin-bottom:3px;">Adresse</span><span style="font-weight:700;font-size:12px;">${address}</span></div>
+                            <div><span style="display:block;font-size:8px;color:#9ca3af;font-weight:700;text-transform:uppercase;margin-bottom:3px;">Date chantier</span><span style="font-weight:700;font-size:12px;">${job.date || '—'}</span></div>
+                            <div><span style="display:block;font-size:8px;color:#9ca3af;font-weight:700;text-transform:uppercase;margin-bottom:3px;">Durée inspection</span><span style="font-weight:900;font-size:13px;">${duration}</span></div>
+                        </div>
+                    </div>
+
+                    <!-- Résumé -->
+                    <div style="margin-bottom:18px;padding:12px 16px;background:#eff6ff;border-radius:10px;border:1px solid #bfdbfe;display:flex;align-items:center;gap:16px;">
+                        <div style="text-align:center;padding-right:16px;border-right:1px solid #bfdbfe;">
+                            <span style="display:block;font-size:26px;font-weight:900;color:#1d4ed8;">${totalSnaps}</span>
+                            <span style="font-size:8px;font-weight:700;color:#3b82f6;text-transform:uppercase;letter-spacing:1px;">capture${totalSnaps > 1 ? 's' : ''}</span>
+                        </div>
+                        <p style="font-size:11px;color:#1e40af;font-weight:500;margin:0;line-height:1.5;">
+                            ${totalSnaps === 0
+                                ? 'Aucune anomalie photographiée lors de cette inspection.'
+                                : `${totalSnaps} point${totalSnaps > 1 ? 's' : ''} d'intérêt photographié${totalSnaps > 1 ? 's' : ''} et documenté${totalSnaps > 1 ? 's' : ''} ci-dessous.`}
+                        </p>
+                    </div>
+
+                    <!-- Observations -->
+                    <div style="margin-bottom:18px;">
+                        <p style="font-size:9px;font-weight:900;color:#7c3aed;text-transform:uppercase;letter-spacing:2px;border-left:3px solid #7c3aed;padding-left:8px;margin:0 0 12px;">Captures & Observations (${totalSnaps})</p>
+                        ${snapBlocksHTML}
+                    </div>
+
+                    <!-- Pied de page -->
+                    <div style="border-top:1px solid #e5e7eb;padding-top:14px;text-align:center;">
+                        <p style="font-size:10px;color:#374151;font-weight:900;margin:0 0 3px;">Rapport généré automatiquement</p>
+                        <p style="font-size:8px;color:#9ca3af;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin:0;">BZBots Systems — BzVision Inspection Module</p>
+                    </div>
+                </div>`;
+
+            document.getElementById('aiAnalysisContent').innerHTML = reportHTML;
+            document.getElementById('aiAnalysisModal').classList.remove('hidden');
         }
 
         // ==========================================
@@ -3988,7 +4218,16 @@
         }
     }
 }
-
+function updateSnapshot() {
+    const piAddress = "http://192.168.5.70"; 
+    const snapshotImg = document.getElementById('piSnapshot');
+    
+    if (snapshotImg) {
+        // Le timestamp force le navigateur à ignorer le cache
+        const timestamp = new Date().getTime();
+        snapshotImg.src = `${piAddress}:8080/?action=snapshot&t=${timestamp}`;
+    }
+}
     </script>
 </body>
 </html>
