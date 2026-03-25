@@ -1183,12 +1183,21 @@
                                         <div class="w-2 h-2 bg-red-500 rounded-full"></div> EN DIRECT
                                     </div>
                                     <span id="bzVisionElapsed" class="text-gray-400 font-mono text-xs font-bold">00:00</span>
+                                    <!-- Indicateur REC -->
+                                    <div id="bzVisionRecBadge" class="hidden items-center gap-1.5 bg-red-600/30 text-red-300 px-2.5 py-1 rounded-lg border border-red-500/40 text-[0.6rem] font-black uppercase">
+                                        <div class="w-1.5 h-1.5 bg-red-400 rounded-full animate-pulse"></div> REC <span id="bzVisionRecTimer" class="font-mono">00:00</span>
+                                    </div>
                                 </div>
                                 <div class="flex items-center gap-2">
                                     <button onclick="takeBzVisionSnapshot()" class="px-3 py-1.5 bg-white/5 hover:bg-white/15 border border-white/10 text-gray-300 hover:text-white rounded-lg text-[0.65rem] font-black uppercase transition-colors flex items-center gap-2">
                                         <i class="fas fa-camera"></i> Capture
                                     </button>
-                                    <button onclick="stopBzVisionStream()" class="px-3 py-1.5 bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 text-red-400 rounded-lg text-[0.65rem] font-black uppercase transition-colors flex items-center gap-2">
+                                    <!-- Bouton REC / STOP REC -->
+                                    <button id="bzVisionRecBtn" onclick="toggleBzVisionRecording()"
+                                        class="px-3 py-1.5 bg-red-600/20 hover:bg-red-600/40 border border-red-600/40 text-red-400 rounded-lg text-[0.65rem] font-black uppercase transition-colors flex items-center gap-2">
+                                        <i class="fas fa-circle text-[0.5rem]"></i> REC
+                                    </button>
+                                    <button onclick="stopBzVisionStream()" class="px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 text-gray-400 hover:text-white rounded-lg text-[0.65rem] font-black uppercase transition-colors flex items-center gap-2">
                                         <i class="fas fa-stop"></i> Arrêter
                                     </button>
                                 </div>
@@ -1243,6 +1252,21 @@
                             class="w-full py-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-black uppercase text-xs tracking-widest rounded-2xl shadow-[0_10px_25px_rgba(59,130,246,0.3)] transition-all flex items-center justify-center gap-2">
                             <i class="fas fa-file-alt text-base"></i> Générer le rapport d'inspection
                         </button>
+                    </div>
+
+                    <!-- Panneau vidéos enregistrées -->
+                    <div id="bzVisionRecordingsPanel" class="glass-panel rounded-2xl md:rounded-3xl overflow-hidden border border-red-500/20">
+                        <div class="p-4 border-b border-white/10 flex justify-between items-center bg-black/30">
+                            <h3 class="text-[0.65rem] font-black text-white uppercase tracking-widest flex items-center gap-2">
+                                <i class="fas fa-film text-red-400"></i> Vidéos enregistrées
+                            </h3>
+                            <button onclick="loadBzVisionRecordings()" class="text-gray-400 hover:text-white transition-colors text-xs flex items-center gap-1.5 font-bold">
+                                <i class="fas fa-sync-alt"></i> Actualiser
+                            </button>
+                        </div>
+                        <div id="bzVisionRecordingsList" class="p-4 space-y-2 min-h-[80px] flex flex-col justify-center">
+                            <p class="text-gray-600 text-[0.6rem] font-bold uppercase tracking-widest text-center">Cliquez sur "Actualiser" pour charger les vidéos</p>
+                        </div>
                     </div>
                 </div>
 
@@ -3432,77 +3456,63 @@
         function saveReportToArchives() {
             const btn = document.getElementById('savePdfBtn');
             const originalText = btn.innerHTML;
-
+            
+            // État de chargement
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Génération PDF...';
             btn.disabled = true;
-
+            
             const element = document.getElementById('aiAnalysisContent');
+            const jobName = document.getElementById('jobName').value || 'Chantier_non_nomme';
+            const city = document.getElementById('jobCity').value || 'Ville_inconnue';
             const dateStr = new Date().toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' });
-
-            // Détermine le contexte : BzVision ou Pompe
-            let jobName, city, street, building;
-            if (currentReportContext.type === 'bzvision' && activeBzVisionJob && activeBzVisionJob.name) {
-                jobName  = activeBzVisionJob.name;
-                city     = activeBzVisionJob.city    || '';
-                street   = activeBzVisionJob.street  || '';
-                building = activeBzVisionJob.num     || '';
-            } else {
-                jobName  = (document.getElementById('jobName')     && document.getElementById('jobName').value.trim())     || 'Chantier non nommé';
-                city     = (document.getElementById('jobCity')     && document.getElementById('jobCity').value.trim())     || '';
-                street   = (document.getElementById('jobStreet')   && document.getElementById('jobStreet').value.trim())   || '';
-                building = (document.getElementById('jobBuilding') && document.getElementById('jobBuilding').value.trim()) || '';
-            }
-
-            let reportName;
-            if (currentReportContext.type === 'bzvision') {
-                reportName = 'Rapport Inspection BzVision';
-            } else if (currentReportContext.type === 'global') {
-                reportName = 'Rapport Global';
-            } else {
-                reportName = `Rapport Canalisation #${currentReportContext.rowIndex + 1}`;
-            }
-
+            
+            let reportName = currentReportContext.type === 'global' ? 'Rapport Global' : `Rapport Canalisation #${currentReportContext.rowIndex + 1}`;
             const fileNameFormatted = `Rapport_${jobName.replace(/\s+/g, '_')}_${reportName.replace(/\s+/g, '_')}.pdf`;
-
-            const opt = {
-                margin: 10,
-                filename: fileNameFormatted,
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff' },
-                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            
+            // Options de la lib HTML2PDF
+            const opt = { 
+                margin: 10, 
+                filename: fileNameFormatted, 
+                image: { type: 'jpeg', quality: 0.98 }, 
+                html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff' }, 
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } 
             };
-
+            
+            // Génération asynchrone
             html2pdf().set(opt).from(element).output('datauristring').then(function(pdfAsString) {
+                // Sauvegarde de l'archive
                 let archives = JSON.parse(localStorage.getItem('bz_archives') || '[]');
-                archives.push({
-                    id: Date.now(),
-                    jobName: jobName,
-                    reportName: reportName,
-                    city: city,
-                    street: street,
-                    building: building,
-                    date: dateStr,
-                    pdf: pdfAsString
+                archives.push({ 
+                    id: Date.now(), 
+                    jobName: jobName, 
+                    reportName: reportName, 
+                    city: city, 
+                    street: document.getElementById('jobStreet').value || '', 
+                    building: document.getElementById('jobBuilding').value || '', 
+                    date: dateStr, 
+                    pdf: pdfAsString 
                 });
                 localStorage.setItem('bz_archives', JSON.stringify(archives));
-
+                
                 loadJobHistory();
-
-                btn.classList.replace('bg-white/90', 'bg-green-500');
+                
+                // Visuel réussite
+                btn.classList.replace('bg-white/90', 'bg-green-500'); 
                 btn.classList.replace('text-black', 'text-white');
                 btn.innerHTML = '<i class="fas fa-check"></i> Archivé avec succès';
-
-                setTimeout(() => {
-                    btn.classList.replace('bg-green-500', 'bg-white/90');
-                    btn.classList.replace('text-white', 'text-black');
-                    btn.innerHTML = originalText;
-                    btn.disabled = false;
-                    document.getElementById('aiAnalysisModal').classList.add('hidden');
+                
+                // Remise à l'état normal
+                setTimeout(() => { 
+                    btn.classList.replace('bg-green-500', 'bg-white/90'); 
+                    btn.classList.replace('text-white', 'text-black'); 
+                    btn.innerHTML = originalText; 
+                    btn.disabled = false; 
+                    document.getElementById('aiAnalysisModal').classList.add('hidden'); 
                 }, 2000);
-            }).catch(err => {
-                console.error(err);
-                btn.innerHTML = '<i class="fas fa-times"></i> Erreur technique';
-                btn.disabled = false;
+            }).catch(err => { 
+                console.error(err); 
+                btn.innerHTML = '<i class="fas fa-times"></i> Erreur technique'; 
+                btn.disabled = false; 
             });
         }
 
@@ -4078,9 +4088,6 @@
         function bzVisionGenerateReport() {
             if (!activeBzVisionJob) return;
 
-            // Indique à saveReportToArchives qu'on est dans le contexte BzVision
-            currentReportContext = { type: 'bzvision', rowIndex: -1 };
-
             const job = activeBzVisionJob;
             const date = new Date().toLocaleString('fr-FR', { dateStyle: 'long', timeStyle: 'short' });
             const duration = document.getElementById('bzVisionSessionTime')
@@ -4170,6 +4177,162 @@
             document.getElementById('aiAnalysisContent').innerHTML = reportHTML;
             document.getElementById('aiAnalysisModal').classList.remove('hidden');
         }
+
+        // ==========================================
+        // BZVISION — Enregistrement vidéo (Pi)
+        // ==========================================
+
+        const BZ_RECORDER_URL = "http://192.168.5.70:8081"; // Flask recorder sur le Pi
+        let bzVisionIsRecording  = false;
+        let bzVisionRecSeconds   = 0;
+        let bzVisionRecTimer     = null;
+
+        async function toggleBzVisionRecording() {
+            if (!bzVisionIsRecording) {
+                await startBzVisionRecording();
+            } else {
+                await stopBzVisionRecording();
+            }
+        }
+
+        async function startBzVisionRecording() {
+            const btn  = document.getElementById('bzVisionRecBtn');
+            const badge = document.getElementById('bzVisionRecBadge');
+            if (btn) { btn.innerHTML = '<i class="fas fa-spinner fa-spin text-[0.5rem]"></i> ...'; btn.disabled = true; }
+
+            try {
+                const res  = await fetch(`${BZ_RECORDER_URL}/start`);
+                const data = await res.json();
+                if (!data.ok) throw new Error(data.error || 'Erreur serveur');
+
+                bzVisionIsRecording = true;
+                bzVisionRecSeconds  = 0;
+
+                // UI : bouton rouge "STOP REC"
+                if (btn) {
+                    btn.innerHTML   = '<i class="fas fa-stop text-[0.5rem]"></i> STOP REC';
+                    btn.className   = 'px-3 py-1.5 bg-red-600 hover:bg-red-500 border border-red-400 text-white rounded-lg text-[0.65rem] font-black uppercase transition-colors flex items-center gap-2 shadow-[0_0_12px_rgba(239,68,68,0.5)]';
+                    btn.disabled    = false;
+                }
+                if (badge) { badge.classList.remove('hidden'); badge.classList.add('flex'); }
+
+                // Timer REC
+                bzVisionRecTimer = setInterval(() => {
+                    bzVisionRecSeconds++;
+                    const m = Math.floor(bzVisionRecSeconds / 60).toString().padStart(2,'0');
+                    const s = (bzVisionRecSeconds % 60).toString().padStart(2,'0');
+                    const timerEl = document.getElementById('bzVisionRecTimer');
+                    if (timerEl) timerEl.innerText = `${m}:${s}`;
+                }, 1000);
+
+            } catch(err) {
+                console.error('[BzVision REC] Start failed:', err.message);
+                openInfoModal(`Impossible de démarrer l'enregistrement. Vérifiez que le script bzvision_recorder.py tourne sur le Pi (port 8081).\n\nErreur : ${err.message}`);
+                if (btn) { btn.innerHTML = '<i class="fas fa-circle text-[0.5rem]"></i> REC'; btn.disabled = false; }
+            }
+        }
+
+        async function stopBzVisionRecording() {
+            const btn   = document.getElementById('bzVisionRecBtn');
+            const badge = document.getElementById('bzVisionRecBadge');
+            if (btn) { btn.innerHTML = '<i class="fas fa-spinner fa-spin text-[0.5rem]"></i> ...'; btn.disabled = true; }
+
+            if (bzVisionRecTimer) { clearInterval(bzVisionRecTimer); bzVisionRecTimer = null; }
+
+            try {
+                const res  = await fetch(`${BZ_RECORDER_URL}/stop`);
+                const data = await res.json();
+                if (!data.ok) throw new Error(data.error || 'Erreur serveur');
+
+                bzVisionIsRecording = false;
+
+                // UI : retour bouton REC
+                if (btn) {
+                    btn.innerHTML = '<i class="fas fa-circle text-[0.5rem]"></i> REC';
+                    btn.className = 'px-3 py-1.5 bg-red-600/20 hover:bg-red-600/40 border border-red-600/40 text-red-400 rounded-lg text-[0.65rem] font-black uppercase transition-colors flex items-center gap-2';
+                    btn.disabled  = false;
+                }
+                if (badge) { badge.classList.add('hidden'); badge.classList.remove('flex'); }
+
+                const sizeLabel = data.size_kb > 1024
+                    ? `${(data.size_kb/1024).toFixed(1)} Mo`
+                    : `${data.size_kb} Ko`;
+                openInfoModal(`✅ Enregistrement terminé\n\nFichier : ${data.filename}\nTaille : ${sizeLabel}\n\nActualisez la liste des vidéos pour le retrouver.`);
+
+                // Recharge automatiquement la liste
+                loadBzVisionRecordings();
+
+            } catch(err) {
+                console.error('[BzVision REC] Stop failed:', err.message);
+                bzVisionIsRecording = false;
+                if (btn) { btn.innerHTML = '<i class="fas fa-circle text-[0.5rem]"></i> REC'; btn.disabled = false; }
+                if (badge) { badge.classList.add('hidden'); }
+                openInfoModal(`Erreur à l'arrêt de l'enregistrement.\n\n${err.message}`);
+            }
+        }
+
+        async function loadBzVisionRecordings() {
+            const container = document.getElementById('bzVisionRecordingsList');
+            if (!container) return;
+            container.innerHTML = '<p class="text-gray-500 text-[0.6rem] font-bold uppercase tracking-widest text-center py-4"><i class="fas fa-spinner fa-spin mr-2 text-cyan-400"></i>Chargement...</p>';
+
+            try {
+                const res  = await fetch(`${BZ_RECORDER_URL}/list`);
+                const data = await res.json();
+
+                if (!data.files || data.files.length === 0) {
+                    container.innerHTML = '<p class="text-gray-600 text-[0.6rem] font-bold uppercase tracking-widest text-center py-4">Aucune vidéo enregistrée</p>';
+                    return;
+                }
+
+                container.innerHTML = data.files.map(f => {
+                    const sizeLabel = f.size_kb > 1024
+                        ? `${(f.size_kb/1024).toFixed(1)} Mo`
+                        : `${f.size_kb} Ko`;
+                    return `
+                    <div class="flex items-center justify-between gap-3 bg-black/40 px-3 py-2.5 rounded-xl border border-white/5 hover:border-red-500/30 transition-colors group">
+                        <div class="flex items-center gap-3 min-w-0">
+                            <i class="fas fa-film text-red-400 shrink-0 text-sm"></i>
+                            <div class="min-w-0">
+                                <p class="text-white text-[0.65rem] font-black truncate">${f.filename}</p>
+                                <p class="text-gray-500 text-[0.55rem] font-bold uppercase tracking-widest">${f.date} · ${sizeLabel}</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-1.5 shrink-0">
+                            <a href="${BZ_RECORDER_URL}/download/${f.filename}" download="${f.filename}"
+                               class="w-7 h-7 flex items-center justify-center bg-white/5 hover:bg-cyan-500/20 border border-white/10 hover:border-cyan-500/40 text-gray-400 hover:text-cyan-400 rounded-lg transition-colors"
+                               title="Télécharger">
+                                <i class="fas fa-download text-[0.65rem]"></i>
+                            </a>
+                            <button onclick="deleteBzVisionRecording('${f.filename}')"
+                                class="w-7 h-7 flex items-center justify-center bg-white/5 hover:bg-red-500/20 border border-white/10 hover:border-red-500/40 text-gray-400 hover:text-red-400 rounded-lg transition-colors"
+                                title="Supprimer">
+                                <i class="fas fa-trash-alt text-[0.65rem]"></i>
+                            </button>
+                        </div>
+                    </div>`;
+                }).join('');
+
+            } catch(err) {
+                container.innerHTML = `<p class="text-red-400 text-[0.6rem] font-bold uppercase tracking-widest text-center py-4"><i class="fas fa-exclamation-triangle mr-2"></i>Serveur Pi inaccessible (port 8081)</p>`;
+            }
+        }
+
+        async function deleteBzVisionRecording(filename) {
+            try {
+                await fetch(`${BZ_RECORDER_URL}/delete/${filename}`);
+                loadBzVisionRecordings();
+            } catch(err) {
+                openInfoModal(`Impossible de supprimer la vidéo.\n${err.message}`);
+            }
+        }
+
+        // Arrête l'enregistrement si le stream est coupé manuellement
+        const _origStopBzVisionStream = stopBzVisionStream;
+        stopBzVisionStream = function() {
+            if (bzVisionIsRecording) stopBzVisionRecording();
+            _origStopBzVisionStream();
+        };
 
         // ==========================================
         // FIN BZVISION
