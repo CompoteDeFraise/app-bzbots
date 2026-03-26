@@ -2034,8 +2034,20 @@
                 </div>
                 <!-- Zone de saisie -->
                 <div class="flex-1 flex flex-col gap-3">
+                    <!-- Distance -->
+                    <div class="flex items-center gap-3">
+                        <div class="flex-1 space-y-1">
+                            <label class="text-[0.6rem] font-black text-gray-400 uppercase tracking-widest">Distance depuis le départ (m)</label>
+                            <div class="relative flex items-center">
+                                <input type="number" id="bzVisionObsDist" min="0" step="0.01"
+                                    class="input-bz py-2 text-sm pr-10 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                    placeholder="Ex: 3.50">
+                                <span class="absolute right-3 text-gray-500 text-xs font-bold pointer-events-none">m</span>
+                            </div>
+                        </div>
+                    </div>
                     <label class="text-[0.6rem] font-black text-gray-400 uppercase tracking-widest">Que montre cette capture ?</label>
-                    <textarea id="bzVisionObsText" rows="4"
+                    <textarea id="bzVisionObsText" rows="3"
                         class="input-bz text-sm font-medium resize-none flex-1"
                         placeholder="Ex: Fissure longitudinale à 4m du regard, infiltration visible en haut de voûte..."></textarea>
                 </div>
@@ -4257,12 +4269,14 @@
 
         // ---- Capture ----
 
-        function buildSnapThumbnailHTML(src, time, obs, num, dataUrl) {
+        function buildSnapThumbnailHTML(src, time, obs, num, dataUrl, dist) {
             const hasObs = obs && obs.trim() !== '';
+            const hasDist = dist && dist !== '';
             const dl = dataUrl ? `<a href="${dataUrl}" download="capture_${num}_${time.replace(':','-')}.jpg" onclick="event.stopPropagation()" class="absolute top-1 right-1 w-5 h-5 bg-black/70 rounded flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"><i class="fas fa-download text-white text-[0.5rem]"></i></a>` : '';
             const badge = hasObs ? `<div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 to-transparent px-1.5 py-1 rounded-b-lg"><p class="text-[0.4rem] text-white font-medium leading-tight line-clamp-2">${obs}</p></div>` : '';
+            const distBadge = hasDist ? `<span class="absolute bottom-1 left-1 text-[0.4rem] font-black bg-blue-600/80 text-white px-1 py-0.5 rounded font-mono">${parseFloat(dist).toFixed(2)}m</span>` : '';
             return `<img src="${src}" class="h-16 w-28 object-cover rounded-lg border ${hasObs?'border-cyan-500/60':'border-white/10'} group-hover:border-cyan-500/50 transition-colors" alt="Capture ${num}">
-                <span class="absolute top-1 left-1 text-[0.4rem] font-bold bg-black/70 text-cyan-400 px-1 py-0.5 rounded font-mono">${time}</span>${badge}${dl}`;
+                <span class="absolute top-1 left-1 text-[0.4rem] font-bold bg-black/70 text-cyan-400 px-1 py-0.5 rounded font-mono">${time}</span>${badge}${distBadge}${dl}`;
         }
 
         async function takeBzVisionSnapshot() {
@@ -4284,11 +4298,11 @@
                 if(document.getElementById('bzVisionSnapCountDisplay')) document.getElementById('bzVisionSnapCountDisplay').innerText = bzVisionSnapCount;
                 const displaySrc = dataUrl || snapshotUrl;
                 const snapIndex  = bzVisionSnapData.length;
-                bzVisionSnapData.push({ dataUrl: displaySrc, time: timeStr, obs: '' });
+                bzVisionSnapData.push({ dataUrl: displaySrc, time: timeStr, obs: '', dist: '' });
                 const snapEl = document.createElement('div');
                 snapEl.className = 'shrink-0 relative group cursor-pointer';
                 snapEl.dataset.snapIndex = snapIndex;
-                snapEl.innerHTML = buildSnapThumbnailHTML(displaySrc, timeStr, '', bzVisionSnapCount, dataUrl);
+                snapEl.innerHTML = buildSnapThumbnailHTML(displaySrc, timeStr, '', bzVisionSnapCount, dataUrl, '');
                 placeholder.replaceWith(snapEl);
                 bzVisionPendingSnap = { snapEl, snapIndex, displaySrc, timeStr, dataUrl };
                 openBzVisionObsModal(displaySrc, timeStr);
@@ -4305,22 +4319,29 @@
             document.getElementById('bzVisionObsPreview').src = src;
             document.getElementById('bzVisionObsTime').innerText = time;
             document.getElementById('bzVisionObsText').value = '';
+            document.getElementById('bzVisionObsDist').value = '';
             document.getElementById('bzVisionObsModal').classList.remove('hidden');
-            setTimeout(() => document.getElementById('bzVisionObsText').focus(), 100);
+            setTimeout(() => document.getElementById('bzVisionObsDist').focus(), 100);
         }
-        function bzVisionObsConfirm() { bzVisionApplyObservation(document.getElementById('bzVisionObsText').value.trim()); }
-        function bzVisionObsSkip()    { bzVisionApplyObservation(''); }
-        function bzVisionApplyObservation(obs) {
+        function bzVisionObsConfirm() { bzVisionApplyObservation(document.getElementById('bzVisionObsText').value.trim(), document.getElementById('bzVisionObsDist').value.trim()); }
+        function bzVisionObsSkip()    { bzVisionApplyObservation('', ''); }
+        function bzVisionApplyObservation(obs, dist) {
             document.getElementById('bzVisionObsModal').classList.add('hidden');
             if (!bzVisionPendingSnap) return;
             const { snapEl, snapIndex, displaySrc, timeStr, dataUrl } = bzVisionPendingSnap;
-            if (bzVisionSnapData[snapIndex] !== undefined) bzVisionSnapData[snapIndex].obs = obs;
-            snapEl.innerHTML = buildSnapThumbnailHTML(displaySrc, timeStr, obs, snapIndex+1, dataUrl);
+            if (bzVisionSnapData[snapIndex] !== undefined) {
+                bzVisionSnapData[snapIndex].obs  = obs;
+                bzVisionSnapData[snapIndex].dist = dist;
+            }
+            snapEl.innerHTML = buildSnapThumbnailHTML(displaySrc, timeStr, obs, snapIndex+1, dataUrl, dist);
             bzVisionPendingSnap = null;
         }
         document.addEventListener('keydown', e => {
             const m = document.getElementById('bzVisionObsModal');
-            if (m && !m.classList.contains('hidden')) { if(e.key==='Escape') bzVisionObsSkip(); if(e.key==='Enter'&&e.ctrlKey) bzVisionObsConfirm(); }
+            if (m && !m.classList.contains('hidden')) {
+                if (e.key === 'Escape') bzVisionObsSkip();
+                if (e.key === 'Enter' && e.ctrlKey) bzVisionObsConfirm();
+            }
         });
 
         // ---- Terminer inspection ----
@@ -4406,6 +4427,135 @@
 
             // Feedback visuel : badge "Détail renseigné" sur la ligne
             renderBzVisionCanalTable();
+        }
+
+        // ---- Schéma tronçon SVG ----
+
+        function buildTronconSVG(canal, snaps) {
+            const d        = canal.detail || {};
+            const totalLen = parseFloat(canal.length) || 0;
+            const label    = canal.label || 'Canalisation';
+            const refDep   = d.refNoeudDepart  || d.noeudDep_ref || 'UN1';
+            const refArr   = d.refNoeudArrivee || d.noeudArr_ref || 'UN0';
+
+            // Dimensions SVG
+            const W = 620, H = 520;
+            const lineX = 90, lineY1 = 60, lineY2 = 450;
+            const lineH = lineY2 - lineY1;
+
+            // Trie les snaps par distance (ceux sans distance vont à la fin)
+            const sorted = [...snaps].map((s, i) => ({
+                ...s,
+                distNum: s.dist !== '' && s.dist !== undefined ? parseFloat(s.dist) : null,
+                origIdx: i
+            })).sort((a, b) => {
+                if (a.distNum === null && b.distNum === null) return 0;
+                if (a.distNum === null) return 1;
+                if (b.distNum === null) return -1;
+                return a.distNum - b.distNum;
+            });
+
+            // Calcule la position Y d'un snap sur la ligne
+            function snapY(distNum) {
+                if (distNum === null || totalLen === 0) return null;
+                const ratio = Math.min(distNum / totalLen, 1);
+                return lineY1 + ratio * lineH;
+            }
+
+            // Construit les lignes horizontales et annotations droites
+            let lines = '';
+            let annotations = '';
+            const usedYs = [];
+
+            sorted.forEach((s, i) => {
+                const y = snapY(s.distNum);
+                if (y === null) return;
+
+                // Évite superposition
+                let yAdj = y;
+                usedYs.forEach(uy => { if (Math.abs(uy - yAdj) < 22) yAdj = uy + 22; });
+                usedYs.push(yAdj);
+
+                const distLabel = s.distNum !== null ? `${s.distNum.toFixed(2)}m` : '';
+                const photoNum  = `${s.origIdx + 1}/${snaps.length}`;
+                const obsText   = s.obs && s.obs.trim() ? s.obs.trim() : '—';
+                const shortObs  = obsText.length > 80 ? obsText.substring(0, 77) + '...' : obsText;
+
+                // Point sur la ligne
+                lines += `<circle cx="${lineX}" cy="${y}" r="5" fill="#1e40af" stroke="white" stroke-width="1.5"/>`;
+
+                // Ligne horizontale vers droite
+                lines += `<line x1="${lineX}" y1="${y}" x2="${lineX + 45}" y2="${yAdj}" stroke="#94a3b8" stroke-width="1" stroke-dasharray="3,2"/>`;
+                lines += `<line x1="${lineX + 45}" y1="${yAdj}" x2="${lineX + 55}" y2="${yAdj}" stroke="#94a3b8" stroke-width="1"/>`;
+
+                // Colonne distance
+                annotations += `<text x="${lineX + 60}" y="${yAdj + 4}" font-family="monospace" font-size="9" fill="#374151" font-weight="700">${distLabel} / ${photoNum}</text>`;
+
+                // Colonne observation
+                const obsX = lineX + 160;
+                const words = shortObs.split(' ');
+                let line1 = '', line2 = '';
+                words.forEach(w => {
+                    if ((line1 + ' ' + w).trim().length <= 52) line1 = (line1 + ' ' + w).trim();
+                    else line2 = (line2 + ' ' + w).trim();
+                });
+                annotations += `<text x="${obsX}" y="${yAdj + (line2 ? 0 : 4)}" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#374151">
+                    <tspan x="${obsX}" dy="0">${line1}</tspan>
+                    ${line2 ? `<tspan x="${obsX}" dy="11">${line2}</tspan>` : ''}
+                </text>`;
+            });
+
+            // Sens d'inspection (flèche)
+            const sensInsp = (d.sensInspection || '').toLowerCase();
+            const arrowUp  = sensInsp.includes('aval') || sensInsp === '';
+            const arrowY1  = arrowUp ? lineY2 - 20 : lineY1 + 20;
+            const arrowY2  = arrowUp ? lineY1 + 20 : lineY2 - 20;
+            const arrowDir = arrowUp
+                ? `M${lineX - 6},${arrowY1} L${lineX},${arrowY2} L${lineX + 6},${arrowY1}`
+                : `M${lineX - 6},${arrowY2} L${lineX},${arrowY1} L${lineX + 6},${arrowY2}`;
+
+            return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" style="font-family:'Segoe UI',Arial,sans-serif;background:white;border:1px solid #e5e7eb;border-radius:8px;">
+
+                <!-- Titre -->
+                <rect x="0" y="0" width="${W}" height="36" fill="#1e3a5f" rx="8" ry="8"/>
+                <rect x="0" y="20" width="${W}" height="16" fill="#1e3a5f"/>
+                <text x="${W/2}" y="23" text-anchor="middle" font-size="11" font-weight="900" fill="white" letter-spacing="2" text-transform="uppercase">SYNTHÈSE DU TRONÇON ${refDep} VERS ${refArr}</text>
+
+                <!-- En-têtes colonnes -->
+                <line x1="${lineX - 30}" y1="36" x2="${W - 10}" y2="36" stroke="#e5e7eb" stroke-width="1"/>
+                <text x="${lineX - 28}" y="50" font-size="8" font-weight="900" fill="#6b7280" letter-spacing="1">NŒUD</text>
+                <text x="${lineX + 62}" y="50" font-size="8" font-weight="900" fill="#6b7280" letter-spacing="1">DISTANCE / PHOTO</text>
+                <text x="${lineX + 162}" y="50" font-size="8" font-weight="900" fill="#6b7280" letter-spacing="1">OBSERVATIONS</text>
+                <line x1="${lineX - 30}" y1="54" x2="${W - 10}" y2="54" stroke="#e5e7eb" stroke-width="1"/>
+
+                <!-- Ligne principale (tuyau) -->
+                <line x1="${lineX}" y1="${lineY1}" x2="${lineX}" y2="${lineY2}" stroke="#3b82f6" stroke-width="8" stroke-linecap="round"/>
+
+                <!-- Effet brillance tuyau -->
+                <line x1="${lineX - 2}" y1="${lineY1 + 10}" x2="${lineX - 2}" y2="${lineY2 - 10}" stroke="rgba(255,255,255,0.35)" stroke-width="2.5" stroke-linecap="round"/>
+
+                <!-- Flèche sens inspection -->
+                <path d="${arrowDir}" stroke="#1d4ed8" stroke-width="2" fill="none" stroke-linejoin="round"/>
+
+                <!-- Nœud départ (haut) -->
+                <circle cx="${lineX}" cy="${lineY1}" r="8" fill="#111827" stroke="#e5e7eb" stroke-width="2"/>
+                <text x="${lineX - 14}" y="${lineY1 - 14}" font-size="9" font-weight="900" fill="#111827" text-anchor="middle">${refDep}</text>
+                <text x="${lineX - 14}" y="${lineY1 - 3}" font-size="7.5" fill="#6b7280" text-anchor="middle">RVC m</text>
+                <text x="${lineX + 62}" y="${lineY1 + 4}" font-size="9" font-weight="700" fill="#374151" font-family="monospace">0.00m / ${refDep}</text>
+
+                <!-- Nœud arrivée (bas) -->
+                <circle cx="${lineX}" cy="${lineY2}" r="8" fill="#111827" stroke="#e5e7eb" stroke-width="2"/>
+                <text x="${lineX - 14}" y="${lineY2 + 20}" font-size="9" font-weight="900" fill="#111827" text-anchor="middle">${refArr}</text>
+                ${totalLen > 0 ? `<text x="${lineX + 62}" y="${lineY2 + 4}" font-size="9" font-weight="700" fill="#374151" font-family="monospace">${totalLen.toFixed(2)}m / ${refArr}</text>` : ''}
+
+                <!-- Ligne séparatrice colonnes -->
+                <line x1="${lineX + 55}" y1="54" x2="${lineX + 55}" y2="${lineY2 + 20}" stroke="#f1f5f9" stroke-width="1"/>
+                <line x1="${lineX + 155}" y1="54" x2="${lineX + 155}" y2="${lineY2 + 20}" stroke="#f1f5f9" stroke-width="1"/>
+
+                <!-- Points et annotations captures -->
+                ${lines}
+                ${annotations}
+            </svg>`;
         }
 
         // ---- Rapport par canalisation ----
@@ -4497,6 +4647,11 @@
                     <div style="background:#f9fafb;padding:10px;border-radius:8px;border:1px solid #e5e7eb;"><p style="font-size:8px;font-weight:900;text-transform:uppercase;color:#6b7280;margin:0 0 6px;">Observations générales</p><p style="font-size:12px;color:#374151;font-weight:500;line-height:1.5;margin:0;">${canal.notes||'<em style="color:#9ca3af;">Aucune observation</em>'}</p></div>
                 </div>
                 ${detailSection}
+                <!-- Schéma du tronçon -->
+                <div style="margin-bottom:16px;">
+                    <p style="font-size:9px;font-weight:900;color:#1e40af;text-transform:uppercase;letter-spacing:2px;border-left:3px solid #1e40af;padding-left:8px;margin:0 0 10px;">Schéma du tronçon</p>
+                    ${buildTronconSVG(canal, snaps)}
+                </div>
                 <p style="font-size:9px;font-weight:900;color:#7c3aed;text-transform:uppercase;letter-spacing:2px;border-left:3px solid #7c3aed;padding-left:8px;margin:0 0 10px;">Captures & observations (${snaps.length})</p>
                 ${snapHTML}
                 <div style="border-top:1px solid #e5e7eb;padding-top:12px;text-align:center;margin-top:14px;"><p style="font-size:9px;color:#374151;font-weight:900;margin:0 0 2px;">Inspection validée</p><p style="font-size:8px;color:#9ca3af;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin:0;">BZBots Systems — BzVision</p></div>
@@ -4521,9 +4676,11 @@
                 const lbl = c.label||`Canalisation #${bzVisionCanals.indexOf(c)+1}`;
                 return `<div style="page-break-inside:avoid;margin-bottom:20px;border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;">
                     <div style="background:#f1f5f9;padding:10px 14px;border-bottom:1px solid #e5e7eb;"><span style="font-size:11px;font-weight:900;text-transform:uppercase;">${lbl}</span><span style="font-size:10px;color:#6b7280;margin-left:10px;">${c.length||'—'}m — DN${c.diameter||'—'} — ${c.duration||'—'}</span></div>
-                    <div style="padding:12px 14px;">${c.notes?`<p style="font-size:11px;color:#374151;margin:0 0 10px;line-height:1.5;"><strong>Observations :</strong> ${c.notes}</p>`:''}
+                    <div style="padding:12px 14px;">
+                    ${c.notes?`<p style="font-size:11px;color:#374151;margin:0 0 10px;line-height:1.5;"><strong>Observations :</strong> ${c.notes}</p>`:''}
+                    <div style="margin-bottom:12px;">${buildTronconSVG(c, c.snapshots||[])}</div>
                     ${(c.snapshots||[]).map((s,i)=>`<div style="display:flex;gap:12px;align-items:flex-start;padding:10px;border-radius:8px;border:1px solid #f3f4f6;background:#fafafa;margin-bottom:8px;">
-                        <div style="flex-shrink:0;">${s.dataUrl?`<img src="${s.dataUrl}" style="width:150px;height:100px;object-fit:cover;border-radius:6px;border:1px solid #e5e7eb;">`:`<div style="width:150px;height:100px;background:#f3f4f6;border-radius:6px;display:flex;align-items:center;justify-content:center;border:1px solid #e5e7eb;"><span style="font-size:9px;color:#9ca3af;">N/A</span></div>`}<div style="font-size:8px;color:#6b7280;text-align:center;font-family:monospace;margin-top:3px;">t=${s.time}</div></div>
+                        <div style="flex-shrink:0;">${s.dataUrl?`<img src="${s.dataUrl}" style="width:150px;height:100px;object-fit:cover;border-radius:6px;border:1px solid #e5e7eb;">`:`<div style="width:150px;height:100px;background:#f3f4f6;border-radius:6px;display:flex;align-items:center;justify-content:center;border:1px solid #e5e7eb;"><span style="font-size:9px;color:#9ca3af;">N/A</span></div>`}<div style="font-size:8px;color:#6b7280;text-align:center;font-family:monospace;margin-top:3px;">${s.dist?`${parseFloat(s.dist).toFixed(2)}m — `:''}t=${s.time}</div></div>
                         <div style="flex:1;"><div style="font-size:8px;font-weight:900;color:#2563eb;text-transform:uppercase;letter-spacing:1px;margin-bottom:5px;">Obs. #${i+1}</div><p style="font-size:11px;color:#374151;margin:0;line-height:1.5;">${s.obs||'<em style="color:#9ca3af;">Sans description</em>'}</p></div>
                     </div>`).join('')}</div></div>`;
             }).join('');
