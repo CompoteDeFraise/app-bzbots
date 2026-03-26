@@ -1839,6 +1839,180 @@
     </div>
 
     <!-- Modal : Observation après capture BzVision -->
+    <!-- Modal : Détail canalisation + noeuds BzVision -->
+    <div id="bzVisionDetailModal" class="fixed inset-0 bg-[#050505]/90 z-[550] hidden flex items-center justify-center p-4 backdrop-blur-3xl">
+        <div class="glass-panel w-full max-w-2xl rounded-3xl overflow-hidden border border-cyan-500/30 shadow-[0_0_80px_rgba(34,211,238,0.2)] flex flex-col max-h-[95vh]">
+            <!-- Header -->
+            <div class="p-5 border-b border-white/10 bg-black/40 flex items-center justify-between shrink-0">
+                <h3 class="text-white font-black uppercase tracking-widest text-xs flex items-center gap-2">
+                    <i class="fas fa-clipboard-list text-cyan-400"></i>
+                    Détail canalisation — <span id="bzVisionDetailCanalLabel" class="text-cyan-400">—</span>
+                </h3>
+                <button onclick="closeBzVisionDetailModal()" class="text-gray-400 hover:text-white transition-colors">
+                    <i class="fas fa-times text-lg"></i>
+                </button>
+            </div>
+
+            <div class="overflow-y-auto custom-scrollbar flex-1 p-5 space-y-6">
+
+                <!-- SECTION 1 : Détail de la canalisation -->
+                <div>
+                    <h4 class="text-[0.6rem] font-black text-cyan-400 uppercase tracking-widest mb-4 flex items-center gap-2 border-b border-white/10 pb-2">
+                        <i class="fas fa-pipe"></i> 1 — Détail de la canalisation
+                    </h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="space-y-1.5">
+                            <label class="text-[0.55rem] font-bold text-gray-400 uppercase tracking-widest">Référence nœud de départ</label>
+                            <input type="text" id="bzVD_refNoeudDepart" class="input-bz py-2.5 text-sm" placeholder="Ex: NR-001">
+                        </div>
+                        <div class="space-y-1.5">
+                            <label class="text-[0.55rem] font-bold text-gray-400 uppercase tracking-widest">Référence nœud d'arrivée</label>
+                            <input type="text" id="bzVD_refNoeudArrivee" class="input-bz py-2.5 text-sm" placeholder="Ex: NR-002">
+                        </div>
+                        <div class="space-y-1.5">
+                            <label class="text-[0.55rem] font-bold text-gray-400 uppercase tracking-widest">Sens d'écoulement</label>
+                            <div class="relative">
+                                <select id="bzVD_sensEcoulement" class="input-bz py-2.5 appearance-none bg-black/50 text-sm">
+                                    <option value="" class="bg-[#111]">— Sélectionner —</option>
+                                    <option value="Amont → Aval" class="bg-[#111]">Amont → Aval</option>
+                                    <option value="Aval → Amont" class="bg-[#111]">Aval → Amont</option>
+                                    <option value="Inconnu" class="bg-[#111]">Inconnu</option>
+                                </select>
+                                <i class="fas fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-xs pointer-events-none text-white"></i>
+                            </div>
+                        </div>
+                        <div class="space-y-1.5">
+                            <label class="text-[0.55rem] font-bold text-gray-400 uppercase tracking-widest">Sens d'inspection</label>
+                            <div class="relative">
+                                <select id="bzVD_sensInspection" class="input-bz py-2.5 appearance-none bg-black/50 text-sm">
+                                    <option value="" class="bg-[#111]">— Sélectionner —</option>
+                                    <option value="Amont → Aval" class="bg-[#111]">Amont → Aval</option>
+                                    <option value="Aval → Amont" class="bg-[#111]">Aval → Amont</option>
+                                </select>
+                                <i class="fas fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-xs pointer-events-none text-white"></i>
+                            </div>
+                        </div>
+                        <div class="space-y-1.5">
+                            <label class="text-[0.55rem] font-bold text-gray-400 uppercase tracking-widest">Matériau</label>
+                            <div class="relative">
+                                <select id="bzVD_materiau" class="input-bz py-2.5 appearance-none bg-black/50 text-sm">
+                                    <option value="" class="bg-[#111]">— Sélectionner —</option>
+                                    <option value="Béton" class="bg-[#111]">Béton</option>
+                                    <option value="PVC" class="bg-[#111]">PVC</option>
+                                    <option value="Grès" class="bg-[#111]">Grès</option>
+                                    <option value="Fonte" class="bg-[#111]">Fonte</option>
+                                    <option value="PEHD" class="bg-[#111]">PEHD</option>
+                                    <option value="Amiante-ciment" class="bg-[#111]">Amiante-ciment</option>
+                                    <option value="Maçonnerie" class="bg-[#111]">Maçonnerie</option>
+                                    <option value="Autre" class="bg-[#111]">Autre</option>
+                                </select>
+                                <i class="fas fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-xs pointer-events-none text-white"></i>
+                            </div>
+                        </div>
+                        <div class="space-y-1.5">
+                            <label class="text-[0.55rem] font-bold text-gray-400 uppercase tracking-widest">Forme</label>
+                            <div class="relative">
+                                <select id="bzVD_forme" class="input-bz py-2.5 appearance-none bg-black/50 text-sm">
+                                    <option value="" class="bg-[#111]">— Sélectionner —</option>
+                                    <option value="Circulaire" class="bg-[#111]">Circulaire</option>
+                                    <option value="Ovoïde" class="bg-[#111]">Ovoïde</option>
+                                    <option value="Rectangulaire" class="bg-[#111]">Rectangulaire</option>
+                                    <option value="Trapézoïdale" class="bg-[#111]">Trapézoïdale</option>
+                                    <option value="Autre" class="bg-[#111]">Autre</option>
+                                </select>
+                                <i class="fas fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-xs pointer-events-none text-white"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECTION 2 : Détail des nœuds -->
+                <div>
+                    <h4 class="text-[0.6rem] font-black text-cyan-400 uppercase tracking-widest mb-4 flex items-center gap-2 border-b border-white/10 pb-2">
+                        <i class="fas fa-circle-nodes"></i> 2 — Détail des nœuds
+                    </h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <!-- Nœud de départ -->
+                        <div class="glass-panel p-4 rounded-2xl border border-white/10 space-y-3">
+                            <h5 class="text-[0.6rem] font-black text-white uppercase tracking-widest flex items-center gap-2">
+                                <i class="fas fa-arrow-right-from-bracket text-green-400"></i> Nœud de départ
+                            </h5>
+                            <div class="space-y-1.5">
+                                <label class="text-[0.5rem] font-bold text-gray-500 uppercase tracking-widest">Référence du nœud</label>
+                                <input type="text" id="bzVD_noeudDep_ref" class="input-bz py-2 text-xs" placeholder="Ex: NR-001">
+                            </div>
+                            <div class="space-y-1.5">
+                                <label class="text-[0.5rem] font-bold text-gray-500 uppercase tracking-widest">Dimension du regard (mm)</label>
+                                <input type="text" id="bzVD_noeudDep_dim" class="input-bz py-2 text-xs" placeholder="Ex: 1000 × 1000">
+                            </div>
+                            <div class="space-y-1.5">
+                                <label class="text-[0.5rem] font-bold text-gray-500 uppercase tracking-widest">Nombre de branchements</label>
+                                <input type="number" id="bzVD_noeudDep_branchements" class="input-bz py-2 text-xs [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" placeholder="0" min="0">
+                            </div>
+                            <div class="space-y-1.5">
+                                <label class="text-[0.5rem] font-bold text-gray-500 uppercase tracking-widest">Dispositif de descente</label>
+                                <div class="relative">
+                                    <select id="bzVD_noeudDep_descente" class="input-bz py-2 appearance-none bg-black/50 text-xs">
+                                        <option value="" class="bg-[#111]">— Sélectionner —</option>
+                                        <option value="Échelons" class="bg-[#111]">Échelons</option>
+                                        <option value="Échelle" class="bg-[#111]">Échelle</option>
+                                        <option value="Aucun" class="bg-[#111]">Aucun</option>
+                                        <option value="Autre" class="bg-[#111]">Autre</option>
+                                    </select>
+                                    <i class="fas fa-chevron-down absolute right-3 top-1/2 -translate-y-1/2 text-[0.55rem] pointer-events-none text-white"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Nœud d'arrivée -->
+                        <div class="glass-panel p-4 rounded-2xl border border-white/10 space-y-3">
+                            <h5 class="text-[0.6rem] font-black text-white uppercase tracking-widest flex items-center gap-2">
+                                <i class="fas fa-arrow-right-to-bracket text-blue-400"></i> Nœud d'arrivée
+                            </h5>
+                            <div class="space-y-1.5">
+                                <label class="text-[0.5rem] font-bold text-gray-500 uppercase tracking-widest">Référence du nœud</label>
+                                <input type="text" id="bzVD_noeudArr_ref" class="input-bz py-2 text-xs" placeholder="Ex: NR-002">
+                            </div>
+                            <div class="space-y-1.5">
+                                <label class="text-[0.5rem] font-bold text-gray-500 uppercase tracking-widest">Dimension du regard (mm)</label>
+                                <input type="text" id="bzVD_noeudArr_dim" class="input-bz py-2 text-xs" placeholder="Ex: 1000 × 1000">
+                            </div>
+                            <div class="space-y-1.5">
+                                <label class="text-[0.5rem] font-bold text-gray-500 uppercase tracking-widest">Nombre de branchements</label>
+                                <input type="number" id="bzVD_noeudArr_branchements" class="input-bz py-2 text-xs [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" placeholder="0" min="0">
+                            </div>
+                            <div class="space-y-1.5">
+                                <label class="text-[0.5rem] font-bold text-gray-500 uppercase tracking-widest">Dispositif de descente</label>
+                                <div class="relative">
+                                    <select id="bzVD_noeudArr_descente" class="input-bz py-2 appearance-none bg-black/50 text-xs">
+                                        <option value="" class="bg-[#111]">— Sélectionner —</option>
+                                        <option value="Échelons" class="bg-[#111]">Échelons</option>
+                                        <option value="Échelle" class="bg-[#111]">Échelle</option>
+                                        <option value="Aucun" class="bg-[#111]">Aucun</option>
+                                        <option value="Autre" class="bg-[#111]">Autre</option>
+                                    </select>
+                                    <i class="fas fa-chevron-down absolute right-3 top-1/2 -translate-y-1/2 text-[0.55rem] pointer-events-none text-white"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="p-5 border-t border-white/10 bg-black/30 flex gap-3 shrink-0">
+                <button onclick="closeBzVisionDetailModal()"
+                    class="flex-1 py-3 bg-white/5 hover:bg-white/10 border border-white/10 text-gray-400 hover:text-white rounded-xl text-xs font-black uppercase tracking-widest transition-colors">
+                    Annuler
+                </button>
+                <button onclick="saveBzVisionDetail()"
+                    class="flex-1 py-3 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white rounded-xl text-xs font-black uppercase tracking-widest transition-all shadow-[0_8px_20px_rgba(34,211,238,0.3)] flex items-center justify-center gap-2">
+                    <i class="fas fa-save"></i> Sauvegarder
+                </button>
+            </div>
+        </div>
+    </div>
+
     <div id="bzVisionObsModal" class="fixed inset-0 bg-[#050505]/90 z-[600] hidden flex items-center justify-center p-4 backdrop-blur-3xl">
         <div class="glass-panel w-full max-w-xl rounded-3xl overflow-hidden border border-cyan-500/30 shadow-[0_0_80px_rgba(34,211,238,0.2)] flex flex-col">
             <!-- Header -->
@@ -2965,12 +3139,7 @@
         // --- GESTION DU DEMARRAGE ET DE LA SIMULATION DU ROBOT ---
         
         /** Initialise les données pour une ligne de canalisation spécifique */
-        function startRowJob(index) {
-            // Si la simulation tourne déjà sur cette ligne, rouvre juste le panneau
-            if (currentRowIndex === index && jobState.timer) {
-                document.getElementById('operationPanel').classList.remove('hidden');
-                return;
-            }
+        function startRowJob(index) { 
             currentRowIndex = index; 
             startJob(); 
         }
@@ -3147,7 +3316,6 @@
                     jobState.currentMeters = 0; 
                     jobState.doneMeters = totalLen; 
                     clearInterval(jobState.timer); // Arrêt de la boucle
-                    jobState.timer = null;
                     
                     // Enregistre que cette passe est terminée pour cette ligne et on le sauvegarde
                     completedPassesCount[currentRowIndex] = passNum;
@@ -3203,34 +3371,6 @@
                         }
                     }
                 }
-
-                // ── Arrêts automatiques : résine épuisée ──────────────────────────────
-                // Calcule la résine restante en temps réel pour vérifier si elle est à 0
-                const _totalPlanned = parseFloat(document.getElementById('totalResinVolumeDisplay').innerText) || 0;
-                let _completedConso = 0;
-                const _nbCols = parseInt(document.getElementById('nbCols').value) || 1;
-                for(let _i = 0; _i < _nbCols; _i++) {
-                    if(rowCompletedStatuses[_i] && _i !== currentRowIndex) {
-                        const _v = document.getElementById(`row-resin-val-${_i}`);
-                        if(_v) _completedConso += parseFloat(_v.innerText) || 0;
-                    }
-                }
-                const _dia2  = parseFloat(document.getElementById(`row-dia-${currentRowIndex}`).value) || 100;
-                const _ep2   = parseFloat(document.getElementById('chosenThickness').value) || 0.75;
-                const _Q2    = 0.5 * (currentPumpPower / 100);
-                const _rowConso = jobState.doneMeters * ((Math.PI * _dia2 * _ep2) / 1000);
-                const _resinLeft = _totalPlanned - _completedConso - _rowConso;
-
-                if (_resinLeft <= 0 && jobState.timer) {
-                    // Résine épuisée → arrêt d'urgence
-                    clearInterval(jobState.timer);
-                    jobState.timer = null;
-                    if (isWifiConnected) fetch(`${esp32Ip}/stop`, { method: 'GET', mode: 'no-cors' }).catch(err => console.warn("Impossible de joindre la pompe:", err));
-                    // Ouvre le panneau si l'opérateur l'avait fermé
-                    document.getElementById('operationPanel').classList.remove('hidden');
-                    openInfoModal("⚠️ Arrêt automatique : résine épuisée. Vérifiez le niveau avant de continuer.");
-                }
-
                 updateMetricsUI();
             }, 50); // Toutes les 50ms
         }
@@ -3333,15 +3473,8 @@
 
         /** Action Bouton Quitter (Flèche retour de la fenêtre simu) */
         function stopJob(finished) {
-            // Le bouton retour ferme juste le panneau — la simulation continue en arrière-plan.
-            // La pompe ne s'arrête que quand les mètres, le temps ou la résine arrivent à 0
-            // (géré directement dans simulatePass).
-            // Si finished === true c'est un arrêt explicite (bouton Stop).
-            if (finished === true) {
-                if(jobState.timer) clearInterval(jobState.timer);
-                jobState.timer = null;
-                if (isWifiConnected) fetch(`${esp32Ip}/stop`, { method: 'GET', mode: 'no-cors' }).catch(err => console.warn("Impossible de joindre la pompe:", err));
-            }
+            if(jobState.timer) clearInterval(jobState.timer);
+            if (isWifiConnected) fetch(`${esp32Ip}/stop`, { method: 'GET', mode: 'no-cors' }).catch(err => console.warn("Impossible de joindre la pompe:", err));
             resetApp();
         }
 
@@ -3972,7 +4105,7 @@
         // ---- Canalisations ----
 
         function bzVisionAddCanal() {
-            bzVisionCanals.push({ id: Date.now(), label:'', length:'', diameter:'', status:null, notes:'', duration:'00:00', snapshots:[], done:false });
+            bzVisionCanals.push({ id: Date.now(), label:'', length:'', diameter:'', status:null, notes:'', duration:'00:00', snapshots:[], done:false, detail:{} });
             saveBzVisionCanals(); renderBzVisionCanalTable();
         }
 
@@ -4013,10 +4146,12 @@
                 const action = c.done
                     ? `<div class="flex gap-1.5 px-2 py-1">
                            <button onclick="bzVisionViewCanalReport(${c.id})" class="px-2 py-1.5 bg-blue-500/20 hover:bg-blue-500/30 border border-blue-500/30 text-blue-400 rounded-lg text-[0.55rem] font-black uppercase transition-colors flex items-center gap-1"><i class="fas fa-file-alt"></i> Rapport</button>
+                           <button onclick="openBzVisionDetailModal(${c.id})" class="px-2 py-1.5 bg-purple-500/20 hover:bg-purple-500/30 border border-purple-500/30 text-purple-400 rounded-lg text-[0.55rem] font-black uppercase transition-colors flex items-center gap-1"><i class="fas fa-clipboard-list"></i> Détail</button>
                            <button onclick="bzVisionReopenCanal(${c.id})" class="px-2 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 text-gray-400 rounded-lg text-[0.55rem] font-black uppercase transition-colors"><i class="fas fa-redo"></i></button>
                        </div>`
                     : `<div class="flex gap-1.5 px-2 py-1">
                            <button onclick="bzVisionStartInspection(${c.id})" class="px-2 py-1.5 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white rounded-lg text-[0.55rem] font-black uppercase transition-all shadow-[0_4px_12px_rgba(34,211,238,0.3)] flex items-center gap-1"><i class="fas fa-play"></i> Inspecter</button>
+                           <button onclick="openBzVisionDetailModal(${c.id})" class="px-2 py-1.5 bg-purple-500/20 hover:bg-purple-500/30 border border-purple-500/30 text-purple-400 rounded-lg text-[0.55rem] font-black uppercase transition-colors flex items-center gap-1"><i class="fas fa-clipboard-list"></i> Détail</button>
                            <button onclick="bzVisionDeleteCanal(${c.id})" class="px-2 py-1.5 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 text-red-400 rounded-lg text-[0.55rem] transition-colors"><i class="fas fa-trash-alt"></i></button>
                        </div>`;
                 return `<tr class="${c.done?'opacity-70 bg-green-900/10':'hover:bg-white/5'} transition-colors">
@@ -4202,6 +4337,77 @@
             goToBzVisionStep2();
         }
 
+        // ---- Modal Détail canalisation ----
+
+        let bzVisionDetailCanalId = null;
+
+        function openBzVisionDetailModal(id) {
+            const canal = bzVisionCanals.find(c => c.id === id);
+            if (!canal) return;
+            bzVisionDetailCanalId = id;
+
+            const idx   = bzVisionCanals.indexOf(canal);
+            const label = canal.label || `Canalisation #${idx+1}`;
+            document.getElementById('bzVisionDetailCanalLabel').innerText = label;
+
+            const d = canal.detail || {};
+            const fields = {
+                bzVD_refNoeudDepart       : d.refNoeudDepart       || '',
+                bzVD_refNoeudArrivee      : d.refNoeudArrivee      || '',
+                bzVD_sensEcoulement       : d.sensEcoulement       || '',
+                bzVD_sensInspection       : d.sensInspection       || '',
+                bzVD_materiau             : d.materiau             || '',
+                bzVD_forme                : d.forme                || '',
+                bzVD_noeudDep_ref         : d.noeudDep_ref         || '',
+                bzVD_noeudDep_dim         : d.noeudDep_dim         || '',
+                bzVD_noeudDep_branchements: d.noeudDep_branchements|| '',
+                bzVD_noeudDep_descente    : d.noeudDep_descente    || '',
+                bzVD_noeudArr_ref         : d.noeudArr_ref         || '',
+                bzVD_noeudArr_dim         : d.noeudArr_dim         || '',
+                bzVD_noeudArr_branchements: d.noeudArr_branchements|| '',
+                bzVD_noeudArr_descente    : d.noeudArr_descente    || '',
+            };
+            Object.entries(fields).forEach(([id, val]) => {
+                const el = document.getElementById(id);
+                if (el) el.value = val;
+            });
+
+            document.getElementById('bzVisionDetailModal').classList.remove('hidden');
+        }
+
+        function closeBzVisionDetailModal() {
+            document.getElementById('bzVisionDetailModal').classList.add('hidden');
+            bzVisionDetailCanalId = null;
+        }
+
+        function saveBzVisionDetail() {
+            const canal = bzVisionCanals.find(c => c.id === bzVisionDetailCanalId);
+            if (!canal) return;
+
+            canal.detail = {
+                refNoeudDepart       : document.getElementById('bzVD_refNoeudDepart').value.trim(),
+                refNoeudArrivee      : document.getElementById('bzVD_refNoeudArrivee').value.trim(),
+                sensEcoulement       : document.getElementById('bzVD_sensEcoulement').value,
+                sensInspection       : document.getElementById('bzVD_sensInspection').value,
+                materiau             : document.getElementById('bzVD_materiau').value,
+                forme                : document.getElementById('bzVD_forme').value,
+                noeudDep_ref         : document.getElementById('bzVD_noeudDep_ref').value.trim(),
+                noeudDep_dim         : document.getElementById('bzVD_noeudDep_dim').value.trim(),
+                noeudDep_branchements: document.getElementById('bzVD_noeudDep_branchements').value.trim(),
+                noeudDep_descente    : document.getElementById('bzVD_noeudDep_descente').value,
+                noeudArr_ref         : document.getElementById('bzVD_noeudArr_ref').value.trim(),
+                noeudArr_dim         : document.getElementById('bzVD_noeudArr_dim').value.trim(),
+                noeudArr_branchements: document.getElementById('bzVD_noeudArr_branchements').value.trim(),
+                noeudArr_descente    : document.getElementById('bzVD_noeudArr_descente').value,
+            };
+
+            saveBzVisionCanals();
+            closeBzVisionDetailModal();
+
+            // Feedback visuel : badge "Détail renseigné" sur la ligne
+            renderBzVisionCanalTable();
+        }
+
         // ---- Rapport par canalisation ----
 
         function bzVisionViewCanalReport(id) {
@@ -4226,6 +4432,43 @@
             const date     = new Date().toLocaleString('fr-FR',{dateStyle:'long',timeStyle:'short'});
             const addr     = [job.num, job.street, job.city].filter(Boolean).join(' ') || '—';
             const snaps    = (canal.snapshots || []);
+            const d        = canal.detail || {};
+
+            // Section détail canalisation + noeuds (si renseigné)
+            const hasDetail = Object.values(d).some(v => v && v !== '');
+            const detailSection = hasDetail ? `
+                <div style="margin-bottom:16px;">
+                    <p style="font-size:9px;font-weight:900;color:#0369a1;text-transform:uppercase;letter-spacing:2px;border-left:3px solid #0369a1;padding-left:8px;margin:0 0 10px;">Détail de la canalisation</p>
+                    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;background:#f0f9ff;padding:10px;border-radius:8px;border:1px solid #bae6fd;margin-bottom:10px;">
+                        <div><span style="display:block;font-size:8px;color:#6b7280;font-weight:700;text-transform:uppercase;margin-bottom:2px;">Nœud départ</span><span style="font-weight:700;font-size:11px;">${d.refNoeudDepart||'—'}</span></div>
+                        <div><span style="display:block;font-size:8px;color:#6b7280;font-weight:700;text-transform:uppercase;margin-bottom:2px;">Nœud arrivée</span><span style="font-weight:700;font-size:11px;">${d.refNoeudArrivee||'—'}</span></div>
+                        <div><span style="display:block;font-size:8px;color:#6b7280;font-weight:700;text-transform:uppercase;margin-bottom:2px;">Sens écoulement</span><span style="font-weight:700;font-size:11px;">${d.sensEcoulement||'—'}</span></div>
+                        <div><span style="display:block;font-size:8px;color:#6b7280;font-weight:700;text-transform:uppercase;margin-bottom:2px;">Sens inspection</span><span style="font-weight:700;font-size:11px;">${d.sensInspection||'—'}</span></div>
+                        <div><span style="display:block;font-size:8px;color:#6b7280;font-weight:700;text-transform:uppercase;margin-bottom:2px;">Matériau</span><span style="font-weight:700;font-size:11px;">${d.materiau||'—'}</span></div>
+                        <div><span style="display:block;font-size:8px;color:#6b7280;font-weight:700;text-transform:uppercase;margin-bottom:2px;">Forme</span><span style="font-weight:700;font-size:11px;">${d.forme||'—'}</span></div>
+                    </div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                        <div style="background:#f0fdf4;padding:10px;border-radius:8px;border:1px solid #bbf7d0;">
+                            <p style="font-size:8px;font-weight:900;text-transform:uppercase;color:#15803d;margin:0 0 8px;letter-spacing:1px;">Nœud de départ</p>
+                            <table style="width:100%;font-size:10px;border-collapse:collapse;">
+                                <tr><td style="padding:3px 0;color:#6b7280;font-weight:700;width:55%;">Référence</td><td style="font-weight:700;">${d.noeudDep_ref||'—'}</td></tr>
+                                <tr><td style="padding:3px 0;color:#6b7280;font-weight:700;">Dimension regard</td><td style="font-weight:700;">${d.noeudDep_dim||'—'}</td></tr>
+                                <tr><td style="padding:3px 0;color:#6b7280;font-weight:700;">Branchements</td><td style="font-weight:700;">${d.noeudDep_branchements||'—'}</td></tr>
+                                <tr><td style="padding:3px 0;color:#6b7280;font-weight:700;">Dispositif descente</td><td style="font-weight:700;">${d.noeudDep_descente||'—'}</td></tr>
+                            </table>
+                        </div>
+                        <div style="background:#eff6ff;padding:10px;border-radius:8px;border:1px solid #bfdbfe;">
+                            <p style="font-size:8px;font-weight:900;text-transform:uppercase;color:#1d4ed8;margin:0 0 8px;letter-spacing:1px;">Nœud d'arrivée</p>
+                            <table style="width:100%;font-size:10px;border-collapse:collapse;">
+                                <tr><td style="padding:3px 0;color:#6b7280;font-weight:700;width:55%;">Référence</td><td style="font-weight:700;">${d.noeudArr_ref||'—'}</td></tr>
+                                <tr><td style="padding:3px 0;color:#6b7280;font-weight:700;">Dimension regard</td><td style="font-weight:700;">${d.noeudArr_dim||'—'}</td></tr>
+                                <tr><td style="padding:3px 0;color:#6b7280;font-weight:700;">Branchements</td><td style="font-weight:700;">${d.noeudArr_branchements||'—'}</td></tr>
+                                <tr><td style="padding:3px 0;color:#6b7280;font-weight:700;">Dispositif descente</td><td style="font-weight:700;">${d.noeudArr_descente||'—'}</td></tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>` : '';
+
             const snapHTML = snaps.length
                 ? snaps.map((s,i) => `<div style="display:flex;gap:14px;align-items:flex-start;padding:12px;border-radius:10px;border:1px solid #e5e7eb;background:#fafafa;margin-bottom:10px;">
                     <div style="flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:5px;">
@@ -4237,6 +4480,7 @@
                         ${s.obs&&s.obs.trim()?`<p style="font-size:12px;color:#1f2937;line-height:1.6;margin:0;font-weight:500;">${s.obs}</p>`:`<p style="font-size:11px;color:#9ca3af;font-style:italic;margin:0;">Aucune observation renseignée</p>`}
                     </div></div>`).join('')
                 : `<p style="font-size:12px;color:#9ca3af;font-style:italic;padding:14px;text-align:center;border:1px dashed #e5e7eb;border-radius:8px;">Aucune capture effectuée.</p>`;
+
             return `<div style="font-family:'Segoe UI',Helvetica,Arial,sans-serif;color:#111;padding:4px 0;">
                 <div style="display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid #111;padding-bottom:14px;margin-bottom:18px;">
                     <div><h1 style="font-size:20px;font-weight:900;text-transform:uppercase;margin:0 0 3px;">Rapport — ${label}</h1><p style="font-size:9px;color:#6b7280;font-weight:700;text-transform:uppercase;letter-spacing:2px;margin:0;">BzVision — BZBots Systems</p></div>
@@ -4252,6 +4496,7 @@
                     <div style="background:#f9fafb;padding:10px;border-radius:8px;border:1px solid #e5e7eb;"><p style="font-size:8px;font-weight:900;text-transform:uppercase;color:#6b7280;margin:0 0 6px;">Statut</p><div style="display:flex;align-items:center;gap:7px;margin-bottom:6px;"><div style="width:9px;height:9px;border-radius:50%;background:${statusCl};flex-shrink:0;"></div><span style="font-weight:900;font-size:12px;color:${statusCl};">${statusTx}</span></div><p style="font-size:9px;color:#9ca3af;margin:0;">${snaps.length} capture(s)</p></div>
                     <div style="background:#f9fafb;padding:10px;border-radius:8px;border:1px solid #e5e7eb;"><p style="font-size:8px;font-weight:900;text-transform:uppercase;color:#6b7280;margin:0 0 6px;">Observations générales</p><p style="font-size:12px;color:#374151;font-weight:500;line-height:1.5;margin:0;">${canal.notes||'<em style="color:#9ca3af;">Aucune observation</em>'}</p></div>
                 </div>
+                ${detailSection}
                 <p style="font-size:9px;font-weight:900;color:#7c3aed;text-transform:uppercase;letter-spacing:2px;border-left:3px solid #7c3aed;padding-left:8px;margin:0 0 10px;">Captures & observations (${snaps.length})</p>
                 ${snapHTML}
                 <div style="border-top:1px solid #e5e7eb;padding-top:12px;text-align:center;margin-top:14px;"><p style="font-size:9px;color:#374151;font-weight:900;margin:0 0 2px;">Inspection validée</p><p style="font-size:8px;color:#9ca3af;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin:0;">BZBots Systems — BzVision</p></div>
