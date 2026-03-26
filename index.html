@@ -2965,7 +2965,12 @@
         // --- GESTION DU DEMARRAGE ET DE LA SIMULATION DU ROBOT ---
         
         /** Initialise les données pour une ligne de canalisation spécifique */
-        function startRowJob(index) { 
+        function startRowJob(index) {
+            // Si la simulation tourne déjà sur cette ligne, rouvre juste le panneau
+            if (currentRowIndex === index && jobState.timer) {
+                document.getElementById('operationPanel').classList.remove('hidden');
+                return;
+            }
             currentRowIndex = index; 
             startJob(); 
         }
@@ -3142,6 +3147,7 @@
                     jobState.currentMeters = 0; 
                     jobState.doneMeters = totalLen; 
                     clearInterval(jobState.timer); // Arrêt de la boucle
+                    jobState.timer = null;
                     
                     // Enregistre que cette passe est terminée pour cette ligne et on le sauvegarde
                     completedPassesCount[currentRowIndex] = passNum;
@@ -3197,7 +3203,33 @@
                         }
                     }
                 }
-                updateMetricsUI();
+
+                // ── Arrêts automatiques : résine épuisée ──────────────────────────────
+                // Calcule la résine restante en temps réel pour vérifier si elle est à 0
+                const _totalPlanned = parseFloat(document.getElementById('totalResinVolumeDisplay').innerText) || 0;
+                let _completedConso = 0;
+                const _nbCols = parseInt(document.getElementById('nbCols').value) || 1;
+                for(let _i = 0; _i < _nbCols; _i++) {
+                    if(rowCompletedStatuses[_i] && _i !== currentRowIndex) {
+                        const _v = document.getElementById(`row-resin-val-${_i}`);
+                        if(_v) _completedConso += parseFloat(_v.innerText) || 0;
+                    }
+                }
+                const _dia2  = parseFloat(document.getElementById(`row-dia-${currentRowIndex}`).value) || 100;
+                const _ep2   = parseFloat(document.getElementById('chosenThickness').value) || 0.75;
+                const _Q2    = 0.5 * (currentPumpPower / 100);
+                const _rowConso = jobState.doneMeters * ((Math.PI * _dia2 * _ep2) / 1000);
+                const _resinLeft = _totalPlanned - _completedConso - _rowConso;
+
+                if (_resinLeft <= 0 && jobState.timer) {
+                    // Résine épuisée → arrêt d'urgence
+                    clearInterval(jobState.timer);
+                    jobState.timer = null;
+                    if (isWifiConnected) fetch(`${esp32Ip}/stop`, { method: 'GET', mode: 'no-cors' }).catch(err => console.warn("Impossible de joindre la pompe:", err));
+                    // Ouvre le panneau si l'opérateur l'avait fermé
+                    document.getElementById('operationPanel').classList.remove('hidden');
+                    openInfoModal("⚠️ Arrêt automatique : résine épuisée. Vérifiez le niveau avant de continuer.");
+                }
             }, 50); // Toutes les 50ms
         }
 
@@ -3299,8 +3331,15 @@
 
         /** Action Bouton Quitter (Flèche retour de la fenêtre simu) */
         function stopJob(finished) {
-            if(jobState.timer) clearInterval(jobState.timer);
-            if (isWifiConnected) fetch(`${esp32Ip}/stop`, { method: 'GET', mode: 'no-cors' }).catch(err => console.warn("Impossible de joindre la pompe:", err));
+            // Le bouton retour ferme juste le panneau — la simulation continue en arrière-plan.
+            // La pompe ne s'arrête que quand les mètres, le temps ou la résine arrivent à 0
+            // (géré directement dans simulatePass).
+            // Si finished === true c'est un arrêt explicite (bouton Stop).
+            if (finished === true) {
+                if(jobState.timer) clearInterval(jobState.timer);
+                jobState.timer = null;
+                if (isWifiConnected) fetch(`${esp32Ip}/stop`, { method: 'GET', mode: 'no-cors' }).catch(err => console.warn("Impossible de joindre la pompe:", err));
+            }
             resetApp();
         }
 
