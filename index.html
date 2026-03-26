@@ -3230,6 +3230,8 @@
                     document.getElementById('operationPanel').classList.remove('hidden');
                     openInfoModal("⚠️ Arrêt automatique : résine épuisée. Vérifiez le niveau avant de continuer.");
                 }
+
+                updateMetricsUI();
             }, 50); // Toutes les 50ms
         }
 
