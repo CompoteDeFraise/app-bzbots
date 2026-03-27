@@ -3151,7 +3151,12 @@
         // --- GESTION DU DEMARRAGE ET DE LA SIMULATION DU ROBOT ---
         
         /** Initialise les données pour une ligne de canalisation spécifique */
-        function startRowJob(index) { 
+        function startRowJob(index) {
+            // Si la simulation tourne déjà sur cette ligne, rouvre juste le panneau
+            if (currentRowIndex === index && jobState.timer) {
+                document.getElementById('operationPanel').classList.remove('hidden');
+                return;
+            }
             currentRowIndex = index; 
             startJob(); 
         }
@@ -3485,8 +3490,13 @@
 
         /** Action Bouton Quitter (Flèche retour de la fenêtre simu) */
         function stopJob(finished) {
-            if(jobState.timer) clearInterval(jobState.timer);
-            if (isWifiConnected) fetch(`${esp32Ip}/stop`, { method: 'GET', mode: 'no-cors' }).catch(err => console.warn("Impossible de joindre la pompe:", err));
+            if (finished === true) {
+                // Arrêt réel (bouton Stop) — coupe le timer et la pompe
+                if(jobState.timer) clearInterval(jobState.timer);
+                jobState.timer = null;
+                if (isWifiConnected) fetch(`${esp32Ip}/stop`, { method: 'GET', mode: 'no-cors' }).catch(err => console.warn("Impossible de joindre la pompe:", err));
+            }
+            // Dans tous les cas, ferme juste le panneau visuellement
             resetApp();
         }
 
