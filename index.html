@@ -294,7 +294,6 @@
             }
         }
     </style>
-
 </head>
 <!-- Modal : Flux Caméra Live Raspberry Pi -->
 <div id="videoModal" class="fixed inset-0 bg-[#050505]/90 z-[500] hidden flex items-center justify-center p-4 backdrop-blur-3xl">
@@ -591,25 +590,7 @@
                 <i class="fas fa-chevron-down absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400 text-[0.55rem]"></i>
             </div>
         </header>
-        <div class="flex-1 overflow-auto p-4 md:p-8 flex flex-col items-center max-w-5xl mx-auto w-full gap-6">
-
-            <!-- Carte des chantiers -->
-            <div class="w-full glass-panel rounded-3xl overflow-hidden border border-white/10 shadow-[0_10px_30px_rgba(0,0,0,0.5)]">
-                <div class="p-4 border-b border-white/10 bg-black/30 flex items-center justify-between">
-                    <h3 class="text-[0.65rem] font-black text-white uppercase tracking-widest flex items-center gap-2">
-                        <i class="fas fa-map-marked-alt text-blue-400"></i> Carte des chantiers
-                    </h3>
-                    <span id="archivesMapCount" class="text-[0.6rem] font-bold text-gray-500 uppercase tracking-widest">—</span>
-                </div>
-                <div id="archivesMapContainer" style="height:340px;background:#0a0a18;position:relative;overflow:hidden;">
-                    <div id="archivesMapPlaceholder" class="flex flex-col items-center justify-center h-full gap-3 text-gray-600">
-                        <i class="fas fa-map text-4xl"></i>
-                        <p class="text-[0.65rem] font-bold uppercase tracking-widest">Chargement de la carte...</p>
-                    </div>
-                    <div id="archivesPinList" class="hidden h-full overflow-y-auto p-4 space-y-2"></div>
-                </div>
-            </div>
-
+        <div class="flex-1 overflow-auto p-4 md:p-8 flex flex-col items-center max-w-5xl mx-auto w-full">
             <div id="archivesList" class="w-full space-y-6"></div>
         </div>
     </section>
@@ -1384,7 +1365,7 @@
         <div class="glass-panel w-full max-w-lg rounded-3xl overflow-hidden border border-cyan-500/30 shadow-[0_0_80px_rgba(34,211,238,0.2)] relative flex flex-col max-h-[95vh]">
             <div class="p-6 md:p-8 border-b border-white/10 flex justify-between items-center relative z-10 bg-black/40 backdrop-blur-md shrink-0">
                 <h3 class="text-white font-black uppercase tracking-widest text-[0.65rem] md:text-xs flex items-center gap-2 md:gap-3">
-                    <i class="fas fa-video text-cyan-400"></i> Nouveau chantier BzVision
+                    <i class="fas fa-video text-cyan-400"></i> <span id="bzVisionModalTitle">Nouveau chantier BzVision</span>
                 </h3>
                 <button onclick="closeNewBzVisionJobModal()" class="text-gray-400 hover:text-white transition-colors">
                     <i class="fas fa-times text-lg md:text-xl"></i>
@@ -1416,7 +1397,7 @@
                         <input type="text" id="bzVisionJobNum" class="input-bz py-2.5 md:py-3.5 transition-colors" placeholder="12">
                     </div>
                 </div>
-                <button onclick="createBzVisionJob()" class="btn-bz-primary py-4 md:py-5 mt-2 rounded-xl md:rounded-2xl bg-white text-black font-black uppercase tracking-widest text-[0.65rem] md:text-[0.75rem] shadow-[0_10px_30px_rgba(255,255,255,0.2)] flex items-center justify-center gap-2 w-full transition-all">
+                <button id="bzVisionModalSubmitBtn" onclick="createBzVisionJob()" class="btn-bz-primary py-4 md:py-5 mt-2 rounded-xl md:rounded-2xl bg-white text-black font-black uppercase tracking-widest text-[0.65rem] md:text-[0.75rem] shadow-[0_10px_30px_rgba(255,255,255,0.2)] flex items-center justify-center gap-2 w-full transition-all">
                     Créer le dossier d'inspection <i class="fas fa-arrow-right"></i>
                 </button>
             </div>
@@ -2502,7 +2483,6 @@
             }
             if(viewId === 'view-archives') {
                 loadArchives();
-                loadArchivesMap();
             }
             if(viewId === 'view-bzvision') {
                 loadBzVisionHistory();
@@ -3827,80 +3807,6 @@
         /**
          * Charge la liste complète des PDFs (Archives) enregistrées.
          */
-        // ==========================================
-        // CARTE INTERACTIVE — Archives
-        // ==========================================
-
-        // ==========================================
-        // CARTE CHANTIERS — version sans Leaflet
-        // Affiche les adresses sous forme de liste
-        // avec liens Google Maps cliquables
-        // ==========================================
-
-        async function geocodeToUrl(addr) {
-            return 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(addr);
-        }
-
-        async function loadArchivesMap() {
-            const container = document.getElementById('archivesMapContainer');
-            const placeholder = document.getElementById('archivesMapPlaceholder');
-            const pinList = document.getElementById('archivesPinList');
-            const countEl = document.getElementById('archivesMapCount');
-            if (!container) return;
-
-            const archives = JSON.parse(localStorage.getItem('bz_archives') || '[]');
-            const history  = JSON.parse(localStorage.getItem('bz_job_history') || '[]');
-
-            const jobs = {};
-            archives.forEach(a => {
-                const k = a.jobName || '?';
-                if (!jobs[k]) jobs[k] = { name:k, city:a.city||'', street:a.street||'', building:a.building||'', source:a.source||'pompe', n:0 };
-                jobs[k].n++;
-            });
-            history.forEach(h => {
-                const k = h.jobName || '?';
-                if (!jobs[k]) jobs[k] = { name:k, city:h.city||'', street:h.street||'', building:h.building||'', source:h.source||'pompe', n:0 };
-                else { if(h.city) jobs[k].city=h.city; if(h.street) jobs[k].street=h.street; jobs[k].source=h.source||jobs[k].source; }
-            });
-
-            const list = Object.values(jobs).filter(j => j.city || j.street);
-
-            if (countEl) countEl.innerText = list.length ? `${list.length} chantier(s)` : 'Aucune adresse';
-
-            if (!list.length) {
-                if (placeholder) placeholder.classList.remove('hidden');
-                if (pinList) pinList.classList.add('hidden');
-                if (placeholder) placeholder.innerHTML = '<i class="fas fa-map text-4xl text-gray-700 mb-2"></i><p class="text-[0.6rem] font-bold uppercase tracking-widest text-gray-600">Aucune adresse renseignée dans vos chantiers</p>';
-                return;
-            }
-
-            if (placeholder) placeholder.classList.add('hidden');
-            if (pinList) {
-                pinList.classList.remove('hidden');
-                pinList.innerHTML = list.map(j => {
-                    const addr = [j.building, j.street, j.city].filter(Boolean).join(', ');
-                    const mapsUrl = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(addr);
-                    const color = j.source === 'bzvision' ? '#22d3ee' : '#a855f7';
-                    const label = j.source === 'bzvision' ? 'BzVision' : 'Pompe';
-                    const icon  = j.source === 'bzvision' ? 'fa-video' : 'fa-flask';
-                    return `<a href="${mapsUrl}" target="_blank" rel="noopener"
-                        class="flex items-center gap-3 p-3 rounded-xl border border-white/5 hover:border-white/20 bg-black/40 hover:bg-white/5 transition-all group cursor-pointer no-underline">
-                        <div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0 border" style="background:${color}18;border-color:${color}44;">
-                            <i class="fas ${icon} text-xs" style="color:${color};"></i>
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <p class="text-white font-black text-xs uppercase tracking-wider truncate group-hover:text-cyan-400 transition-colors">${j.name}</p>
-                            <p class="text-gray-500 text-[0.6rem] font-bold uppercase tracking-widest truncate"><i class="fas fa-map-marker-alt mr-1" style="color:${color};"></i>${addr || '—'}</p>
-                        </div>
-                        <div class="shrink-0 flex items-center gap-2">
-                            <span class="text-[0.5rem] font-black uppercase px-2 py-0.5 rounded" style="background:${color}18;color:${color};border:1px solid ${color}33;">${label}</span>
-                            <i class="fas fa-external-link-alt text-gray-600 group-hover:text-white transition-colors text-xs"></i>
-                        </div>
-                    </a>`;
-                }).join('');
-            }
-        }
-
         function loadArchives() {
             const container = document.getElementById('archivesList');
             let archives = JSON.parse(localStorage.getItem('bz_archives') || '[]');
@@ -3985,8 +3891,7 @@
                 let archives = JSON.parse(localStorage.getItem('bz_archives') || '[]');
                 archives = archives.filter(a => a.id !== archiveIdToDelete);
                 localStorage.setItem('bz_archives', JSON.stringify(archives));
-                loadArchives();
-                loadArchivesMap();
+                loadArchives(); 
                 archiveIdToDelete = null;
             }
             closeConfirmNewJobModal();
@@ -4832,13 +4737,36 @@
             let html = '';
             [...allJobs].reverse().forEach(job => {
                 const name   = job.jobName||'Chantier inconnu'; const city=job.city||'';
-                const safe   = name.replace(/'/g,"\'").replace(/"/g,"&quot;");
+                const safe   = name.replace(/'/g,"\\'").replace(/"/g,"&quot;");
                 const src    = job.source||'pompe';
                 const canals = job.canals||[];
                 const done   = canals.filter(c=>c.done).length;
                 const badge  = src==='bzvision' ? `<span class="text-[0.5rem] font-black text-cyan-400 bg-cyan-500/10 border border-cyan-500/20 px-1.5 py-0.5 rounded uppercase shrink-0">Vision</span>` : `<span class="text-[0.5rem] font-black text-purple-400 bg-purple-500/10 border border-purple-500/20 px-1.5 py-0.5 rounded uppercase shrink-0">Pompe</span>`;
                 const info   = src==='bzvision'&&canals.length>0 ? `<p class="text-[0.55rem] text-gray-600 font-bold uppercase tracking-widest mt-1"><i class="fas fa-pipe mr-1"></i>${done}/${canals.length} inspectée(s)</p>` : '';
-                html += `<div onclick="loadBzVisionJobIntoView('${safe}')" class="bg-black/40 p-3 md:p-4 rounded-xl border border-white/5 hover:border-cyan-500/50 hover:bg-cyan-900/10 transition-all cursor-pointer group shadow-inner"><div class="flex items-start justify-between gap-2 mb-1"><h4 class="text-white font-black text-xs md:text-sm uppercase tracking-wider truncate group-hover:text-cyan-400 transition-colors">${name}</h4>${badge}</div><p class="text-[0.6rem] text-gray-500 font-bold uppercase tracking-widest truncate"><i class="fas fa-map-marker-alt mr-1"></i>${city||'Lieu non renseigné'}</p>${info}<div class="text-[0.55rem] text-gray-600 mt-2 flex justify-between items-center"><span class="font-bold">${job.date||''}</span><span class="text-cyan-500 font-black opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1 bg-cyan-500/10 px-2 py-1 rounded">OUVRIR <i class="fas fa-arrow-right text-[0.5rem]"></i></span></div></div>`;
+                html += `
+                <div class="bg-black/40 rounded-xl border border-white/5 hover:border-cyan-500/30 transition-all shadow-inner group flex flex-col">
+                    <!-- Zone cliquable principale -->
+                    <div onclick="loadBzVisionJobIntoView('${safe}')" class="p-3 md:p-4 cursor-pointer flex-1">
+                        <div class="flex items-start justify-between gap-2 mb-1">
+                            <h4 class="text-white font-black text-xs md:text-sm uppercase tracking-wider truncate group-hover:text-cyan-400 transition-colors">${name}</h4>
+                            ${badge}
+                        </div>
+                        <p class="text-[0.6rem] text-gray-500 font-bold uppercase tracking-widest truncate"><i class="fas fa-map-marker-alt mr-1"></i>${city||'Lieu non renseigné'}</p>
+                        ${info}
+                        <div class="text-[0.55rem] text-gray-600 mt-2"><span class="font-bold">${job.date||''}</span></div>
+                    </div>
+                    <!-- Boutons action -->
+                    <div class="border-t border-white/5 px-3 py-2 flex gap-2 justify-end">
+                        <button onclick="event.stopPropagation();openEditBzVisionJobModal('${safe}')"
+                            class="flex items-center gap-1.5 px-2.5 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 text-gray-400 hover:text-white rounded-lg text-[0.55rem] font-black uppercase transition-colors">
+                            <i class="fas fa-pen"></i> Modifier
+                        </button>
+                        <button onclick="event.stopPropagation();deleteBzVisionJob('${safe}')"
+                            class="flex items-center gap-1.5 px-2.5 py-1.5 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 text-red-400 rounded-lg text-[0.55rem] font-black uppercase transition-colors">
+                            <i class="fas fa-trash-alt"></i> Supprimer
+                        </button>
+                    </div>
+                </div>`;
             });
             container.innerHTML = html;
             filterBzVisionHistory();
@@ -4854,6 +4782,79 @@
             const allJobs = JSON.parse(localStorage.getItem('bz_job_history') || '[]');
             const job = allJobs.find(j => j.jobName === name); if (!job) return;
             openBzVisionJob(job.jobName, job.date, job.city, job.street, job.building||'', job.canals||[]);
+        }
+
+        // ---- Suppression chantier BzVision ----
+
+        function deleteBzVisionJob(name) {
+            if (!confirm(`Supprimer le chantier "${name}" et toutes ses canalisations ?`)) return;
+            let history = JSON.parse(localStorage.getItem('bz_job_history') || '[]');
+            history = history.filter(h => h.jobName !== name);
+            localStorage.setItem('bz_job_history', JSON.stringify(history));
+            loadBzVisionHistory();
+        }
+
+        // ---- Modification chantier BzVision ----
+
+        let _editingBzVisionJobName = null;
+
+        function openEditBzVisionJobModal(name) {
+            const allJobs = JSON.parse(localStorage.getItem('bz_job_history') || '[]');
+            const job = allJobs.find(j => j.jobName === name); if (!job) return;
+            _editingBzVisionJobName = name;
+
+            // Pré-remplit les champs du modal existant
+            document.getElementById('bzVisionJobName').value  = job.jobName || '';
+            document.getElementById('bzVisionJobCity').value  = job.city    || '';
+            document.getElementById('bzVisionJobStreet').value= job.street  || '';
+            document.getElementById('bzVisionJobNum').value   = job.building|| '';
+            if (job.date) {
+                // Convertir date fr "jj/mm/aaaa" → "aaaa-mm-jj" pour l'input date
+                const parts = (job.date || '').split('/');
+                if (parts.length === 3) document.getElementById('bzVisionJobDate').value = `${parts[2]}-${parts[1]}-${parts[0]}`;
+            }
+            document.getElementById('bzVisionJobNameError').classList.add('hidden');
+            document.getElementById('bzVisionJobName').classList.remove('!border-red-500','!bg-red-500/10');
+
+            // Change le titre et le bouton du modal
+            document.getElementById('bzVisionModalTitle').innerText    = 'Modifier le chantier';
+            document.getElementById('bzVisionModalSubmitBtn').innerText = 'Enregistrer';
+            document.getElementById('bzVisionModalSubmitBtn').onclick   = saveBzVisionJobEdit;
+            document.getElementById('newBzVisionJobModal').classList.remove('hidden');
+        }
+
+        function saveBzVisionJobEdit() {
+            const newName = document.getElementById('bzVisionJobName').value.trim();
+            if (!newName) {
+                document.getElementById('bzVisionJobNameError').classList.remove('hidden');
+                document.getElementById('bzVisionJobName').classList.add('!border-red-500','!bg-red-500/10');
+                return;
+            }
+            const date    = document.getElementById('bzVisionJobDate').value;
+            const city    = document.getElementById('bzVisionJobCity').value.trim();
+            const street  = document.getElementById('bzVisionJobStreet').value.trim();
+            const num     = document.getElementById('bzVisionJobNum').value.trim();
+            const dateFmt = date ? new Date(date).toLocaleDateString('fr-FR') : '';
+
+            let history = JSON.parse(localStorage.getItem('bz_job_history') || '[]');
+            const idx   = history.findIndex(h => h.jobName === _editingBzVisionJobName);
+            if (idx >= 0) {
+                history[idx].jobName  = newName;
+                history[idx].city     = city;
+                history[idx].street   = street;
+                history[idx].building = num;
+                if (dateFmt) history[idx].date = dateFmt;
+            }
+            localStorage.setItem('bz_job_history', JSON.stringify(history));
+
+            // Remet le modal en mode création pour la prochaine fois
+            document.getElementById('bzVisionModalTitle').innerText    = 'Nouveau chantier BzVision';
+            document.getElementById('bzVisionModalSubmitBtn').innerText = 'Créer le dossier';
+            document.getElementById('bzVisionModalSubmitBtn').onclick   = createBzVisionJob;
+            _editingBzVisionJobName = null;
+
+            closeNewBzVisionJobModal();
+            loadBzVisionHistory();
         }
 
         // ==========================================
