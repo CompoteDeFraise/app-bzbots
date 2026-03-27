@@ -294,7 +294,6 @@
             }
         }
     </style>
-    <!-- Leaflet embarqué inline (pas de dépendance réseau) -->
     <style>/* required styles */
 
 .leaflet-pane,
@@ -1278,7 +1277,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
                     </h3>
                     <span id="archivesMapCount" class="text-[0.6rem] font-bold text-gray-500 uppercase tracking-widest">—</span>
                 </div>
-                <div id="archivesMap" class="w-full"></div>
+                <div id="archivesMap" style="height:340px;width:100%;background:#0a0a12;"></div>
             </div>
 
             <div id="archivesList" class="w-full space-y-6"></div>
@@ -4502,160 +4501,67 @@ svg.leaflet-image-layer.leaflet-interactive path {
         // CARTE INTERACTIVE — Archives
         // ==========================================
 
-        let archivesMap    = null;  // Instance Leaflet
-        let archivesMarkers = [];   // Marqueurs actifs
-        const _geocodeCache = {};   // Cache adresse → {lat, lon}
+        let _bzMap = null, _bzMarkers = [], _bzGeoCache = {};
 
-        function initArchivesMap() {
-            if (archivesMap) { setTimeout(() => archivesMap.invalidateSize(), 50); return; }
+        // Dès que la section Archives reçoit la classe "active", on init la carte
+        document.addEventListener('DOMContentLoaded', function() {
+            const sec = document.getElementById('view-archives');
+            if (!sec) return;
+            new MutationObserver(function() {
+                if (sec.classList.contains('active') && !_bzMap) {
+                    setTimeout(_bzInitMap, 100);
+                }
+            }).observe(sec, { attributes: true, attributeFilter: ['class'] });
+        });
+
+        function _bzInitMap() {
             const el = document.getElementById('archivesMap');
-            if (!el) return;
-            // Force dimensions inline — Leaflet a besoin de voir une hauteur > 0
-            el.style.height = '340px';
-            el.style.minHeight = '340px';
-            el.style.width = '100%';
-            el.style.display = 'block';
-            archivesMap = L.map(el, {
-                center: [46.8, 2.3],
-                zoom: 5,
-                zoomControl: true,
-                attributionControl: false
-            });
+            if (!el || _bzMap) return;
+            _bzMap = L.map(el, { center: [46.8, 2.3], zoom: 5 });
             L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                maxZoom: 19,
-                attribution: '© OpenStreetMap'
-            }).addTo(archivesMap);
-            setTimeout(() => archivesMap.invalidateSize(), 300);
+                maxZoom: 19, attribution: '© OpenStreetMap'
+            }).addTo(_bzMap);
+            _bzMap.invalidateSize();
         }
 
-        async function geocodeAddress(address) {
-            if (_geocodeCache[address]) return _geocodeCache[address];
+        async function _bzGeocode(addr) {
+            if (_bzGeoCache[addr]) return _bzGeoCache[addr];
             try {
-                const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(address)}&format=json&limit=1`;
-                const res  = await fetch(url, { headers: { 'Accept-Language': 'fr' } });
-                const data = await res.json();
-                if (data && data[0]) {
-                    const coords = { lat: parseFloat(data[0].lat), lon: parseFloat(data[0].lon), display: data[0].display_name };
-                    _geocodeCache[address] = coords;
-                    return coords;
-                }
-            } catch(e) { console.warn('[Carte] Géocodage échoué pour:', address); }
+                const r = await fetch('https://nominatim.openstreetmap.org/search?q=' + encodeURIComponent(addr) + '&format=json&limit=1', { headers: {'Accept-Language':'fr'} });
+                const d = await r.json();
+                if (d[0]) { _bzGeoCache[addr] = {lat:+d[0].lat, lon:+d[0].lon}; return _bzGeoCache[addr]; }
+            } catch(e) {}
             return null;
         }
 
-        function makeArchiveMarker(name, city, street, building, source, count) {
-            // Icône SVG personnalisée selon source
-            const color  = source === 'bzvision' ? '#22d3ee' : '#a855f7';
-            const icon   = source === 'bzvision' ? 'V' : 'P';
-            const svgIcon = L.divIcon({
-                className: '',
-                html: `<div style="position:relative;width:32px;height:40px;">
-                    <svg width="32" height="40" viewBox="0 0 32 40" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M16 0C7.163 0 0 7.163 0 16c0 10.5 16 24 16 24S32 26.5 32 16C32 7.163 24.837 0 16 0z" fill="${color}"/>
-                        <circle cx="16" cy="16" r="9" fill="#0a0a0a"/>
-                        <text x="16" y="20" text-anchor="middle" font-size="9" font-weight="900" fill="${color}" font-family="Arial">${icon}</text>
-                    </svg>
-                </div>`,
-                iconSize: [32, 40],
-                iconAnchor: [16, 40],
-                popupAnchor: [0, -42]
-            });
-            return icon;
-        }
-
         async function loadArchivesMap() {
-            // Attendre que la section soit visible (display:flex appliqué)
-            await new Promise(r => setTimeout(r, 50));
-            await new Promise(r => requestAnimationFrame(r));
-            await new Promise(r => requestAnimationFrame(r));
-            initArchivesMap();
-            await new Promise(r => setTimeout(r, 200));
-            if (archivesMap) archivesMap.invalidateSize();
-            // Nettoie les anciens marqueurs
-            archivesMarkers.forEach(m => archivesMap.removeLayer(m));
-            archivesMarkers = [];
-
-
-            // Récupère tous les chantiers uniques depuis bz_archives + bz_job_history
-            const archives  = JSON.parse(localStorage.getItem('bz_archives') || '[]');
-            const history   = JSON.parse(localStorage.getItem('bz_job_history') || '[]');
-            const countEl   = document.getElementById('archivesMapCount');
-
-            // Regroupe par chantier unique
+            if (!_bzMap) { setTimeout(loadArchivesMap, 300); return; }
+            _bzMap.invalidateSize();
+            _bzMarkers.forEach(m => _bzMap.removeLayer(m)); _bzMarkers = [];
+            const arcs = JSON.parse(localStorage.getItem('bz_archives') || '[]');
+            const hist = JSON.parse(localStorage.getItem('bz_job_history') || '[]');
             const jobs = {};
-            archives.forEach(arc => {
-                const key = arc.jobName || 'Inconnu';
-                if (!jobs[key]) jobs[key] = { name: key, city: arc.city||'', street: arc.street||'', building: arc.building||'', source: arc.source||'pompe', count: 0 };
-                jobs[key].count++;
-                if (!jobs[key].source) jobs[key].source = 'pompe';
-            });
-            history.forEach(h => {
-                const key = h.jobName || 'Inconnu';
-                if (!jobs[key]) jobs[key] = { name: key, city: h.city||'', street: h.street||'', building: h.building||'', source: h.source||'pompe', count: 0 };
-                else { if (h.city) jobs[key].city = h.city; if (h.street) jobs[key].street = h.street; jobs[key].source = h.source || jobs[key].source; }
-            });
-
-            const jobList = Object.values(jobs).filter(j => j.city || j.street);
-            if (countEl) countEl.innerText = `${jobList.length} chantier(s) localisé(s)`;
-
-            if (jobList.length === 0) {
-                if (countEl) countEl.innerText = 'Aucune adresse renseignée';
-                return;
-            }
-
+            arcs.forEach(a => { const k=a.jobName||'?'; if(!jobs[k]) jobs[k]={name:k,city:a.city||'',street:a.street||'',building:a.building||'',source:a.source||'pompe',n:0}; jobs[k].n++; });
+            hist.forEach(h => { const k=h.jobName||'?'; if(!jobs[k]) jobs[k]={name:k,city:h.city||'',street:h.street||'',building:h.building||'',source:h.source||'pompe',n:0}; else { if(h.city) jobs[k].city=h.city; if(h.street) jobs[k].street=h.street; } });
+            const list = Object.values(jobs).filter(j=>j.city||j.street);
+            const cEl = document.getElementById('archivesMapCount');
+            if (cEl) cEl.innerText = list.length + ' chantier(s)';
             const bounds = [];
-            // Géocode chaque chantier avec un délai pour respecter Nominatim (1 req/s)
-            for (let i = 0; i < jobList.length; i++) {
-                const j = jobList[i];
-                const addr = [j.building, j.street, j.city].filter(Boolean).join(', ');
+            for (let i=0; i<list.length; i++) {
+                const j=list[i], addr=[j.building,j.street,j.city].filter(Boolean).join(', ');
                 if (!addr) continue;
-
-                // Petit délai entre requêtes (Nominatim rate limit)
-                if (i > 0) await new Promise(r => setTimeout(r, 350));
-
-                const coords = await geocodeAddress(addr);
-                if (!coords) continue;
-
-                const color  = j.source === 'bzvision' ? '#22d3ee' : '#a855f7';
-                const icon   = j.source === 'bzvision' ? 'V' : 'P';
-                const label  = j.source === 'bzvision' ? 'BzVision' : 'Pompe';
-                const badgeStyle = `background:${color}22;color:${color};border:1px solid ${color}55;`;
-
-                const svgIcon = L.divIcon({
-                    className: '',
-                    html: `<div style="position:relative;width:32px;height:40px;">
-                        <svg width="32" height="40" viewBox="0 0 32 40" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M16 0C7.163 0 0 7.163 0 16c0 10.5 16 24 16 24S32 26.5 32 16C32 7.163 24.837 0 16 0z" fill="${color}"/>
-                            <circle cx="16" cy="16" r="9" fill="#0a0a0a"/>
-                            <text x="16" y="20" text-anchor="middle" font-size="9" font-weight="900" fill="${color}" font-family="Arial,sans-serif">${icon}</text>
-                        </svg>
-                    </div>`,
-                    iconSize: [32, 40],
-                    iconAnchor: [16, 40],
-                    popupAnchor: [0, -44]
+                if (i>0) await new Promise(r=>setTimeout(r,400));
+                const c = await _bzGeocode(addr); if (!c) continue;
+                const col = j.source==='bzvision'?'#22d3ee':'#a855f7';
+                const ico = L.divIcon({ className:'', iconSize:[28,36], iconAnchor:[14,36], popupAnchor:[0,-38],
+                    html:`<svg width="28" height="36" viewBox="0 0 28 36" xmlns="http://www.w3.org/2000/svg"><path d="M14 0C6.268 0 0 6.268 0 14c0 9.333 14 22 14 22S28 23.333 28 14C28 6.268 21.732 0 14 0z" fill="${col}"/><circle cx="14" cy="14" r="7" fill="#050505"/><text x="14" y="18" text-anchor="middle" font-size="7" font-weight="900" fill="${col}" font-family="Arial">${j.source==='bzvision'?'V':'P'}</text></svg>`
                 });
-
-                const marker = L.marker([coords.lat, coords.lon], { icon: svgIcon });
-                marker.bindPopup(`
-                    <div class="archive-marker-popup">
-                        <h4>${j.name}</h4>
-                        <p><i class="fas fa-map-marker-alt" style="color:${color};margin-right:4px;"></i>${addr}</p>
-                        <span class="badge" style="${badgeStyle}">${label}</span>
-                        ${j.count > 0 ? `<span class="badge" style="background:#ffffff11;color:#9ca3af;border:1px solid #ffffff22;margin-left:4px;">${j.count} doc(s)</span>` : ''}
-                    </div>
-                `, { maxWidth: 220 });
-
-                marker.addTo(archivesMap);
-                archivesMarkers.push(marker);
-                bounds.push([coords.lat, coords.lon]);
+                const mk = L.marker([c.lat,c.lon],{icon:ico}).addTo(_bzMap);
+                mk.bindPopup(`<b>${j.name}</b><br><small>${addr}</small>`, {maxWidth:200});
+                _bzMarkers.push(mk); bounds.push([c.lat,c.lon]);
             }
-
-            // Zoom sur tous les marqueurs
-            if (bounds.length === 1) {
-                archivesMap.setView(bounds[0], 13);
-            } else if (bounds.length > 1) {
-                archivesMap.fitBounds(bounds, { padding: [40, 40] });
-            }
+            if (bounds.length===1) _bzMap.setView(bounds[0],13);
+            else if (bounds.length>1) _bzMap.fitBounds(bounds,{padding:[30,30]});
         }
 
         function loadArchives() {
