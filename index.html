@@ -612,7 +612,7 @@
                     </h3>
                     <span id="archivesMapCount" class="text-[0.6rem] font-bold text-gray-500 uppercase tracking-widest">—</span>
                 </div>
-                <div id="archivesMap" class="w-full"></div>
+                <div id="archivesMap" style="height:340px;width:100%;"></div>
             </div>
 
             <div id="archivesList" class="w-full space-y-6"></div>
@@ -3841,20 +3841,22 @@
         const _geocodeCache = {};   // Cache adresse → {lat, lon}
 
         function initArchivesMap() {
-            if (archivesMap) return; // Déjà initialisé
+            if (archivesMap) { archivesMap.invalidateSize(); return; }
+            const el = document.getElementById('archivesMap');
+            if (!el) return;
+            // Force la hauteur directement sur l'élément — Leaflet ignore les styles CSS parfois
+            el.style.height = '340px';
+            el.style.width  = '100%';
             archivesMap = L.map('archivesMap', {
-                center: [46.8, 2.3], // Centre France
+                center: [46.8, 2.3],
                 zoom: 5,
                 zoomControl: true,
                 attributionControl: false
             });
             L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-                attribution: '© OpenStreetMap © CARTO',
                 subdomains: 'abcd',
                 maxZoom: 19
             }).addTo(archivesMap);
-            // Attribution discrète
-            L.control.attribution({ position: 'bottomright', prefix: '' }).addTo(archivesMap);
         }
 
         async function geocodeAddress(address) {
@@ -3893,13 +3895,13 @@
         }
 
         async function loadArchivesMap() {
-            // Leaflet ne peut pas s'initialiser sur un élément display:none.
-            // On attend que la section soit rendue visible (après le repaint CSS)
-            // puis on force le recalcul des dimensions avec invalidateSize().
-            await new Promise(r => setTimeout(r, 80));
+            // Leaflet a besoin que l'élément soit visible (display != none)
+            // avant de s'initialiser, sinon la carte reste invisible.
+            // On utilise requestAnimationFrame + setTimeout pour être sûr.
+            await new Promise(r => requestAnimationFrame(() => setTimeout(r, 150)));
             initArchivesMap();
-            // Force Leaflet à recalculer la taille du conteneur maintenant qu'il est visible
-            archivesMap.invalidateSize();
+            await new Promise(r => setTimeout(r, 50));
+            if (archivesMap) archivesMap.invalidateSize();
             // Nettoie les anciens marqueurs
             archivesMarkers.forEach(m => archivesMap.removeLayer(m));
             archivesMarkers = [];
