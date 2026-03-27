@@ -3893,7 +3893,13 @@
         }
 
         async function loadArchivesMap() {
+            // Leaflet ne peut pas s'initialiser sur un élément display:none.
+            // On attend que la section soit rendue visible (après le repaint CSS)
+            // puis on force le recalcul des dimensions avec invalidateSize().
+            await new Promise(r => setTimeout(r, 80));
             initArchivesMap();
+            // Force Leaflet à recalculer la taille du conteneur maintenant qu'il est visible
+            archivesMap.invalidateSize();
             // Nettoie les anciens marqueurs
             archivesMarkers.forEach(m => archivesMap.removeLayer(m));
             archivesMarkers = [];
