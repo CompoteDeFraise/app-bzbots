@@ -294,6 +294,9 @@
             }
         }
     </style>
+    <!-- Leaflet — Carte interactive archives -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </head>
 <!-- Modal : Flux Caméra Live Raspberry Pi -->
 <div id="videoModal" class="fixed inset-0 bg-[#050505]/90 z-[500] hidden flex items-center justify-center p-4 backdrop-blur-3xl">
@@ -3852,15 +3855,25 @@
             let html = '';
             for(let jName in groupedArchives) {
                 let arcs = groupedArchives[jName];
+                // Récupère l'adresse depuis le premier rapport du groupe
+                const firstArc = arcs[0];
+                const adresseChantier = [firstArc.building, firstArc.street, firstArc.city].filter(Boolean).join(', ');
+                const mapId = 'archiveMap_' + Math.random().toString(36).substr(2,8);
+                const hasAddr = adresseChantier.trim() !== '';
+
                 html += `
                 <div class="w-full glass-panel p-5 md:p-6 rounded-3xl flex flex-col gap-4 border-l-4 border-blue-500/50 shadow-[0_10px_30px_rgba(0,0,0,0.5)]">
                     <div class="flex items-center gap-3 border-b border-white/10 pb-4">
                         <i class="fas fa-folder text-2xl text-blue-400 drop-shadow-[0_0_10px_rgba(59,130,246,0.5)]"></i>
                         <div class="flex-1 min-w-0">
                             <h3 class="text-base md:text-lg font-black text-white uppercase tracking-widest truncate">${jName}</h3>
+                            ${hasAddr ? `<p class="text-[0.6rem] text-gray-500 font-bold uppercase tracking-widest mt-0.5"><i class="fas fa-map-marker-alt mr-1 text-blue-400"></i>${adresseChantier}</p>` : ''}
                         </div>
                         <span class="shrink-0 text-[0.65rem] font-bold text-gray-400 bg-white/5 border border-white/10 px-3 py-1.5 rounded-lg uppercase tracking-widest">${arcs.length} doc(s)</span>
                     </div>
+                    ${hasAddr ? `
+                    <div id="${mapId}" style="height:220px;width:100%;border-radius:12px;overflow:hidden;z-index:1;"></div>
+                    ` : ''}
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-3">`;
                 
                 arcs.reverse().forEach(arc => {
@@ -3894,10 +3907,100 @@
                             </div>
                         </div>`;
                 });
+                // Stocke le mapId et l'adresse pour initialisation après rendu
                 html += `</div></div>`;
+                // On garde trace des cartes à initialiser
+                if (hasAddr) {
+                    html += `<script>_archiveMapsToInit.push({id:'${mapId}',addr:'${adresseChantier.replace(/'/g,"\\'")}'})<\/script>`;
+                }
             }
+            // File d'attente pour les cartes
+            window._archiveMapsToInit = [];
             container.innerHTML = html;
+            // Initialise toutes les cartes après rendu (le DOM est prêt)
+            setTimeout(() => {
+                (_archiveMapsToInit || []).forEach(item => {
+                    _initArchiveMapInEl(item.id, item.addr);
+                });
+            }, 100);
         }
+
+        // ==========================================
+        // CARTE INTERACTIVE — Archives (Leaflet)
+        // ==========================================
+
+        const _archiveGeoCache = {}; // Cache géocodage pour éviter des requêtes répétées
+
+        async function _initArchiveMapInEl(mapId, adresse) {
+            const el = document.getElementById(mapId);
+            if (!el) return;
+
+            // Affiche un placeholder pendant le chargement
+            el.innerHTML = `<div style="height:100%;display:flex;align-items:center;justify-content:center;background:#0a0a18;color:#374151;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;gap:8px;">
+                <svg style="animation:spin 1s linear infinite;width:16px;height:16px;" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2"><circle cx="12" cy="12" r="10" opacity="0.3"/><path d="M12 2a10 10 0 0 1 10 10"/></svg>
+                Localisation...
+            </div>`;
+
+            // Géocode l'adresse (avec cache)
+            let coords = _archiveGeoCache[adresse];
+            if (!coords) {
+                try {
+                    const res  = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(adresse)}`, { headers: { 'Accept-Language': 'fr' } });
+                    const data = await res.json();
+                    if (data && data.length > 0) {
+                        coords = { lat: parseFloat(data[0].lat), lon: parseFloat(data[0].lon) };
+                        _archiveGeoCache[adresse] = coords;
+                    }
+                } catch(e) {
+                    console.warn('[Carte Archives] Géocodage échoué:', adresse);
+                }
+            }
+
+            if (!coords) {
+                el.innerHTML = `<div style="height:100%;display:flex;align-items:center;justify-content:center;background:#0a0a18;color:#6b7280;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;">
+                    <i class="fas fa-map-marker-alt" style="margin-right:6px;color:#374151;"></i> Adresse introuvable sur la carte
+                </div>`;
+                return;
+            }
+
+            // Vide le placeholder et initialise Leaflet directement dans le div
+            el.innerHTML = '';
+            const map = L.map(el, {
+                center: [coords.lat, coords.lon],
+                zoom: 15,
+                zoomControl: true,
+                attributionControl: false,
+                scrollWheelZoom: false
+            });
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap'
+            }).addTo(map);
+
+            // Marqueur personnalisé
+            const icon = L.divIcon({
+                className: '',
+                html: `<svg width="28" height="36" viewBox="0 0 28 36" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M14 0C6.268 0 0 6.268 0 14c0 9.333 14 22 14 22S28 23.333 28 14C28 6.268 21.732 0 14 0z" fill="#3b82f6"/>
+                    <circle cx="14" cy="14" r="6" fill="white"/>
+                </svg>`,
+                iconSize: [28, 36],
+                iconAnchor: [14, 36],
+                popupAnchor: [0, -38]
+            });
+
+            L.marker([coords.lat, coords.lon], { icon })
+                .addTo(map)
+                .bindPopup(`<b style="font-size:12px;">${adresse}</b>`, { maxWidth: 200 })
+                .openPopup();
+
+            // ÉTAPE VITALE : force le recalcul des dimensions
+            setTimeout(() => map.invalidateSize(), 150);
+        }
+
+        // ==========================================
+        // FIN CARTE INTERACTIVE
+        // ==========================================
 
         // --- Suppression d'Archives ---
         let archiveIdToDelete = null;
