@@ -5489,30 +5489,26 @@
             scene.add(camIcon);
 
             // ── Anomalies (sphères rouges avec halos) ─────────────────────
-            const clickableSpheres = []; // Pour le raycaster
-
             if (listeDefauts && listeDefauts.length > 0) {
                 listeDefauts.forEach((d, i) => {
                     const posX = d.dist - longueurTotale / 2;
 
-                    // Sphère principale — cliquable
-                    const geoD = new THREE.SphereGeometry(rayon * 0.35, 16, 16);
-                    const matD = new THREE.MeshBasicMaterial({ color: 0xff2222 });
+                    // Sphère principale — nom "sphereDefaut" pour le raycaster
+                    const geoD   = new THREE.SphereGeometry(rayon * 0.35, 16, 16);
+                    const matD   = new THREE.MeshBasicMaterial({ color: 0xff2222 });
                     const defaut = new THREE.Mesh(geoD, matD);
+                    defaut.name  = "sphereDefaut";
                     defaut.position.set(posX, -rayon * 0.7, 0);
-                    // Stocke les données dans userData pour le raycaster
                     defaut.userData = {
-                        isDefaut : true,
-                        index    : i,
-                        dist     : d.dist,
-                        obs      : d.obs  || '',
-                        dataUrl  : d.dataUrl || null,
-                        time     : d.time || ''
+                        index  : i,
+                        dist   : d.dist,
+                        obs    : d.obs    || '',
+                        dataUrl: d.dataUrl || null,
+                        time   : d.time   || ''
                     };
                     scene.add(defaut);
-                    clickableSpheres.push(defaut);
 
-                    // Halo pulsant (anneau)
+                    // Halo pulsant
                     const geoRing = new THREE.TorusGeometry(rayon * 0.5, 0.04, 8, 32);
                     const matRing = new THREE.MeshBasicMaterial({ color: 0xff4444, transparent: true, opacity: 0.5 });
                     const ring    = new THREE.Mesh(geoRing, matRing);
@@ -5521,7 +5517,7 @@
                     ring.userData.pulse = i;
                     scene.add(ring);
 
-                    // Ligne verticale reliant le défaut à l'axe
+                    // Ligne verticale
                     const geoVLine = new THREE.BufferGeometry().setFromPoints([
                         new THREE.Vector3(posX, 0, 0),
                         new THREE.Vector3(posX, -rayon * 0.7, 0)
@@ -5530,12 +5526,11 @@
                 });
             }
 
-            // ── Raycaster — clic sur une sphère ───────────────────────────
+            // ── Raycaster — détection de clic sur les sphères ─────────────
             const raycaster = new THREE.Raycaster();
             const mouse     = new THREE.Vector2();
-
-            // Détecte si c'est un clic ou un drag (OrbitControls)
             let _mouseDownPos = null;
+
             _3dRenderer.domElement.addEventListener('mousedown', (e) => {
                 _mouseDownPos = { x: e.clientX, y: e.clientY };
             });
@@ -5545,69 +5540,67 @@
                 const dx = Math.abs(e.clientX - _mouseDownPos.x);
                 const dy = Math.abs(e.clientY - _mouseDownPos.y);
                 _mouseDownPos = null;
-                // Si la souris a bougé de plus de 5px c'est un drag, pas un clic
-                if (dx > 5 || dy > 5) return;
+                if (dx > 5 || dy > 5) return; // Drag → pas un clic
 
+                // Traduction pixel → coordonnées normalisées Three.js
                 const rect = _3dRenderer.domElement.getBoundingClientRect();
-                mouse.x =  ((e.clientX - rect.left)  / rect.width)  * 2 - 1;
-                mouse.y = -((e.clientY - rect.top)    / rect.height) * 2 + 1;
+                mouse.x = ((e.clientX - rect.left) / rect.width)  * 2 - 1;
+                mouse.y = -((e.clientY - rect.top)  / rect.height) * 2 + 1;
 
                 raycaster.setFromCamera(mouse, camera);
-                const hits = raycaster.intersectObjects(clickableSpheres);
+                const objetsTouches = raycaster.intersectObjects(scene.children);
 
-                if (hits.length > 0) {
-                    const hit  = hits[0].object;
-                    const data = hit.userData;
+                if (objetsTouches.length > 0) {
+                    const objetClique = objetsTouches[0].object;
 
-                    // Met en surbrillance la sphère cliquée
-                    clickableSpheres.forEach(s => s.material.color.set(0xff2222));
-                    hit.material.color.set(0xff8800);
+                    if (objetClique.name === "sphereDefaut") {
+                        const donnees = objetClique.userData;
 
-                    // Remplit la popup
-                    const popup      = document.getElementById('bz3DPopup');
-                    const popupImg   = document.getElementById('bz3DPopupImg');
-                    const popupObs   = document.getElementById('bz3DPopupObs');
-                    const popupTime  = document.getElementById('bz3DPopupTime');
-                    const popupTitle = document.getElementById('bz3DPopupTitle');
+                        // Surbrillance orange
+                        scene.children.forEach(o => { if (o.name === "sphereDefaut") o.material.color.set(0xff2222); });
+                        objetClique.material.color.set(0xff8800);
 
-                    popupTitle.innerText = `Anomalie #${data.index + 1} — ${data.dist.toFixed(2)} m`;
-                    popupObs.innerText   = data.obs && data.obs.trim() ? data.obs : 'Aucune observation renseignée';
-                    popupTime.innerText  = data.time ? `t = ${data.time}` : '';
+                        // Remplit et affiche la popup
+                        document.getElementById('bz3DPopupTitle').innerText = `Anomalie #${donnees.index + 1} — ${donnees.dist.toFixed(2)} m`;
+                        document.getElementById('bz3DPopupObs').innerText   = donnees.obs && donnees.obs.trim() ? donnees.obs : 'Aucune observation renseignée';
+                        document.getElementById('bz3DPopupTime').innerText  = donnees.time ? `t = ${donnees.time}` : '';
 
-                    if (data.dataUrl) {
-                        popupImg.src = data.dataUrl;
-                        popupImg.classList.remove('hidden');
+                        const popupImg = document.getElementById('bz3DPopupImg');
+                        if (donnees.dataUrl) {
+                            popupImg.src = donnees.dataUrl;
+                            popupImg.classList.remove('hidden');
+                        } else {
+                            popupImg.src = '';
+                            popupImg.classList.add('hidden');
+                        }
+
+                        const popup = document.getElementById('bz3DPopup');
+                        popup.style.position = 'fixed';
+                        popup.style.zIndex   = '9999';
+                        let px = e.clientX + 15;
+                        let py = e.clientY + 15;
+                        if (px + 315 > window.innerWidth)  px = e.clientX - 320;
+                        if (py + 290 > window.innerHeight) py = e.clientY - 290;
+                        popup.style.left = Math.max(5, px) + 'px';
+                        popup.style.top  = Math.max(5, py) + 'px';
+                        popup.classList.remove('hidden');
                     } else {
-                        popupImg.src = '';
-                        popupImg.classList.add('hidden');
+                        // Clic sur autre chose → ferme la popup
+                        document.getElementById('bz3DPopup').classList.add('hidden');
+                        scene.children.forEach(o => { if (o.name === "sphereDefaut") o.material.color.set(0xff2222); });
                     }
-
-                    // Positionne la popup en coordonnées fixes (viewport)
-                    // La popup est fixed dans le modal fixed → utilise clientX/Y directement
-                    popup.style.position = 'fixed';
-                    popup.style.zIndex   = '900';
-                    let px = e.clientX + 15;
-                    let py = e.clientY + 15;
-                    const pw = 310, ph = 280;
-                    if (px + pw > window.innerWidth)  px = e.clientX - pw - 10;
-                    if (py + ph > window.innerHeight) py = e.clientY - ph - 10;
-                    popup.style.left = px + 'px';
-                    popup.style.top  = py + 'px';
-                    popup.classList.remove('hidden');
-                } else {
-                    document.getElementById('bz3DPopup').classList.add('hidden');
-                    clickableSpheres.forEach(s => s.material.color.set(0xff2222));
                 }
             });
 
-            // Curseur pointer au survol d'une sphère
+            // Curseur pointer au survol
             _3dRenderer.domElement.addEventListener('mousemove', (e) => {
                 const rect = _3dRenderer.domElement.getBoundingClientRect();
-                mouse.x =  ((e.clientX - rect.left)  / rect.width)  * 2 - 1;
-                mouse.y = -((e.clientY - rect.top)    / rect.height) * 2 + 1;
+                mouse.x = ((e.clientX - rect.left) / rect.width)  * 2 - 1;
+                mouse.y = -((e.clientY - rect.top)  / rect.height) * 2 + 1;
                 raycaster.setFromCamera(mouse, camera);
-                const hits = raycaster.intersectObjects(clickableSpheres);
-                _3dRenderer.domElement.style.cursor = hits.length > 0 ? 'pointer' : 'grab';
+                const hits = raycaster.intersectObjects(scene.children);
+                const onSphere = hits.length > 0 && hits[0].object.name === "sphereDefaut";
+                _3dRenderer.domElement.style.cursor = onSphere ? 'pointer' : 'grab';
             });
 
             // ── Grille de sol ──────────────────────────────────────────────
