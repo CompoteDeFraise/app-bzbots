@@ -555,7 +555,7 @@
                     <!-- Profil accessible via le bloc session en haut à gauche -->
                     <div onclick="nav('view-archives')" class="card-menu p-6 md:p-8 rounded-2xl flex flex-col items-center justify-center aspect-square md:aspect-video group">
                         <i class="fas fa-file-pdf text-2xl md:text-3xl mb-3 md:mb-4 text-gray-300 group-hover:text-white group-hover:scale-110 transition-all"></i>
-                        <span class="text-[0.65rem] md:text-[0.7rem] font-bold uppercase tracking-widest text-center text-gray-300 group-hover:text-white transition-colors" data-i18n="documents">Archives</span>
+                        <span class="text-[0.65rem] md:text-[0.7rem] font-bold uppercase tracking-widest text-center text-gray-300 group-hover:text-white transition-colors" data-i18n="documents">Mes Chantiers</span>
                     </div>
                     <!-- Assistant IA (Masqué par défaut) -->
                     <div onclick="nav('view-ai-chat')" class="hidden card-menu p-6 md:p-8 rounded-2xl flex flex-col items-center justify-center aspect-square md:aspect-video border-purple-500/30 hover:border-purple-400/60 group overflow-hidden relative">
@@ -583,7 +583,7 @@
                 <button onclick="nav('view-home')" class="text-gray-400 hover:text-white transition-colors mr-4 md:mr-6">
                     <i class="fas fa-chevron-left text-lg md:text-xl"></i>
                 </button>
-                <h2 class="font-black text-lg md:text-xl uppercase tracking-[0.2em] text-white" data-i18n="documents">Archives</h2>
+                <h2 class="font-black text-lg md:text-xl uppercase tracking-[0.2em] text-white" data-i18n="documents">Mes Chantiers</h2>
             </div>
             <!-- Sélecteur de langue -->
             <div class="relative shrink-0">
@@ -1959,19 +1959,21 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div class="space-y-1.5">
                             <label class="text-[0.55rem] font-bold text-gray-400 uppercase tracking-widest">Référence nœud de départ</label>
-                            <input type="text" id="bzVD_refNoeudDepart" class="input-bz py-2.5 text-sm" placeholder="Ex: NR-001">
+                            <input type="text" id="bzVD_refNoeudDepart" class="input-bz py-2.5 text-sm" placeholder="Ex: NR-001"
+                                oninput="syncBzVisionNoeudLabels()">
                         </div>
                         <div class="space-y-1.5">
                             <label class="text-[0.55rem] font-bold text-gray-400 uppercase tracking-widest">Référence nœud d'arrivée</label>
-                            <input type="text" id="bzVD_refNoeudArrivee" class="input-bz py-2.5 text-sm" placeholder="Ex: NR-002">
+                            <input type="text" id="bzVD_refNoeudArrivee" class="input-bz py-2.5 text-sm" placeholder="Ex: NR-002"
+                                oninput="syncBzVisionNoeudLabels()">
                         </div>
                         <div class="space-y-1.5">
                             <label class="text-[0.55rem] font-bold text-gray-400 uppercase tracking-widest">Sens d'écoulement</label>
                             <div class="relative">
                                 <select id="bzVD_sensEcoulement" class="input-bz py-2.5 appearance-none bg-black/50 text-sm">
                                     <option value="" class="bg-[#111]">— Sélectionner —</option>
-                                    <option value="Amont → Aval" class="bg-[#111]">Amont → Aval</option>
-                                    <option value="Aval → Amont" class="bg-[#111]">Aval → Amont</option>
+                                    <option id="bzVD_ecoul_opt1" value="Amont → Aval" class="bg-[#111]">Amont → Aval</option>
+                                    <option id="bzVD_ecoul_opt2" value="Aval → Amont" class="bg-[#111]">Aval → Amont</option>
                                     <option value="Inconnu" class="bg-[#111]">Inconnu</option>
                                 </select>
                                 <i class="fas fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-xs pointer-events-none text-white"></i>
@@ -1982,8 +1984,8 @@
                             <div class="relative">
                                 <select id="bzVD_sensInspection" class="input-bz py-2.5 appearance-none bg-black/50 text-sm">
                                     <option value="" class="bg-[#111]">— Sélectionner —</option>
-                                    <option value="Amont → Aval" class="bg-[#111]">Amont → Aval</option>
-                                    <option value="Aval → Amont" class="bg-[#111]">Aval → Amont</option>
+                                    <option id="bzVD_insp_opt1" value="Amont → Aval" class="bg-[#111]">Amont → Aval</option>
+                                    <option id="bzVD_insp_opt2" value="Aval → Amont" class="bg-[#111]">Aval → Amont</option>
                                 </select>
                                 <i class="fas fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-xs pointer-events-none text-white"></i>
                             </div>
@@ -2031,11 +2033,13 @@
                         <!-- Nœud de départ -->
                         <div class="glass-panel p-4 rounded-2xl border border-white/10 space-y-3">
                             <h5 class="text-[0.6rem] font-black text-white uppercase tracking-widest flex items-center gap-2">
-                                <i class="fas fa-arrow-right-from-bracket text-green-400"></i> Nœud de départ
+                                <i class="fas fa-arrow-right-from-bracket text-green-400"></i>
+                                Nœud de départ — <span id="bzVD_labelDep" class="text-green-400">—</span>
                             </h5>
                             <div class="space-y-1.5">
                                 <label class="text-[0.5rem] font-bold text-gray-500 uppercase tracking-widest">Référence du nœud</label>
-                                <input type="text" id="bzVD_noeudDep_ref" class="input-bz py-2 text-xs" placeholder="Ex: NR-001">
+                                <input type="text" id="bzVD_noeudDep_ref" class="input-bz py-2 text-xs" placeholder="Ex: NR-001"
+                                    oninput="document.getElementById('bzVD_refNoeudDepart').value=this.value; syncBzVisionNoeudLabels()">
                             </div>
                             <div class="space-y-1.5">
                                 <label class="text-[0.5rem] font-bold text-gray-500 uppercase tracking-widest">Dimension du regard (mm)</label>
@@ -2063,11 +2067,13 @@
                         <!-- Nœud d'arrivée -->
                         <div class="glass-panel p-4 rounded-2xl border border-white/10 space-y-3">
                             <h5 class="text-[0.6rem] font-black text-white uppercase tracking-widest flex items-center gap-2">
-                                <i class="fas fa-arrow-right-to-bracket text-blue-400"></i> Nœud d'arrivée
+                                <i class="fas fa-arrow-right-to-bracket text-blue-400"></i>
+                                Nœud d'arrivée — <span id="bzVD_labelArr" class="text-blue-400">—</span>
                             </h5>
                             <div class="space-y-1.5">
                                 <label class="text-[0.5rem] font-bold text-gray-500 uppercase tracking-widest">Référence du nœud</label>
-                                <input type="text" id="bzVD_noeudArr_ref" class="input-bz py-2 text-xs" placeholder="Ex: NR-002">
+                                <input type="text" id="bzVD_noeudArr_ref" class="input-bz py-2 text-xs" placeholder="Ex: NR-002"
+                                    oninput="document.getElementById('bzVD_refNoeudArrivee').value=this.value; syncBzVisionNoeudLabels()">
                             </div>
                             <div class="space-y-1.5">
                                 <label class="text-[0.5rem] font-bold text-gray-500 uppercase tracking-widest">Dimension du regard (mm)</label>
@@ -2174,7 +2180,7 @@
             
             <div class="p-4 md:p-6 bg-black/60 border-t border-white/10 flex justify-center gap-4 backdrop-blur-xl relative z-10 shrink-0 print-hide">
                  <button onclick="window.print()" class="px-4 py-2.5 bg-white/10 text-white border border-white/20 text-[0.6rem] md:text-[0.65rem] font-black uppercase rounded-lg hover:bg-white/20 transition-all flex items-center gap-2"><i class="fas fa-print"></i> Imprimer</button>
-                 <button id="savePdfBtn" onclick="saveReportToArchives()" class="px-6 py-2.5 md:px-8 md:py-3 bg-white/90 text-black text-[0.6rem] md:text-[0.65rem] font-black uppercase rounded-lg md:rounded-xl hover:bg-white shadow-[0_5px_15px_rgba(255,255,255,0.2)] transition-all flex items-center gap-2"><i class="fas fa-save"></i> Archiver (PDF)</button>
+                 <button id="savePdfBtn" onclick="saveReportToArchives()" class="px-6 py-2.5 md:px-8 md:py-3 bg-white/90 text-black text-[0.6rem] md:text-[0.65rem] font-black uppercase rounded-lg md:rounded-xl hover:bg-white shadow-[0_5px_15px_rgba(255,255,255,0.2)] transition-all flex items-center gap-2"><i class="fas fa-save"></i> Archiver</button>
             </div>
         </div>
     </div>
@@ -3917,80 +3923,118 @@
          */
         function loadArchives() {
             const container = document.getElementById('archivesList');
-            let archives = JSON.parse(localStorage.getItem('bz_archives') || '[]');
-            
-            if(archives.length === 0) { 
-                container.innerHTML = `<div class="glass-panel p-10 rounded-3xl text-center border-dashed border-white/20 flex flex-col items-center justify-center"><i class="fas fa-folder-open text-4xl text-gray-600 mb-4"></i><p class="text-gray-400 font-bold uppercase tracking-widest text-sm">Aucune archive disponible</p></div>`; 
-                return; 
-            }
-            
-            // Grouper les rapports par Chantier
-            let groupedArchives = {};
-            archives.forEach(arc => { 
-                let jName = arc.jobName || arc.title || 'Chantier Inconnu'; 
-                if(!groupedArchives[jName]) groupedArchives[jName] = []; 
-                groupedArchives[jName].push(arc); 
-            });
-            
-            let html = '';
-            for(let jName in groupedArchives) {
-                let arcs = groupedArchives[jName];
-                const firstArc = arcs[0];
-                const adresseChantier = [firstArc.building, firstArc.street, firstArc.city].filter(Boolean).join(', ');
-                const safeAddr = adresseChantier.replace(/'/g, "\\'");
-                const hasAddr = adresseChantier.trim() !== '';
+            const archives  = JSON.parse(localStorage.getItem('bz_archives')    || '[]');
+            const allJobs   = JSON.parse(localStorage.getItem('bz_job_history') || '[]');
 
-                html += `
-                <div class="w-full glass-panel p-5 md:p-6 rounded-3xl flex flex-col gap-4 border-l-4 border-blue-500/50 shadow-[0_10px_30px_rgba(0,0,0,0.5)]">
-                    <div class="flex items-center gap-3 border-b border-white/10 pb-4">
-                        <i class="fas fa-folder text-2xl text-blue-400 drop-shadow-[0_0_10px_rgba(59,130,246,0.5)]"></i>
-                        <div class="flex-1 min-w-0">
-                            <h3 class="text-base md:text-lg font-black text-white uppercase tracking-widest truncate">${jName}</h3>
-                            ${hasAddr ? `<p class="text-[0.6rem] text-gray-500 font-bold uppercase tracking-widest mt-0.5"><i class="fas fa-map-marker-alt mr-1 text-blue-400"></i>${adresseChantier}</p>` : ''}
-                        </div>
-                        <div class="flex items-center gap-2 shrink-0">
-                            ${hasAddr ? `<button onclick="showAddressOnMap('${safeAddr}', '${jName.replace(/'/g, "\'")}')" class="flex items-center gap-1.5 px-3 py-1.5 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/20 text-blue-400 rounded-lg text-[0.55rem] font-black uppercase tracking-widest transition-colors"><i class="fas fa-map-marker-alt"></i> Carte</button>` : ''}
-                            <span class="text-[0.65rem] font-bold text-gray-400 bg-white/5 border border-white/10 px-3 py-1.5 rounded-lg uppercase tracking-widest">${arcs.length} doc(s)</span>
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">`;
-                
-                arcs.reverse().forEach(arc => {
-                    let rName = arc.reportName || 'Rapport Global';
-                    let rIcon = rName.includes('Inspection') ? 'fa-video text-red-400' : rName.includes('Global') ? 'fa-globe text-purple-400' : 'fa-align-left text-cyan-400';
-                    // Bouton vidéo si un enregistrement est lié
-                    const videoBtn = arc.videoFilename
-                        ? `<button onclick="downloadBzVisionRecording('${arc.videoFilename}')" title="Télécharger la vidéo (${arc.videoFilename})"
-                               class="w-8 h-8 flex items-center justify-center bg-red-500/10 hover:bg-red-500/30 text-red-400 rounded-lg transition-colors border border-red-500/20">
-                               <i class="fas fa-film text-xs"></i>
-                           </button>`
-                        : '';
-                    html += `
-                        <div class="bg-black/40 p-3 md:p-4 rounded-xl flex justify-between items-center group border border-white/5 hover:border-white/20 transition-colors shadow-inner">
-                            <div class="flex items-center gap-3 overflow-hidden">
-                                <div class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center border border-white/10 shrink-0">
-                                    <i class="fas ${rIcon} text-sm"></i>
-                                </div>
+            const jobIndex = {};
+            allJobs.forEach(j => { const k = j.jobName||j.title||''; if(k) jobIndex[k]=j; });
+
+            const groupedPdfs = {};
+            archives.forEach(arc => {
+                const k = arc.jobName||arc.title||'Chantier Inconnu';
+                if(!groupedPdfs[k]) groupedPdfs[k]=[];
+                groupedPdfs[k].push(arc);
+            });
+
+            const allNames = new Set([...Object.keys(groupedPdfs), ...Object.keys(jobIndex)]);
+
+            if(!allNames.size) {
+                container.innerHTML = `<div class="glass-panel p-10 rounded-3xl text-center border-dashed border-white/20 flex flex-col items-center justify-center"><i class="fas fa-folder-open text-4xl text-gray-600 mb-4"></i><p class="text-gray-400 font-bold uppercase tracking-widest text-sm">Aucun chantier enregistré</p></div>`;
+                return;
+            }
+
+            let html = '';
+            allNames.forEach(jName => {
+                const job       = jobIndex[jName] || {};
+                const arcs      = groupedPdfs[jName] || [];
+                const src       = job.source || (arcs[0] && arcs[0].reportName && arcs[0].reportName.includes('Vision') ? 'bzvision' : 'pompe');
+                const isBzV     = src === 'bzvision';
+                const accentHex = isBzV ? '#22d3ee' : '#a855f7';
+                const icon      = isBzV ? 'fa-video' : 'fa-flask';
+                const module    = isBzV ? 'BzVision' : 'Pompe';
+                const safeN     = jName.replace(/'/g,"\\'").replace(/"/g,'&quot;');
+
+                const city     = job.city     || (arcs[0]&&arcs[0].city)     || '';
+                const street   = job.street   || (arcs[0]&&arcs[0].street)   || '';
+                const building = job.building || (arcs[0]&&arcs[0].building) || '';
+                const addr     = [building,street,city].filter(Boolean).join(', ');
+                const safeAddr = addr.replace(/'/g,"\\'");
+
+                const canals   = job.canals || [];
+                const done     = canals.filter(c=>c.done).length;
+                const canalStat= isBzV && canals.length ? `<span class="text-[0.55rem] font-bold uppercase tracking-widest" style="color:${accentHex}99;"><i class="fas fa-pipe mr-1"></i>${done}/${canals.length} insp.</span>` : '';
+
+                // Rapports PDF
+                let pdfsHtml = '';
+                if(arcs.length > 0) {
+                    const rows = [...arcs].reverse().map(arc => {
+                        const rName  = arc.reportName||'Rapport Global';
+                        const rIcon  = rName.includes('Inspection') ? 'fa-video text-red-400' : rName.includes('Global') ? 'fa-globe text-purple-400' : 'fa-align-left text-cyan-400';
+                        const vidBtn = arc.videoFilename ? `<button onclick="downloadBzVisionRecording('${arc.videoFilename}')" title="Vidéo" class="w-7 h-7 flex items-center justify-center bg-red-500/10 hover:bg-red-500/30 text-red-400 rounded-lg border border-red-500/20"><i class="fas fa-film text-[0.6rem]"></i></button>` : '';
+                        const dlName = `Rapport_${jName.replace(/\s+/g,'_')}_${rName.replace(/\s+/g,'_')}.pdf`;
+                        return `<div class="bg-black/40 p-3 rounded-xl flex justify-between items-center border border-white/5 hover:border-white/15 transition-colors">
+                            <div class="flex items-center gap-2.5 overflow-hidden">
+                                <i class="fas ${rIcon} text-sm shrink-0"></i>
                                 <div class="truncate">
-                                    <h4 class="text-white font-bold text-xs md:text-sm uppercase tracking-wider truncate">${rName}</h4>
-                                    <p class="text-[0.6rem] text-gray-500 font-bold uppercase tracking-widest mt-0.5">
-                                        <i class="far fa-clock mr-1"></i> ${arc.date}
-                                        ${arc.videoFilename ? `<span class="ml-2 text-red-400"><i class="fas fa-film mr-0.5"></i>Vidéo liée</span>` : ''}
-                                    </p>
+                                    <p class="text-white font-bold text-xs truncate">${rName}</p>
+                                    <p class="text-[0.55rem] text-gray-600 font-bold uppercase">${arc.date}${arc.videoFilename?` · <span class="text-red-400">Vidéo</span>`:''}</p>
                                 </div>
                             </div>
-                            <div class="flex gap-2 shrink-0 ml-2">
-                                ${videoBtn}
-                                <a href="${arc.pdf}" download="Rapport_${jName.replace(/\s+/g, '_')}_${rName.replace(/\s+/g, '_')}.pdf" class="w-8 h-8 flex items-center justify-center bg-white/10 hover:bg-white/30 text-white rounded-lg transition-colors border border-white/10" title="Télécharger le PDF"><i class="fas fa-download"></i></a>
-                                <button onclick="deleteArchive(${arc.id})" class="w-8 h-8 flex items-center justify-center bg-red-500/10 hover:bg-red-500/30 text-red-400 rounded-lg transition-colors border border-red-500/20"><i class="fas fa-trash-alt"></i></button>
+                            <div class="flex gap-1.5 shrink-0 ml-2">
+                                ${vidBtn}
+                                <a href="${arc.pdf}" download="${dlName}" class="w-7 h-7 flex items-center justify-center bg-white/10 hover:bg-white/25 text-white rounded-lg border border-white/10" title="PDF"><i class="fas fa-download text-[0.6rem]"></i></a>
+                                <button onclick="deleteArchive(${arc.id})" class="w-7 h-7 flex items-center justify-center bg-red-500/10 hover:bg-red-500/30 text-red-400 rounded-lg border border-red-500/20"><i class="fas fa-trash-alt text-[0.6rem]"></i></button>
                             </div>
                         </div>`;
-                });
-                // Ferme le bloc chantier
-                html += `</div></div>`;
-            }
+                    }).join('');
+                    pdfsHtml = `<div><p class="text-[0.55rem] font-black text-gray-500 uppercase tracking-widest mb-2"><i class="fas fa-file-pdf mr-1.5"></i>Rapports (${arcs.length})</p><div class="grid grid-cols-1 md:grid-cols-2 gap-2">${rows}</div></div>`;
+                } else {
+                    pdfsHtml = `<p class="text-[0.6rem] text-gray-600 font-bold uppercase tracking-widest text-center py-1"><i class="fas fa-info-circle mr-1"></i>Aucun rapport — cliquez Ouvrir pour accéder au chantier</p>`;
+                }
+
+                html += `<div class="w-full glass-panel p-5 md:p-6 rounded-3xl flex flex-col gap-4 shadow-[0_10px_30px_rgba(0,0,0,0.5)] border-l-4" style="border-left-color:${accentHex}50;">
+                    <div class="flex items-start gap-3 border-b border-white/10 pb-4">
+                        <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border" style="background:${accentHex}15;border-color:${accentHex}30;">
+                            <i class="fas ${icon} text-sm" style="color:${accentHex};"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center gap-2 mb-0.5 flex-wrap">
+                                <h3 class="text-base md:text-lg font-black text-white uppercase tracking-widest truncate">${jName}</h3>
+                                <span class="text-[0.5rem] font-black uppercase px-2 py-0.5 rounded" style="background:${accentHex}15;color:${accentHex};border:1px solid ${accentHex}30;">${module}</span>
+                            </div>
+                            <div class="flex flex-wrap items-center gap-3 mt-0.5">
+                                ${addr ? `<span class="text-[0.6rem] text-gray-500 font-bold uppercase tracking-widest"><i class="fas fa-map-marker-alt mr-1" style="color:${accentHex};"></i>${addr}</span>` : ''}
+                                ${canalStat}
+                                ${job.date ? `<span class="text-[0.6rem] text-gray-600 font-bold uppercase tracking-widest"><i class="far fa-calendar-alt mr-1"></i>${job.date}</span>` : ''}
+                            </div>
+                        </div>
+                        <div class="flex flex-col gap-2 shrink-0">
+                            <button onclick="openChantierFromArchives('${safeN}','${src}')"
+                                class="flex items-center gap-1.5 px-3 py-2 font-black uppercase text-[0.6rem] tracking-widest rounded-xl border transition-all"
+                                style="background:${accentHex}15;border-color:${accentHex}40;color:${accentHex};">
+                                <i class="fas fa-external-link-alt text-[0.55rem]"></i> Ouvrir
+                            </button>
+                            ${addr ? `<button onclick="showAddressOnMap('${safeAddr}','${safeN}')" class="flex items-center gap-1.5 px-3 py-2 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/20 text-blue-400 rounded-xl text-[0.55rem] font-black uppercase tracking-widest transition-colors"><i class="fas fa-map-marker-alt text-[0.5rem]"></i> Carte</button>` : ''}
+                        </div>
+                    </div>
+                    ${pdfsHtml}
+                </div>`;
+            });
             container.innerHTML = html;
         }
+
+        function openChantierFromArchives(jobName, source) {
+            const allJobs = JSON.parse(localStorage.getItem('bz_job_history') || '[]');
+            const job = allJobs.find(j => j.jobName === jobName);
+            if (source === 'bzvision') {
+                if (job) openBzVisionJob(job.jobName, job.date||'', job.city||'', job.street||'', job.building||'', job.canals||[]);
+                nav('view-bzvision');
+            } else {
+                if (job) loadJobIntoForm(jobName);
+                nav('view-pump');
+            }
+        }
+
 
         // ==========================================
         // CARTE INTERACTIVE — Archives (Leaflet)
@@ -4724,7 +4768,58 @@
                 if (el) el.value = val;
             });
 
+            // Met à jour les labels et options après pré-remplissage
+            syncBzVisionNoeudLabels();
+
             document.getElementById('bzVisionDetailModal').classList.remove('hidden');
+        }
+
+        // Synchronise dynamiquement les labels nœuds et options sens depuis les refs
+        function syncBzVisionNoeudLabels() {
+            const dep = (document.getElementById('bzVD_refNoeudDepart')?.value || '').trim();
+            const arr = (document.getElementById('bzVD_refNoeudArrivee')?.value || '').trim();
+
+            const labelDep = dep || '—';
+            const labelArr = arr || '—';
+
+            // Titres des sections nœud
+            const elLabelDep = document.getElementById('bzVD_labelDep');
+            const elLabelArr = document.getElementById('bzVD_labelArr');
+            if (elLabelDep) elLabelDep.innerText = labelDep;
+            if (elLabelArr) elLabelArr.innerText = labelArr;
+
+            // Sync champs "Référence du nœud" si on tape dans le haut
+            // (la synchro inverse est faite via oninput sur les champs du bas)
+            const elDepRef = document.getElementById('bzVD_noeudDep_ref');
+            const elArrRef = document.getElementById('bzVD_noeudArr_ref');
+            if (elDepRef && dep && elDepRef.value !== dep) elDepRef.value = dep;
+            if (elArrRef && arr && elArrRef.value !== arr) elArrRef.value = arr;
+
+            // Options des selects sens d'écoulement et d'inspection
+            const opt1Label = (dep && arr) ? `${dep} → ${arr}` : 'Amont → Aval';
+            const opt2Label = (dep && arr) ? `${arr} → ${dep}` : 'Aval → Amont';
+            const opt1Val   = (dep && arr) ? `${dep} → ${arr}` : 'Amont → Aval';
+            const opt2Val   = (dep && arr) ? `${arr} → ${dep}` : 'Aval → Amont';
+
+            ['bzVD_ecoul_opt1','bzVD_insp_opt1'].forEach(id => {
+                const el = document.getElementById(id);
+                if (!el) return;
+                const sel = el.parentElement;
+                const curVal = sel.value;
+                el.value = opt1Val;
+                el.innerText = opt1Label;
+                // Remet la sélection si elle était sur cette option
+                if (curVal === 'Amont → Aval' || curVal === opt1Val) sel.value = opt1Val;
+            });
+            ['bzVD_ecoul_opt2','bzVD_insp_opt2'].forEach(id => {
+                const el = document.getElementById(id);
+                if (!el) return;
+                const sel = el.parentElement;
+                const curVal = sel.value;
+                el.value = opt2Val;
+                el.innerText = opt2Label;
+                if (curVal === 'Aval → Amont' || curVal === opt2Val) sel.value = opt2Val;
+            });
         }
 
         function closeBzVisionDetailModal() {
