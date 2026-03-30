@@ -445,12 +445,12 @@
     <!-- ========================================== -->
     <section id="view-home" class="view-section relative">
         <header class="p-4 md:p-6 flex justify-between items-center border-b border-white/10 bg-black/40 backdrop-blur-xl sticky top-0 z-40">
-            <!-- Informations de session -->
-            <div class="flex items-center gap-4">
-                <div class="w-10 h-10 bg-white text-black font-black flex items-center justify-center rounded-full text-xs shadow-[0_0_20px_rgba(255,255,255,0.3)] shrink-0" id="userAvatarInitials">T</div>
+            <!-- Informations de session — cliquable vers le profil -->
+            <div class="flex items-center gap-4 cursor-pointer group" onclick="nav('view-profile')" title="Accéder au profil">
+                <div class="w-10 h-10 bg-white text-black font-black flex items-center justify-center rounded-full text-xs shadow-[0_0_20px_rgba(255,255,255,0.3)] shrink-0 group-hover:shadow-[0_0_28px_rgba(255,255,255,0.5)] group-hover:scale-105 transition-all" id="userAvatarInitials">T</div>
                 <div>
-                    <span class="block text-[0.6rem] text-gray-400 uppercase font-bold tracking-widest" data-i18n="hello">Session Active</span>
-                    <span class="font-black text-base md:text-lg tracking-wide text-white"><span id="userNameDisplay">Tanguy</span></span>
+                    <span class="block text-[0.6rem] text-gray-400 uppercase font-bold tracking-widest group-hover:text-gray-300 transition-colors" data-i18n="hello">Session Active</span>
+                    <span class="font-black text-base md:text-lg tracking-wide text-white group-hover:text-gray-200 transition-colors flex items-center gap-1.5"><span id="userNameDisplay">Tanguy</span><i class="fas fa-chevron-right text-[0.55rem] text-gray-600 group-hover:text-gray-400 transition-colors"></i></span>
                 </div>
             </div>
             <!-- Sélecteur de langue -->
@@ -552,13 +552,10 @@
                         <i class="fas fa-boxes text-2xl md:text-3xl mb-3 md:mb-4 text-white group-hover:scale-110 transition-transform"></i>
                         <span class="text-[0.65rem] md:text-[0.7rem] font-bold uppercase tracking-widest text-center" data-i18n="catalog">Catalogue</span>
                     </div>
-                    <div onclick="nav('view-profile')" class="card-menu p-6 md:p-8 rounded-2xl flex flex-col items-center justify-center aspect-square md:aspect-video group">
-                        <i class="fas fa-user-circle text-2xl md:text-3xl mb-3 md:mb-4 text-gray-300 group-hover:text-white group-hover:scale-110 transition-all"></i>
-                        <span class="text-[0.65rem] md:text-[0.7rem] font-bold uppercase tracking-widest text-center text-gray-300 group-hover:text-white transition-colors" data-i18n="profile">Profil</span>
-                    </div>
+                    <!-- Profil accessible via le bloc session en haut à gauche -->
                     <div onclick="nav('view-archives')" class="card-menu p-6 md:p-8 rounded-2xl flex flex-col items-center justify-center aspect-square md:aspect-video group">
                         <i class="fas fa-file-pdf text-2xl md:text-3xl mb-3 md:mb-4 text-gray-300 group-hover:text-white group-hover:scale-110 transition-all"></i>
-                        <span class="text-[0.65rem] md:text-[0.7rem] font-bold uppercase tracking-widest text-center text-gray-300 group-hover:text-white transition-colors" data-i18n="documents">Chantier</span>
+                        <span class="text-[0.65rem] md:text-[0.7rem] font-bold uppercase tracking-widest text-center text-gray-300 group-hover:text-white transition-colors" data-i18n="documents">Archives</span>
                     </div>
                     <!-- Assistant IA (Masqué par défaut) -->
                     <div onclick="nav('view-ai-chat')" class="hidden card-menu p-6 md:p-8 rounded-2xl flex flex-col items-center justify-center aspect-square md:aspect-video border-purple-500/30 hover:border-purple-400/60 group overflow-hidden relative">
@@ -586,7 +583,7 @@
                 <button onclick="nav('view-home')" class="text-gray-400 hover:text-white transition-colors mr-4 md:mr-6">
                     <i class="fas fa-chevron-left text-lg md:text-xl"></i>
                 </button>
-                <h2 class="font-black text-lg md:text-xl uppercase tracking-[0.2em] text-white" data-i18n="documents">Chantier</h2>
+                <h2 class="font-black text-lg md:text-xl uppercase tracking-[0.2em] text-white" data-i18n="documents">Archives</h2>
             </div>
             <!-- Sélecteur de langue -->
             <div class="relative shrink-0">
@@ -1210,7 +1207,6 @@
 
                     <!-- En-tête chantier actif -->
                     <div class="glass-panel p-5 md:p-6 rounded-2xl md:rounded-3xl flex flex-col gap-4 border-l-4 border-l-cyan-400">
-                        <!-- Ligne principale : nom + compteur -->
                         <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
                             <div>
                                 <h2 id="bzVisionJobNameDisplay" class="text-xl md:text-2xl font-black text-white mb-1">Nom du chantier</h2>
@@ -1224,29 +1220,29 @@
                                 <i class="fas fa-pipe mr-1 text-cyan-400"></i><span id="bzVisionCanalCount">0</span> canalisation(s)
                             </span>
                         </div>
-                        <!-- Bandeau infos canalisation active (nœuds, matière, forme) -->
+                        <!-- Bandeau infos canalisation sélectionnée -->
                         <div id="bzVisionCanalInfoBand" class="hidden flex-wrap gap-2 pt-3 border-t border-white/10">
-                            <span class="flex items-center gap-1.5 bg-black/40 border border-white/10 px-2.5 py-1 rounded-lg text-[0.6rem] font-black uppercase tracking-widest text-gray-300">
+                            <span class="flex items-center gap-1.5 bg-black/40 border border-white/10 px-2.5 py-1 rounded-lg text-[0.6rem] font-black uppercase tracking-widest">
                                 <i class="fas fa-arrow-right text-cyan-400 text-[0.5rem]"></i>
                                 <span class="text-gray-500">Amont</span>
                                 <span id="bzV2NoeudDep" class="text-cyan-300 ml-1">—</span>
                             </span>
-                            <span class="flex items-center gap-1.5 bg-black/40 border border-white/10 px-2.5 py-1 rounded-lg text-[0.6rem] font-black uppercase tracking-widest text-gray-300">
+                            <span class="flex items-center gap-1.5 bg-black/40 border border-white/10 px-2.5 py-1 rounded-lg text-[0.6rem] font-black uppercase tracking-widest">
                                 <i class="fas fa-arrow-left text-purple-400 text-[0.5rem]"></i>
                                 <span class="text-gray-500">Aval</span>
                                 <span id="bzV2NoeudArr" class="text-purple-300 ml-1">—</span>
                             </span>
-                            <span class="flex items-center gap-1.5 bg-black/40 border border-white/10 px-2.5 py-1 rounded-lg text-[0.6rem] font-black uppercase tracking-widest text-gray-300">
+                            <span class="flex items-center gap-1.5 bg-black/40 border border-white/10 px-2.5 py-1 rounded-lg text-[0.6rem] font-black uppercase tracking-widest">
                                 <i class="fas fa-layer-group text-yellow-400 text-[0.5rem]"></i>
                                 <span class="text-gray-500">Matière</span>
                                 <span id="bzV2Materiau" class="text-yellow-300 ml-1">—</span>
                             </span>
-                            <span class="flex items-center gap-1.5 bg-black/40 border border-white/10 px-2.5 py-1 rounded-lg text-[0.6rem] font-black uppercase tracking-widest text-gray-300">
+                            <span class="flex items-center gap-1.5 bg-black/40 border border-white/10 px-2.5 py-1 rounded-lg text-[0.6rem] font-black uppercase tracking-widest">
                                 <i class="fas fa-shapes text-green-400 text-[0.5rem]"></i>
                                 <span class="text-gray-500">Forme</span>
                                 <span id="bzV2Forme" class="text-green-300 ml-1">—</span>
                             </span>
-                            <span class="flex items-center gap-1.5 bg-black/40 border border-white/10 px-2.5 py-1 rounded-lg text-[0.6rem] font-black uppercase tracking-widest text-gray-300">
+                            <span class="flex items-center gap-1.5 bg-black/40 border border-white/10 px-2.5 py-1 rounded-lg text-[0.6rem] font-black uppercase tracking-widest">
                                 <i class="fas fa-water text-blue-400 text-[0.5rem]"></i>
                                 <span class="text-gray-500">Écoulement</span>
                                 <span id="bzV2SensEcoul" class="text-blue-300 ml-1">—</span>
@@ -1754,7 +1750,7 @@
     <div id="operationPanel" class="hidden fixed inset-0 bg-[#050505]/95 backdrop-blur-3xl z-[100] flex flex-col overflow-y-auto">
         <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80vw] h-[80vw] bg-cyan-900/10 blur-[150px] rounded-full pointer-events-none"></div>
         <div class="p-6 md:p-8 border-b border-white/10 flex justify-between items-center bg-black/40 backdrop-blur-xl relative z-10">
-            <div onclick="nav('view-profile')" class="flex items-center gap-4 cursor-pointer hover:opacity-80 transition">
+            <div class="flex items-center gap-4">
                 <button onclick="stopJob(false)" class="w-10 h-10 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-gray-400 hover:text-white transition-colors shrink-0">
                     <i class="fas fa-chevron-left"></i>
                 </button>
@@ -4433,13 +4429,13 @@
             if (empty) empty.classList.add('hidden');
             tbody.innerHTML = bzVisionCanals.map((c,i) => {
                 const badge  = c.done ? bzVisionStatusBadge(c.status) : `<span class="text-[0.55rem] font-black text-gray-500 bg-white/5 border border-white/10 px-2 py-1 rounded uppercase">En attente</span>`;
-                // Infos nœuds depuis le détail
+                // Nœuds sous le libellé
                 const dep = c.detail?.refNoeudDepart || c.detail?.noeudDep_ref || '';
                 const arr = c.detail?.refNoeudArrivee || c.detail?.noeudArr_ref || '';
                 const noeudInfo = (dep || arr)
                     ? `<div class="flex items-center gap-1 mt-0.5 text-[0.5rem] text-gray-600 font-bold uppercase">
                            ${dep ? `<span class="text-cyan-500/70">${dep}</span>` : ''}
-                           ${dep && arr ? `<i class="fas fa-arrow-right text-gray-700"></i>` : ''}
+                           ${dep && arr ? `<i class="fas fa-arrow-right text-gray-700 text-[0.45rem]"></i>` : ''}
                            ${arr ? `<span class="text-purple-500/70">${arr}</span>` : ''}
                        </div>` : '';
                 const action = c.done
@@ -4478,19 +4474,11 @@
             const c   = bzVisionCanals.find(c => c.id === id); if (!c) return;
             const d   = c.detail || {};
             const band = document.getElementById('bzVisionCanalInfoBand'); if (!band) return;
-
-            const dep   = d.refNoeudDepart  || d.noeudDep_ref || '—';
-            const arr   = d.refNoeudArrivee || d.noeudArr_ref || '—';
-            const mat   = d.materiau   || '—';
-            const forme = d.forme      || '—';
-            const ecoul = d.sensEcoulement || '—';
-
-            document.getElementById('bzV2NoeudDep').innerText  = dep;
-            document.getElementById('bzV2NoeudArr').innerText  = arr;
-            document.getElementById('bzV2Materiau').innerText  = mat;
-            document.getElementById('bzV2Forme').innerText     = forme;
-            document.getElementById('bzV2SensEcoul').innerText = ecoul;
-
+            document.getElementById('bzV2NoeudDep').innerText  = d.refNoeudDepart  || d.noeudDep_ref  || '—';
+            document.getElementById('bzV2NoeudArr').innerText  = d.refNoeudArrivee || d.noeudArr_ref  || '—';
+            document.getElementById('bzV2Materiau').innerText  = d.materiau   || '—';
+            document.getElementById('bzV2Forme').innerText     = d.forme      || '—';
+            document.getElementById('bzV2SensEcoul').innerText = d.sensEcoulement || '—';
             band.classList.remove('hidden');
             band.classList.add('flex');
         }
@@ -4778,15 +4766,27 @@
             const d        = canal.detail || {};
             const totalLen = parseFloat(canal.length) || 0;
             const label    = canal.label || 'Canalisation';
-            const refDep   = d.refNoeudDepart  || d.noeudDep_ref || 'UN1';
-            const refArr   = d.refNoeudArrivee || d.noeudArr_ref || 'UN0';
+            const refDep   = d.refNoeudDepart  || d.noeudDep_ref || 'ND';
+            const refArr   = d.refNoeudArrivee || d.noeudArr_ref || 'NA';
+            const materiau = d.materiau  || '';
+            const forme    = d.forme     || '';
+            const sensEcoul= d.sensEcoulement || '';
+            const sensInsp = (d.sensInspection || '').toLowerCase();
 
-            // Dimensions SVG
-            const W = 620, H = 520;
-            const lineX = 90, lineY1 = 60, lineY2 = 450;
-            const lineH = lineY2 - lineY1;
+            // ── Dimensions ────────────────────────────────────────────────
+            // Marge gauche plus large pour laisser la place aux noms de nœuds
+            const W = 640;
+            const colLineX   = 110;   // X de la ligne tuyau
+            const colDistX   = colLineX + 20;  // X colonne distance (juste à droite de la ligne)
+            const colObsX    = colLineX + 130; // X colonne observations
+            const headerY    = 36;
+            const subHeaderY = 54;
+            const lineY1     = 70;    // début tuyau
+            const lineY2     = 460;   // fin tuyau
+            const lineH      = lineY2 - lineY1;
+            const H          = lineY2 + 50; // hauteur totale
 
-            // Trie les snaps par distance (ceux sans distance vont à la fin)
+            // ── Tri des snaps ─────────────────────────────────────────────
             const sorted = [...snaps].map((s, i) => ({
                 ...s,
                 distNum: s.dist !== '' && s.dist !== undefined ? parseFloat(s.dist) : null,
@@ -4798,23 +4798,19 @@
                 return a.distNum - b.distNum;
             });
 
-            // Calcule la position Y d'un snap sur la ligne
             function snapY(distNum) {
                 if (distNum === null || totalLen === 0) return null;
-                const ratio = Math.min(distNum / totalLen, 1);
-                return lineY1 + ratio * lineH;
+                return lineY1 + Math.min(distNum / totalLen, 1) * lineH;
             }
 
-            // Construit les lignes horizontales et annotations droites
+            // ── Annotations captures ──────────────────────────────────────
             let lines = '';
             let annotations = '';
             const usedYs = [];
 
-            sorted.forEach((s, i) => {
+            sorted.forEach((s) => {
                 const y = snapY(s.distNum);
                 if (y === null) return;
-
-                // Évite superposition
                 let yAdj = y;
                 usedYs.forEach(uy => { if (Math.abs(uy - yAdj) < 22) yAdj = uy + 22; });
                 usedYs.push(yAdj);
@@ -4822,84 +4818,80 @@
                 const distLabel = s.distNum !== null ? `${s.distNum.toFixed(2)}m` : '';
                 const photoNum  = `${s.origIdx + 1}/${snaps.length}`;
                 const obsText   = s.obs && s.obs.trim() ? s.obs.trim() : '—';
-                const shortObs  = obsText.length > 80 ? obsText.substring(0, 77) + '...' : obsText;
+                const shortObs  = obsText.length > 70 ? obsText.substring(0, 67) + '...' : obsText;
 
                 // Point sur la ligne
-                lines += `<circle cx="${lineX}" cy="${y}" r="5" fill="#1e40af" stroke="white" stroke-width="1.5"/>`;
+                lines += `<circle cx="${colLineX}" cy="${y}" r="4.5" fill="#1e40af" stroke="white" stroke-width="1.5"/>`;
+                // Ligne pointillée vers colonne distance
+                lines += `<line x1="${colLineX + 5}" y1="${y}" x2="${colDistX + 5}" y2="${yAdj}" stroke="#94a3b8" stroke-width="0.8" stroke-dasharray="3,2"/>`;
+                lines += `<line x1="${colDistX + 5}" y1="${yAdj}" x2="${colDistX + 12}" y2="${yAdj}" stroke="#94a3b8" stroke-width="0.8"/>`;
 
-                // Ligne horizontale vers droite
-                lines += `<line x1="${lineX}" y1="${y}" x2="${lineX + 45}" y2="${yAdj}" stroke="#94a3b8" stroke-width="1" stroke-dasharray="3,2"/>`;
-                lines += `<line x1="${lineX + 45}" y1="${yAdj}" x2="${lineX + 55}" y2="${yAdj}" stroke="#94a3b8" stroke-width="1"/>`;
+                // Distance + numéro photo
+                annotations += `<text x="${colDistX + 14}" y="${yAdj + 4}" font-family="monospace" font-size="9" fill="#374151" font-weight="700">${distLabel}  ${photoNum}</text>`;
 
-                // Colonne distance
-                annotations += `<text x="${lineX + 60}" y="${yAdj + 4}" font-family="monospace" font-size="9" fill="#374151" font-weight="700">${distLabel} / ${photoNum}</text>`;
-
-                // Colonne observation
-                const obsX = lineX + 160;
+                // Observation (2 lignes max)
                 const words = shortObs.split(' ');
                 let line1 = '', line2 = '';
                 words.forEach(w => {
-                    if ((line1 + ' ' + w).trim().length <= 52) line1 = (line1 + ' ' + w).trim();
+                    if ((line1 + ' ' + w).trim().length <= 40) line1 = (line1 + ' ' + w).trim();
                     else line2 = (line2 + ' ' + w).trim();
                 });
-                annotations += `<text x="${obsX}" y="${yAdj + (line2 ? 0 : 4)}" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#374151">
-                    <tspan x="${obsX}" dy="0">${line1}</tspan>
-                    ${line2 ? `<tspan x="${obsX}" dy="11">${line2}</tspan>` : ''}
+                annotations += `<text x="${colObsX}" y="${yAdj + (line2 ? 0 : 4)}" font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#374151">
+                    <tspan x="${colObsX}" dy="0">${line1}</tspan>
+                    ${line2 ? `<tspan x="${colObsX}" dy="11">${line2}</tspan>` : ''}
                 </text>`;
             });
 
-            // Sens d'inspection (flèche)
-            // "Amont → Aval" = tracteur part du nœud départ (haut) vers nœud arrivée (bas) → flèche vers le bas
-            // "Aval → Amont" = tracteur part du bas vers le haut → flèche vers le haut
-            const sensInsp  = (d.sensInspection || '').toLowerCase();
-            const goingDown = sensInsp.includes('amont') && sensInsp.includes('aval') && sensInsp.indexOf('amont') < sensInsp.indexOf('aval');
-            // Si "Amont → Aval" : flèche pointe vers le bas (lineY2)
-            // Si "Aval → Amont" : flèche pointe vers le haut (lineY1)
-            // Par défaut (non renseigné) : flèche vers le bas
-            const arrowDown = goingDown || sensInsp === '';
+            // ── Sens inspection → flèche à GAUCHE de la ligne ────────────
+            const goingDown = !sensInsp.includes('aval') || (sensInsp.includes('amont') && sensInsp.indexOf('amont') < sensInsp.indexOf('aval'));
             const arrowMidY = (lineY1 + lineY2) / 2;
-            const arrowSize = 10;
-            const arrowDir  = arrowDown
-                ? `M${lineX - arrowSize/2},${arrowMidY - arrowSize/2} L${lineX},${arrowMidY + arrowSize/2} L${lineX + arrowSize/2},${arrowMidY - arrowSize/2}`
-                : `M${lineX - arrowSize/2},${arrowMidY + arrowSize/2} L${lineX},${arrowMidY - arrowSize/2} L${lineX + arrowSize/2},${arrowMidY + arrowSize/2}`;
+            const arrowX    = colLineX - 18; // à gauche de la ligne
+            const arrowDir  = goingDown
+                ? `M${arrowX - 5},${arrowMidY - 7} L${arrowX},${arrowMidY + 7} L${arrowX + 5},${arrowMidY - 7}`
+                : `M${arrowX - 5},${arrowMidY + 7} L${arrowX},${arrowMidY - 7} L${arrowX + 5},${arrowMidY + 7}`;
+
+            // ── Info canalisation (matière + forme + sens écoulement) ─────
+            const metaItems = [materiau, forme, sensEcoul].filter(Boolean);
+            const metaLine  = metaItems.length ? metaItems.join('  ·  ') : '';
 
             return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" style="font-family:'Segoe UI',Arial,sans-serif;background:white;border:1px solid #e5e7eb;border-radius:8px;">
 
                 <!-- Titre -->
-                <rect x="0" y="0" width="${W}" height="36" fill="#1e3a5f" rx="8" ry="8"/>
-                <rect x="0" y="20" width="${W}" height="16" fill="#1e3a5f"/>
-                <text x="${W/2}" y="23" text-anchor="middle" font-size="11" font-weight="900" fill="white" letter-spacing="2" text-transform="uppercase">SYNTHÈSE DU TRONÇON ${refDep} VERS ${refArr}</text>
+                <rect x="0" y="0" width="${W}" height="${headerY}" fill="#1e3a5f" rx="8" ry="8"/>
+                <rect x="0" y="22" width="${W}" height="${headerY - 22}" fill="#1e3a5f"/>
+                <text x="${W/2}" y="23" text-anchor="middle" font-size="11" font-weight="900" fill="white" letter-spacing="1.5">SYNTHÈSE DU TRONÇON ${refDep} → ${refArr}</text>
+                ${metaLine ? `<text x="${W/2}" y="33" text-anchor="middle" font-size="7.5" fill="#93c5fd" letter-spacing="0.5">${metaLine}</text>` : ''}
 
                 <!-- En-têtes colonnes -->
-                <line x1="${lineX - 30}" y1="36" x2="${W - 10}" y2="36" stroke="#e5e7eb" stroke-width="1"/>
-                <text x="${lineX - 28}" y="50" font-size="8" font-weight="900" fill="#6b7280" letter-spacing="1">NŒUD</text>
-                <text x="${lineX + 62}" y="50" font-size="8" font-weight="900" fill="#6b7280" letter-spacing="1">DISTANCE / PHOTO</text>
-                <text x="${lineX + 162}" y="50" font-size="8" font-weight="900" fill="#6b7280" letter-spacing="1">OBSERVATIONS</text>
-                <line x1="${lineX - 30}" y1="54" x2="${W - 10}" y2="54" stroke="#e5e7eb" stroke-width="1"/>
+                <line x1="10" y1="${headerY}" x2="${W - 10}" y2="${headerY}" stroke="#e5e7eb" stroke-width="1"/>
+                <text x="${colDistX + 14}" y="${subHeaderY - 4}" font-size="8" font-weight="900" fill="#6b7280" letter-spacing="1">DISTANCE  PHOTO</text>
+                <text x="${colObsX}" y="${subHeaderY - 4}" font-size="8" font-weight="900" fill="#6b7280" letter-spacing="1">OBSERVATIONS</text>
+                <line x1="10" y1="${subHeaderY}" x2="${W - 10}" y2="${subHeaderY}" stroke="#e5e7eb" stroke-width="1"/>
 
                 <!-- Ligne principale (tuyau) -->
-                <line x1="${lineX}" y1="${lineY1}" x2="${lineX}" y2="${lineY2}" stroke="#3b82f6" stroke-width="8" stroke-linecap="round"/>
+                <line x1="${colLineX}" y1="${lineY1}" x2="${colLineX}" y2="${lineY2}" stroke="#3b82f6" stroke-width="8" stroke-linecap="round"/>
+                <!-- Brillance -->
+                <line x1="${colLineX - 2}" y1="${lineY1 + 10}" x2="${colLineX - 2}" y2="${lineY2 - 10}" stroke="rgba(255,255,255,0.35)" stroke-width="2.5" stroke-linecap="round"/>
 
-                <!-- Effet brillance tuyau -->
-                <line x1="${lineX - 2}" y1="${lineY1 + 10}" x2="${lineX - 2}" y2="${lineY2 - 10}" stroke="rgba(255,255,255,0.35)" stroke-width="2.5" stroke-linecap="round"/>
+                <!-- Flèche sens inspection — À GAUCHE de la ligne, hors colonne data -->
+                <path d="${arrowDir}" fill="#1d4ed8" stroke="#1d4ed8" stroke-width="1" stroke-linejoin="round"/>
+                <text x="${arrowX}" y="${arrowMidY + 22}" font-size="6.5" fill="#6b7280" text-anchor="middle" font-weight="700">${goingDown ? '▼' : '▲'}</text>
 
-                <!-- Flèche sens inspection (milieu de la ligne, pleine) -->
-                <path d="${arrowDir}" stroke="#1d4ed8" stroke-width="1.5" fill="#1d4ed8" stroke-linejoin="round"/>
+                <!-- Séparateurs colonnes -->
+                <line x1="${colDistX + 10}" y1="${subHeaderY}" x2="${colDistX + 10}" y2="${lineY2 + 20}" stroke="#f1f5f9" stroke-width="1"/>
+                <line x1="${colObsX - 8}" y1="${subHeaderY}" x2="${colObsX - 8}" y2="${lineY2 + 20}" stroke="#f1f5f9" stroke-width="1"/>
 
-                <!-- Nœud départ (haut) -->
-                <circle cx="${lineX}" cy="${lineY1}" r="8" fill="#111827" stroke="#e5e7eb" stroke-width="2"/>
-                <text x="${lineX - 14}" y="${lineY1 - 14}" font-size="9" font-weight="900" fill="#111827" text-anchor="middle">${refDep}</text>
-                <text x="${lineX - 14}" y="${lineY1 - 3}" font-size="7.5" fill="#6b7280" text-anchor="middle">RVC m</text>
-                <text x="${lineX + 62}" y="${lineY1 + 4}" font-size="9" font-weight="700" fill="#374151" font-family="monospace">0.00m / ${refDep}</text>
+                <!-- Nœud départ (haut) — nom à GAUCHE uniquement -->
+                <circle cx="${colLineX}" cy="${lineY1}" r="8" fill="#111827" stroke="#e5e7eb" stroke-width="2"/>
+                <text x="${colLineX - 14}" y="${lineY1 - 13}" font-size="9" font-weight="900" fill="#111827" text-anchor="middle">${refDep}</text>
+                <!-- Distance 0.00m sur la ligne data -->
+                <text x="${colDistX + 14}" y="${lineY1 + 4}" font-family="monospace" font-size="9" fill="#374151" font-weight="700">0.00m</text>
 
-                <!-- Nœud arrivée (bas) -->
-                <circle cx="${lineX}" cy="${lineY2}" r="8" fill="#111827" stroke="#e5e7eb" stroke-width="2"/>
-                <text x="${lineX - 14}" y="${lineY2 + 20}" font-size="9" font-weight="900" fill="#111827" text-anchor="middle">${refArr}</text>
-                ${totalLen > 0 ? `<text x="${lineX + 62}" y="${lineY2 + 4}" font-size="9" font-weight="700" fill="#374151" font-family="monospace">${totalLen.toFixed(2)}m / ${refArr}</text>` : ''}
-
-                <!-- Ligne séparatrice colonnes -->
-                <line x1="${lineX + 55}" y1="54" x2="${lineX + 55}" y2="${lineY2 + 20}" stroke="#f1f5f9" stroke-width="1"/>
-                <line x1="${lineX + 155}" y1="54" x2="${lineX + 155}" y2="${lineY2 + 20}" stroke="#f1f5f9" stroke-width="1"/>
+                <!-- Nœud arrivée (bas) — nom à GAUCHE uniquement -->
+                <circle cx="${colLineX}" cy="${lineY2}" r="8" fill="#111827" stroke="#e5e7eb" stroke-width="2"/>
+                <text x="${colLineX - 14}" y="${lineY2 + 20}" font-size="9" font-weight="900" fill="#111827" text-anchor="middle">${refArr}</text>
+                <!-- Distance finale sur la ligne data -->
+                ${totalLen > 0 ? `<text x="${colDistX + 14}" y="${lineY2 + 4}" font-family="monospace" font-size="9" fill="#374151" font-weight="700">${totalLen.toFixed(2)}m</text>` : ''}
 
                 <!-- Points et annotations captures -->
                 ${lines}
