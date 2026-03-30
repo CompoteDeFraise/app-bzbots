@@ -5409,29 +5409,28 @@
             const canvasEl = document.getElementById('canvas3D');
             if (!canvasEl || typeof THREE === 'undefined') return;
 
-            // Nettoie le rendu précédent
+            // Nettoie l'ancien rendu
             canvasEl.innerHTML = '';
             if (_3dAnimId) { cancelAnimationFrame(_3dAnimId); _3dAnimId = null; }
             if (_3dRenderer) { _3dRenderer.dispose(); _3dRenderer = null; }
 
+            const rayon = Math.max(0.8, (diametre / 1000) * 4);
             const W = canvasEl.clientWidth  || window.innerWidth;
-            const H = canvasEl.clientHeight || 400;
-            const rayon = Math.max(0.8, (diametre / 1000) * 4); // Rayon visuel adapté au diamètre
+            const H = canvasEl.clientHeight || 500;
 
-            // ── Scène ──────────────────────────────────────────────────────
-            const scene  = new THREE.Scene();
-            scene.background = null;
-
-            // ── Caméra ─────────────────────────────────────────────────────
-            const camera = new THREE.PerspectiveCamera(45, W / H, 0.1, 1000);
-            camera.position.set(longueurTotale * 0.6, rayon * 3, longueurTotale * 0.6);
+            // ── Scène, caméra, renderer ────────────────────────────────────
+            const scene    = new THREE.Scene();
+            const camera   = new THREE.PerspectiveCamera(45, W / H, 0.1, 1000);
+            camera.position.set(longueurTotale * 0.8, rayon * 3, longueurTotale * 0.8);
             camera.lookAt(0, 0, 0);
 
-            // ── Renderer ───────────────────────────────────────────────────
-            _3dRenderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-            _3dRenderer.setSize(W, H);
-            _3dRenderer.setPixelRatio(window.devicePixelRatio);
-            canvasEl.appendChild(_3dRenderer.domElement);
+            const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+            renderer.setSize(W, H);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            canvasEl.appendChild(renderer.domElement);
+
+            // Garde une référence globale pour le dispose
+            _3dRenderer = renderer;
 
             // ── Lumières ───────────────────────────────────────────────────
             scene.add(new THREE.AmbientLight(0xffffff, 0.4));
@@ -5439,21 +5438,21 @@
             dirLight.position.set(longueurTotale, 10, 10);
             scene.add(dirLight);
 
-            // ── Tuyau (wireframe cyan holographique) ───────────────────────
+            // ── Tuyau holographique ────────────────────────────────────────
             const geoCyl = new THREE.CylinderGeometry(rayon, rayon, longueurTotale, 32, 8, true);
             const matCyl = new THREE.MeshBasicMaterial({ color: 0x00e5ff, wireframe: true, transparent: true, opacity: 0.25 });
             const tuyau  = new THREE.Mesh(geoCyl, matCyl);
-            tuyau.rotation.z = Math.PI / 2; // Couche le tuyau sur l'axe X (horizontal)
+            tuyau.rotation.z = Math.PI / 2;
             scene.add(tuyau);
 
-            // Tuyau plein semi-transparent pour l'effet de profondeur
+            // Intérieur semi-transparent
             const geoCylSolid = new THREE.CylinderGeometry(rayon, rayon, longueurTotale, 32, 1, false);
             const matCylSolid = new THREE.MeshPhongMaterial({ color: 0x003344, transparent: true, opacity: 0.15, side: THREE.BackSide });
             const tuyauSolid  = new THREE.Mesh(geoCylSolid, matCylSolid);
             tuyauSolid.rotation.z = Math.PI / 2;
             scene.add(tuyauSolid);
 
-            // Bouchons aux extrémités
+            // Bouchons
             [- longueurTotale / 2, longueurTotale / 2].forEach(x => {
                 const geoEnd = new THREE.CircleGeometry(rayon, 32);
                 const matEnd = new THREE.MeshBasicMaterial({ color: 0x00e5ff, transparent: true, opacity: 0.15, side: THREE.DoubleSide });
@@ -5463,14 +5462,14 @@
                 scene.add(end);
             });
 
-            // Axe central (ligne de guidage)
+            // Axe central
             const geoLine = new THREE.BufferGeometry().setFromPoints([
                 new THREE.Vector3(-longueurTotale / 2, 0, 0),
-                new THREE.Vector3(longueurTotale / 2, 0, 0)
+                new THREE.Vector3( longueurTotale / 2, 0, 0)
             ]);
             scene.add(new THREE.Line(geoLine, new THREE.LineBasicMaterial({ color: 0x00e5ff, transparent: true, opacity: 0.3 })));
 
-            // ── Marqueurs de distance ──────────────────────────────────────
+            // Marqueurs de distance
             for (let i = 0; i <= longueurTotale; i++) {
                 const tick = new THREE.Mesh(
                     new THREE.SphereGeometry(0.04, 6, 6),
@@ -5480,7 +5479,7 @@
                 scene.add(tick);
             }
 
-            // ── Icône caméra (position de départ) ─────────────────────────
+            // Icône caméra
             const geoCamera = new THREE.ConeGeometry(rayon * 0.3, rayon * 0.6, 8);
             const matCamera = new THREE.MeshBasicMaterial({ color: 0x3b82f6 });
             const camIcon   = new THREE.Mesh(geoCamera, matCamera);
@@ -5488,16 +5487,21 @@
             camIcon.position.set(-longueurTotale / 2 + 0.3, 0, 0);
             scene.add(camIcon);
 
-            // ── Anomalies (sphères rouges avec halos) ─────────────────────
+            // Grille de sol
+            const gridHelper = new THREE.GridHelper(longueurTotale * 1.5, Math.ceil(longueurTotale), 0x0a1628, 0x0d1f35);
+            gridHelper.position.y = -rayon * 1.8;
+            scene.add(gridHelper);
+
+            // ── Sphères de défauts ─────────────────────────────────────────
             if (listeDefauts && listeDefauts.length > 0) {
                 listeDefauts.forEach((d, i) => {
                     const posX = d.dist - longueurTotale / 2;
 
-                    // Sphère principale — nom "sphereDefaut" pour le raycaster
+                    // Sphère cliquable — DOIT avoir name = "sphereDefaut"
                     const geoD   = new THREE.SphereGeometry(rayon * 0.35, 16, 16);
                     const matD   = new THREE.MeshBasicMaterial({ color: 0xff2222 });
                     const defaut = new THREE.Mesh(geoD, matD);
-                    defaut.name  = "sphereDefaut";
+                    defaut.name     = "sphereDefaut";
                     defaut.position.set(posX, -rayon * 0.7, 0);
                     defaut.userData = {
                         index  : i,
@@ -5518,35 +5522,43 @@
                     scene.add(ring);
 
                     // Ligne verticale
-                    const geoVLine = new THREE.BufferGeometry().setFromPoints([
+                    const pts = new THREE.BufferGeometry().setFromPoints([
                         new THREE.Vector3(posX, 0, 0),
                         new THREE.Vector3(posX, -rayon * 0.7, 0)
                     ]);
-                    scene.add(new THREE.Line(geoVLine, new THREE.LineBasicMaterial({ color: 0xff4444, transparent: true, opacity: 0.6 })));
+                    scene.add(new THREE.Line(pts, new THREE.LineBasicMaterial({ color: 0xff4444, transparent: true, opacity: 0.6 })));
                 });
             }
 
-            // ── Raycaster — détection de clic sur les sphères ─────────────
-            const raycaster = new THREE.Raycaster();
-            const mouse     = new THREE.Vector2();
-            let _mouseDownPos = null;
+            // ── Contrôles orbitaux ─────────────────────────────────────────
+            const controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.06;
+            controls.minDistance   = rayon * 2;
+            controls.maxDistance   = longueurTotale * 3;
 
-            _3dRenderer.domElement.addEventListener('mousedown', (e) => {
-                _mouseDownPos = { x: e.clientX, y: e.clientY };
+            // ── RAYCASTER — intégré ici pour accéder à scene et camera ─────
+            const raycaster    = new THREE.Raycaster();
+            const mouse        = new THREE.Vector2();
+            let mouseDownPos   = { x: 0, y: 0 };
+
+            renderer.domElement.addEventListener('mousedown', (e) => {
+                mouseDownPos.x = e.clientX;
+                mouseDownPos.y = e.clientY;
             });
 
-            _3dRenderer.domElement.addEventListener('mouseup', (e) => {
-                if (!_mouseDownPos) return;
-                const dx = Math.abs(e.clientX - _mouseDownPos.x);
-                const dy = Math.abs(e.clientY - _mouseDownPos.y);
-                _mouseDownPos = null;
-                if (dx > 5 || dy > 5) return; // Drag → pas un clic
+            renderer.domElement.addEventListener('mouseup', (e) => {
+                // Si la souris a bougé → rotation de caméra, pas un clic
+                const dx = Math.abs(e.clientX - mouseDownPos.x);
+                const dy = Math.abs(e.clientY - mouseDownPos.y);
+                if (dx > 5 || dy > 5) return;
 
-                // Traduction pixel → coordonnées normalisées Three.js
-                const rect = _3dRenderer.domElement.getBoundingClientRect();
-                mouse.x = ((e.clientX - rect.left) / rect.width)  * 2 - 1;
-                mouse.y = -((e.clientY - rect.top)  / rect.height) * 2 + 1;
+                // Traduction pixel → coordonnées normalisées Three.js (-1 à +1)
+                const rect  = renderer.domElement.getBoundingClientRect();
+                mouse.x     =  ((e.clientX - rect.left) / rect.width)  * 2 - 1;
+                mouse.y     = -((e.clientY - rect.top)  / rect.height) * 2 + 1;
 
+                // Tir du rayon laser depuis la caméra
                 raycaster.setFromCamera(mouse, camera);
                 const objetsTouches = raycaster.intersectObjects(scene.children);
 
@@ -5554,77 +5566,64 @@
                     const objetClique = objetsTouches[0].object;
 
                     if (objetClique.name === "sphereDefaut") {
-                        const donnees = objetClique.userData;
+                        const d = objetClique.userData;
 
-                        // Surbrillance orange
+                        // Surbrillance orange sur la sphère sélectionnée
                         scene.children.forEach(o => { if (o.name === "sphereDefaut") o.material.color.set(0xff2222); });
                         objetClique.material.color.set(0xff8800);
 
-                        // Remplit et affiche la popup
-                        document.getElementById('bz3DPopupTitle').innerText = `Anomalie #${donnees.index + 1} — ${donnees.dist.toFixed(2)} m`;
-                        document.getElementById('bz3DPopupObs').innerText   = donnees.obs && donnees.obs.trim() ? donnees.obs : 'Aucune observation renseignée';
-                        document.getElementById('bz3DPopupTime').innerText  = donnees.time ? `t = ${donnees.time}` : '';
+                        // Remplit la popup
+                        const titleEl  = document.getElementById('bz3DPopupTitle');
+                        const obsEl    = document.getElementById('bz3DPopupObs');
+                        const timeEl   = document.getElementById('bz3DPopupTime');
+                        const imgEl    = document.getElementById('bz3DPopupImg');
+                        const popupEl  = document.getElementById('bz3DPopup');
 
-                        const popupImg = document.getElementById('bz3DPopupImg');
-                        if (donnees.dataUrl) {
-                            popupImg.src = donnees.dataUrl;
-                            popupImg.classList.remove('hidden');
-                        } else {
-                            popupImg.src = '';
-                            popupImg.classList.add('hidden');
+                        if (titleEl) titleEl.innerText = `Anomalie #${d.index + 1} — ${d.dist.toFixed(2)} m`;
+                        if (obsEl)   obsEl.innerText   = d.obs && d.obs.trim() ? d.obs : 'Aucune observation renseignée';
+                        if (timeEl)  timeEl.innerText  = d.time ? `t = ${d.time}` : '';
+
+                        if (imgEl) {
+                            if (d.dataUrl) { imgEl.src = d.dataUrl; imgEl.classList.remove('hidden'); }
+                            else           { imgEl.src = ''; imgEl.classList.add('hidden'); }
                         }
 
-                        const popup = document.getElementById('bz3DPopup');
-                        popup.style.position = 'fixed';
-                        popup.style.zIndex   = '9999';
-                        let px = e.clientX + 15;
-                        let py = e.clientY + 15;
-                        if (px + 315 > window.innerWidth)  px = e.clientX - 320;
-                        if (py + 290 > window.innerHeight) py = e.clientY - 290;
-                        popup.style.left = Math.max(5, px) + 'px';
-                        popup.style.top  = Math.max(5, py) + 'px';
-                        popup.classList.remove('hidden');
+                        if (popupEl) {
+                            popupEl.style.position = 'fixed';
+                            popupEl.style.zIndex   = '9999';
+                            let px = e.clientX + 15;
+                            let py = e.clientY + 15;
+                            if (px + 315 > window.innerWidth)  px = e.clientX - 320;
+                            if (py + 290 > window.innerHeight) py = e.clientY - 290;
+                            popupEl.style.left = Math.max(5, px) + 'px';
+                            popupEl.style.top  = Math.max(5, py) + 'px';
+                            popupEl.classList.remove('hidden');
+                        }
                     } else {
-                        // Clic sur autre chose → ferme la popup
-                        document.getElementById('bz3DPopup').classList.add('hidden');
+                        // Clic ailleurs → ferme la popup
+                        const popupEl = document.getElementById('bz3DPopup');
+                        if (popupEl) popupEl.classList.add('hidden');
                         scene.children.forEach(o => { if (o.name === "sphereDefaut") o.material.color.set(0xff2222); });
                     }
                 }
             });
 
-            // Curseur pointer au survol
-            _3dRenderer.domElement.addEventListener('mousemove', (e) => {
-                const rect = _3dRenderer.domElement.getBoundingClientRect();
-                mouse.x = ((e.clientX - rect.left) / rect.width)  * 2 - 1;
-                mouse.y = -((e.clientY - rect.top)  / rect.height) * 2 + 1;
+            // Curseur pointer au survol des sphères
+            renderer.domElement.addEventListener('mousemove', (e) => {
+                const rect = renderer.domElement.getBoundingClientRect();
+                mouse.x    =  ((e.clientX - rect.left) / rect.width)  * 2 - 1;
+                mouse.y    = -((e.clientY - rect.top)  / rect.height) * 2 + 1;
                 raycaster.setFromCamera(mouse, camera);
                 const hits = raycaster.intersectObjects(scene.children);
-                const onSphere = hits.length > 0 && hits[0].object.name === "sphereDefaut";
-                _3dRenderer.domElement.style.cursor = onSphere ? 'pointer' : 'grab';
+                renderer.domElement.style.cursor = (hits.length > 0 && hits[0].object.name === "sphereDefaut") ? 'pointer' : 'grab';
             });
-
-            // ── Grille de sol ──────────────────────────────────────────────
-            const gridHelper = new THREE.GridHelper(longueurTotale * 1.5, Math.ceil(longueurTotale), 0x0a1628, 0x0d1f35);
-            gridHelper.position.y = -rayon * 1.8;
-            scene.add(gridHelper);
-
-            // ── Contrôles orbitaux ─────────────────────────────────────────
-            const controls = new THREE.OrbitControls(camera, _3dRenderer.domElement);
-            controls.enableDamping = true;
-            controls.dampingFactor = 0.06;
-            controls.minDistance   = rayon * 2;
-            controls.maxDistance   = longueurTotale * 3;
 
             // ── Boucle d'animation ─────────────────────────────────────────
             let frame = 0;
             function animate() {
                 _3dAnimId = requestAnimationFrame(animate);
                 frame++;
-
-                // Rotation lente automatique si pas d'interaction
-                if (!controls.autoRotate) tuyau.rotation.x += 0.0015;
-
-                // Pulsation des halos d'anomalie
+                tuyau.rotation.x += 0.0015;
                 scene.children.forEach(obj => {
                     if (obj.userData.pulse !== undefined) {
                         obj.material.opacity = 0.3 + 0.3 * Math.sin(frame * 0.05 + obj.userData.pulse);
@@ -5632,24 +5631,22 @@
                         obj.scale.set(s, s, s);
                     }
                 });
-
                 controls.update();
-                _3dRenderer.render(scene, camera);
+                renderer.render(scene, camera);
             }
             animate();
 
-            // ── Redimensionnement ──────────────────────────────────────────
+            // Redimensionnement
             window.addEventListener('resize', () => {
                 const nW = canvasEl.clientWidth;
                 const nH = canvasEl.clientHeight;
                 if (nW > 0 && nH > 0) {
                     camera.aspect = nW / nH;
                     camera.updateProjectionMatrix();
-                    _3dRenderer.setSize(nW, nH);
+                    renderer.setSize(nW, nH);
                 }
             });
         }
-
         // ==========================================
         // FIN BZVISION 3D
         // ==========================================
