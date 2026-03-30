@@ -558,7 +558,7 @@
                     </div>
                     <div onclick="nav('view-archives')" class="card-menu p-6 md:p-8 rounded-2xl flex flex-col items-center justify-center aspect-square md:aspect-video group">
                         <i class="fas fa-file-pdf text-2xl md:text-3xl mb-3 md:mb-4 text-gray-300 group-hover:text-white group-hover:scale-110 transition-all"></i>
-                        <span class="text-[0.65rem] md:text-[0.7rem] font-bold uppercase tracking-widest text-center text-gray-300 group-hover:text-white transition-colors" data-i18n="documents">Archives</span>
+                        <span class="text-[0.65rem] md:text-[0.7rem] font-bold uppercase tracking-widest text-center text-gray-300 group-hover:text-white transition-colors" data-i18n="documents">Chantier</span>
                     </div>
                     <!-- Assistant IA (Masqué par défaut) -->
                     <div onclick="nav('view-ai-chat')" class="hidden card-menu p-6 md:p-8 rounded-2xl flex flex-col items-center justify-center aspect-square md:aspect-video border-purple-500/30 hover:border-purple-400/60 group overflow-hidden relative">
@@ -586,7 +586,7 @@
                 <button onclick="nav('view-home')" class="text-gray-400 hover:text-white transition-colors mr-4 md:mr-6">
                     <i class="fas fa-chevron-left text-lg md:text-xl"></i>
                 </button>
-                <h2 class="font-black text-lg md:text-xl uppercase tracking-[0.2em] text-white" data-i18n="documents">Archives</h2>
+                <h2 class="font-black text-lg md:text-xl uppercase tracking-[0.2em] text-white" data-i18n="documents">Chantier</h2>
             </div>
             <!-- Sélecteur de langue -->
             <div class="relative shrink-0">
@@ -1188,9 +1188,11 @@
                             <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
                         </div>
                         <button onclick="openNewBzVisionJobModal()" class="btn-bz-primary py-3 md:py-4 px-6 md:px-8 rounded-xl md:rounded-2xl bg-white text-black font-black uppercase tracking-widest text-[0.65rem] md:text-[0.75rem] shadow-[0_10px_30px_rgba(255,255,255,0.2)] flex items-center justify-center gap-2 md:gap-3 transition-all shrink-0 w-full sm:w-auto">
-                            <i class="fas fa-plus"></i> Nouveau chantier
+                            <i class="fas fa-plus"></i> <span>Créer chantier</span>
                         </button>
                     </div>
+
+                    <!-- Liste Historique -->
                     <div class="glass-panel rounded-3xl p-6 md:p-8 flex flex-col min-h-[400px] lg:max-h-[600px] overflow-hidden border border-cyan-500/20 shadow-[0_0_30px_rgba(34,211,238,0.05)]">
                         <div id="bzVisionHistoryList" class="flex-1 overflow-y-auto custom-scrollbar grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pr-2 content-start">
                             <!-- Injecté via JS -->
@@ -1207,18 +1209,49 @@
                     </div>
 
                     <!-- En-tête chantier actif -->
-                    <div class="glass-panel p-5 md:p-6 rounded-2xl md:rounded-3xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-l-4 border-l-cyan-400">
-                        <div>
-                            <h2 id="bzVisionJobNameDisplay" class="text-xl md:text-2xl font-black text-white mb-1">Nom du chantier</h2>
-                            <div class="flex flex-wrap items-center gap-2 text-xs text-gray-400">
-                                <span id="bzVisionJobDateDisplay"><i class="far fa-calendar-alt mr-1"></i> Date</span>
-                                <span>•</span>
-                                <span id="bzVisionJobAddressDisplay"><i class="fas fa-map-marker-alt mr-1"></i> Adresse</span>
+                    <div class="glass-panel p-5 md:p-6 rounded-2xl md:rounded-3xl flex flex-col gap-4 border-l-4 border-l-cyan-400">
+                        <!-- Ligne principale : nom + compteur -->
+                        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
+                            <div>
+                                <h2 id="bzVisionJobNameDisplay" class="text-xl md:text-2xl font-black text-white mb-1">Nom du chantier</h2>
+                                <div class="flex flex-wrap items-center gap-2 text-xs text-gray-400">
+                                    <span id="bzVisionJobDateDisplay"><i class="far fa-calendar-alt mr-1"></i> Date</span>
+                                    <span>•</span>
+                                    <span id="bzVisionJobAddressDisplay"><i class="fas fa-map-marker-alt mr-1"></i> Adresse</span>
+                                </div>
                             </div>
+                            <span class="text-[0.6rem] font-black text-gray-400 uppercase tracking-widest bg-white/5 px-3 py-1.5 rounded-lg border border-white/10 shrink-0">
+                                <i class="fas fa-pipe mr-1 text-cyan-400"></i><span id="bzVisionCanalCount">0</span> canalisation(s)
+                            </span>
                         </div>
-                        <span class="text-[0.6rem] font-black text-gray-400 uppercase tracking-widest bg-white/5 px-3 py-1.5 rounded-lg border border-white/10 shrink-0">
-                            <i class="fas fa-pipe mr-1 text-cyan-400"></i><span id="bzVisionCanalCount">0</span> canalisation(s)
-                        </span>
+                        <!-- Bandeau infos canalisation active (nœuds, matière, forme) -->
+                        <div id="bzVisionCanalInfoBand" class="hidden flex-wrap gap-2 pt-3 border-t border-white/10">
+                            <span class="flex items-center gap-1.5 bg-black/40 border border-white/10 px-2.5 py-1 rounded-lg text-[0.6rem] font-black uppercase tracking-widest text-gray-300">
+                                <i class="fas fa-arrow-right text-cyan-400 text-[0.5rem]"></i>
+                                <span class="text-gray-500">Amont</span>
+                                <span id="bzV2NoeudDep" class="text-cyan-300 ml-1">—</span>
+                            </span>
+                            <span class="flex items-center gap-1.5 bg-black/40 border border-white/10 px-2.5 py-1 rounded-lg text-[0.6rem] font-black uppercase tracking-widest text-gray-300">
+                                <i class="fas fa-arrow-left text-purple-400 text-[0.5rem]"></i>
+                                <span class="text-gray-500">Aval</span>
+                                <span id="bzV2NoeudArr" class="text-purple-300 ml-1">—</span>
+                            </span>
+                            <span class="flex items-center gap-1.5 bg-black/40 border border-white/10 px-2.5 py-1 rounded-lg text-[0.6rem] font-black uppercase tracking-widest text-gray-300">
+                                <i class="fas fa-layer-group text-yellow-400 text-[0.5rem]"></i>
+                                <span class="text-gray-500">Matière</span>
+                                <span id="bzV2Materiau" class="text-yellow-300 ml-1">—</span>
+                            </span>
+                            <span class="flex items-center gap-1.5 bg-black/40 border border-white/10 px-2.5 py-1 rounded-lg text-[0.6rem] font-black uppercase tracking-widest text-gray-300">
+                                <i class="fas fa-shapes text-green-400 text-[0.5rem]"></i>
+                                <span class="text-gray-500">Forme</span>
+                                <span id="bzV2Forme" class="text-green-300 ml-1">—</span>
+                            </span>
+                            <span class="flex items-center gap-1.5 bg-black/40 border border-white/10 px-2.5 py-1 rounded-lg text-[0.6rem] font-black uppercase tracking-widest text-gray-300">
+                                <i class="fas fa-water text-blue-400 text-[0.5rem]"></i>
+                                <span class="text-gray-500">Écoulement</span>
+                                <span id="bzV2SensEcoul" class="text-blue-300 ml-1">—</span>
+                            </span>
+                        </div>
                     </div>
 
                     <!-- Tableau canalisations -->
@@ -4396,29 +4429,41 @@
             const tbody = document.getElementById('bzVisionCanalTable');
             const empty = document.getElementById('bzVisionCanalEmpty');
             const cc    = document.getElementById('bzVisionCanalCount'); if (cc) cc.innerText = bzVisionCanals.length;
-            if (!bzVisionCanals.length) { if(tbody) tbody.innerHTML=''; if(empty) empty.classList.remove('hidden'); updateBzVisionGlobalReportBtn(); return; }
+            if (!bzVisionCanals.length) { if(tbody) tbody.innerHTML=''; if(empty) empty.classList.remove('hidden'); updateBzVisionGlobalReportBtn(); hideBzVisionInfoBand(); return; }
             if (empty) empty.classList.add('hidden');
             tbody.innerHTML = bzVisionCanals.map((c,i) => {
                 const badge  = c.done ? bzVisionStatusBadge(c.status) : `<span class="text-[0.55rem] font-black text-gray-500 bg-white/5 border border-white/10 px-2 py-1 rounded uppercase">En attente</span>`;
+                // Infos nœuds depuis le détail
+                const dep = c.detail?.refNoeudDepart || c.detail?.noeudDep_ref || '';
+                const arr = c.detail?.refNoeudArrivee || c.detail?.noeudArr_ref || '';
+                const noeudInfo = (dep || arr)
+                    ? `<div class="flex items-center gap-1 mt-0.5 text-[0.5rem] text-gray-600 font-bold uppercase">
+                           ${dep ? `<span class="text-cyan-500/70">${dep}</span>` : ''}
+                           ${dep && arr ? `<i class="fas fa-arrow-right text-gray-700"></i>` : ''}
+                           ${arr ? `<span class="text-purple-500/70">${arr}</span>` : ''}
+                       </div>` : '';
                 const action = c.done
                     ? `<div class="flex gap-1.5 px-2 py-1">
+                           <button onclick="bzVisionReopenCanal(${c.id})" class="px-2 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 text-gray-400 rounded-lg text-[0.55rem] font-black uppercase transition-colors" title="Réinitialiser"><i class="fas fa-redo"></i></button>
                            <button onclick="bzVisionViewCanalReport(${c.id})" class="px-2 py-1.5 bg-blue-500/20 hover:bg-blue-500/30 border border-blue-500/30 text-blue-400 rounded-lg text-[0.55rem] font-black uppercase transition-colors flex items-center gap-1"><i class="fas fa-file-alt"></i> Rapport</button>
                            <button onclick="bzVisionShow3DFromCanal(bzVisionCanals.find(x=>x.id===${c.id}))" class="px-2 py-1.5 bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/20 text-cyan-400 rounded-lg text-[0.55rem] font-black uppercase transition-colors flex items-center gap-1" title="Vue 3D"><i class="fas fa-cube"></i> 3D</button>
                            <button onclick="openBzVisionDetailModal(${c.id})" class="px-2 py-1.5 bg-purple-500/20 hover:bg-purple-500/30 border border-purple-500/30 text-purple-400 rounded-lg text-[0.55rem] font-black uppercase transition-colors flex items-center gap-1"><i class="fas fa-clipboard-list"></i> Détail</button>
-                           <button onclick="bzVisionReopenCanal(${c.id})" class="px-2 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 text-gray-400 rounded-lg text-[0.55rem] font-black uppercase transition-colors"><i class="fas fa-redo"></i></button>
                        </div>`
                     : `<div class="flex gap-1.5 px-2 py-1">
+                           <button onclick="bzVisionDeleteCanal(${c.id})" class="px-2 py-1.5 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 text-red-400 rounded-lg text-[0.55rem] transition-colors" title="Supprimer"><i class="fas fa-trash-alt"></i></button>
                            <button onclick="bzVisionStartInspection(${c.id})" class="px-2 py-1.5 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white rounded-lg text-[0.55rem] font-black uppercase transition-all shadow-[0_4px_12px_rgba(34,211,238,0.3)] flex items-center gap-1"><i class="fas fa-play"></i> Inspecter</button>
                            <button onclick="openBzVisionDetailModal(${c.id})" class="px-2 py-1.5 bg-purple-500/20 hover:bg-purple-500/30 border border-purple-500/30 text-purple-400 rounded-lg text-[0.55rem] font-black uppercase transition-colors flex items-center gap-1"><i class="fas fa-clipboard-list"></i> Détail</button>
-                           <button onclick="bzVisionDeleteCanal(${c.id})" class="px-2 py-1.5 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 text-red-400 rounded-lg text-[0.55rem] transition-colors"><i class="fas fa-trash-alt"></i></button>
                        </div>`;
-                return `<tr class="${c.done?'opacity-70 bg-green-900/10':'hover:bg-white/5'} transition-colors">
+                return `<tr class="${c.done?'opacity-70 bg-green-900/10':'hover:bg-white/5'} transition-colors cursor-pointer" onclick="showBzVisionInfoBand(${c.id})">
                     <td class="px-4 py-3 font-mono font-bold text-gray-400 text-xs">#${i+1}</td>
-                    <td class="px-2 py-2"><input type="text" value="${c.label}" placeholder="Libellé..." onchange="bzVisionCanalField(${c.id},'label',this.value)" class="bg-transparent border border-transparent focus:border-white/20 focus:bg-white/5 outline-none text-white font-bold text-xs px-2 py-1.5 rounded-lg w-full min-w-[120px] transition-colors ${c.done?'pointer-events-none opacity-50':''}"></td>
-                    <td class="px-2 py-2"><input type="number" value="${c.length}" placeholder="—" onchange="bzVisionCanalField(${c.id},'length',this.value)" class="bg-transparent border border-transparent focus:border-white/20 focus:bg-white/5 outline-none text-white font-bold text-xs px-2 py-1.5 rounded-lg w-20 text-center transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${c.done?'pointer-events-none opacity-50':''}"></td>
-                    <td class="px-2 py-2"><input type="number" value="${c.diameter}" placeholder="—" onchange="bzVisionCanalField(${c.id},'diameter',this.value)" class="bg-transparent border border-transparent focus:border-white/20 focus:bg-white/5 outline-none text-white font-bold text-xs px-2 py-1.5 rounded-lg w-20 text-center transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${c.done?'pointer-events-none opacity-50':''}"></td>
+                    <td class="px-2 py-2">
+                        <input type="text" value="${c.label}" placeholder="Libellé..." onchange="bzVisionCanalField(${c.id},'label',this.value)" onclick="event.stopPropagation()" class="bg-transparent border border-transparent focus:border-white/20 focus:bg-white/5 outline-none text-white font-bold text-xs px-2 py-1.5 rounded-lg w-full min-w-[120px] transition-colors ${c.done?'pointer-events-none opacity-50':''}">
+                        ${noeudInfo}
+                    </td>
+                    <td class="px-2 py-2"><input type="number" value="${c.length}" placeholder="—" onchange="bzVisionCanalField(${c.id},'length',this.value)" onclick="event.stopPropagation()" class="bg-transparent border border-transparent focus:border-white/20 focus:bg-white/5 outline-none text-white font-bold text-xs px-2 py-1.5 rounded-lg w-20 text-center transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${c.done?'pointer-events-none opacity-50':''}"></td>
+                    <td class="px-2 py-2"><input type="number" value="${c.diameter}" placeholder="—" onchange="bzVisionCanalField(${c.id},'diameter',this.value)" onclick="event.stopPropagation()" class="bg-transparent border border-transparent focus:border-white/20 focus:bg-white/5 outline-none text-white font-bold text-xs px-2 py-1.5 rounded-lg w-20 text-center transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${c.done?'pointer-events-none opacity-50':''}"></td>
                     <td class="px-4 py-3 text-center">${badge}</td>
-                    <td class="sticky right-0 bg-[#0a0a0a] border-l border-white/5 shadow-[-8px_0_15px_rgba(0,0,0,0.5)]">${action}</td>
+                    <td class="sticky right-0 bg-[#0a0a0a] border-l border-white/5 shadow-[-8px_0_15px_rgba(0,0,0,0.5)]" onclick="event.stopPropagation()">${action}</td>
                 </tr>`;
             }).join('');
             updateBzVisionGlobalReportBtn();
@@ -4427,6 +4472,33 @@
         function updateBzVisionGlobalReportBtn() {
             const btn = document.getElementById('bzVisionGlobalReportBtn'); if (!btn) return;
             btn.classList.toggle('hidden', !bzVisionCanals.some(c => c.done));
+        }
+
+        function showBzVisionInfoBand(id) {
+            const c   = bzVisionCanals.find(c => c.id === id); if (!c) return;
+            const d   = c.detail || {};
+            const band = document.getElementById('bzVisionCanalInfoBand'); if (!band) return;
+
+            const dep   = d.refNoeudDepart  || d.noeudDep_ref || '—';
+            const arr   = d.refNoeudArrivee || d.noeudArr_ref || '—';
+            const mat   = d.materiau   || '—';
+            const forme = d.forme      || '—';
+            const ecoul = d.sensEcoulement || '—';
+
+            document.getElementById('bzV2NoeudDep').innerText  = dep;
+            document.getElementById('bzV2NoeudArr').innerText  = arr;
+            document.getElementById('bzV2Materiau').innerText  = mat;
+            document.getElementById('bzV2Forme').innerText     = forme;
+            document.getElementById('bzV2SensEcoul').innerText = ecoul;
+
+            band.classList.remove('hidden');
+            band.classList.add('flex');
+        }
+
+        function hideBzVisionInfoBand() {
+            const band = document.getElementById('bzVisionCanalInfoBand'); if (!band) return;
+            band.classList.add('hidden');
+            band.classList.remove('flex');
         }
 
         function bzVisionReopenCanal(id) {
