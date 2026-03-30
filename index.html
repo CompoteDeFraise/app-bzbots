@@ -593,7 +593,15 @@
                 <i class="fas fa-chevron-down absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400 text-[0.55rem]"></i>
             </div>
         </header>
-        <div class="flex-1 overflow-auto p-4 md:p-8 flex flex-col items-center max-w-5xl mx-auto w-full">
+        <div class="flex-1 overflow-auto p-4 md:p-8 flex flex-col items-center max-w-5xl mx-auto w-full gap-6">
+            <!-- Conteneur carte partagé — visible seulement si une adresse est trouvée -->
+            <div id="archiveMapContainer" class="w-full glass-panel rounded-3xl overflow-hidden hidden border border-cyan-900/50 shadow-[0_10px_30px_rgba(0,0,0,0.5)]">
+                <div class="p-3 border-b border-white/10 bg-black/30 flex items-center gap-2">
+                    <i class="fas fa-map-marker-alt text-blue-400 text-xs"></i>
+                    <span id="archiveMapLabel" class="text-[0.6rem] font-black text-gray-400 uppercase tracking-widest truncate">Localisation</span>
+                </div>
+                <div id="map" style="width:100%;height:260px;z-index:10;"></div>
+            </div>
             <div id="archivesList" class="w-full space-y-6"></div>
         </div>
     </section>
@@ -3855,10 +3863,9 @@
             let html = '';
             for(let jName in groupedArchives) {
                 let arcs = groupedArchives[jName];
-                // Récupère l'adresse depuis le premier rapport du groupe
                 const firstArc = arcs[0];
                 const adresseChantier = [firstArc.building, firstArc.street, firstArc.city].filter(Boolean).join(', ');
-                const mapId = 'archiveMap_' + Math.random().toString(36).substr(2,8);
+                const safeAddr = adresseChantier.replace(/'/g, "\\'");
                 const hasAddr = adresseChantier.trim() !== '';
 
                 html += `
@@ -3869,11 +3876,11 @@
                             <h3 class="text-base md:text-lg font-black text-white uppercase tracking-widest truncate">${jName}</h3>
                             ${hasAddr ? `<p class="text-[0.6rem] text-gray-500 font-bold uppercase tracking-widest mt-0.5"><i class="fas fa-map-marker-alt mr-1 text-blue-400"></i>${adresseChantier}</p>` : ''}
                         </div>
-                        <span class="shrink-0 text-[0.65rem] font-bold text-gray-400 bg-white/5 border border-white/10 px-3 py-1.5 rounded-lg uppercase tracking-widest">${arcs.length} doc(s)</span>
+                        <div class="flex items-center gap-2 shrink-0">
+                            ${hasAddr ? `<button onclick="showAddressOnMap('${safeAddr}', '${jName.replace(/'/g, "\'")}')" class="flex items-center gap-1.5 px-3 py-1.5 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/20 text-blue-400 rounded-lg text-[0.55rem] font-black uppercase tracking-widest transition-colors"><i class="fas fa-map-marker-alt"></i> Carte</button>` : ''}
+                            <span class="text-[0.65rem] font-bold text-gray-400 bg-white/5 border border-white/10 px-3 py-1.5 rounded-lg uppercase tracking-widest">${arcs.length} doc(s)</span>
+                        </div>
                     </div>
-                    ${hasAddr ? `
-                    <div id="${mapId}" style="height:220px;width:100%;border-radius:12px;overflow:hidden;z-index:1;"></div>
-                    ` : ''}
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-3">`;
                 
                 arcs.reverse().forEach(arc => {
@@ -3907,101 +3914,79 @@
                             </div>
                         </div>`;
                 });
-                // Stocke le mapId et l'adresse pour initialisation après rendu
+                // Ferme le bloc chantier
                 html += `</div></div>`;
-                // On garde trace des cartes à initialiser
-                if (hasAddr) {
-                    html += `<script>_archiveMapsToInit.push({id:'${mapId}',addr:'${adresseChantier.replace(/'/g,"\\'")}'})<\/script>`;
-                }
             }
-            // File d'attente pour les cartes
-            window._archiveMapsToInit = [];
             container.innerHTML = html;
-            // Initialise toutes les cartes après rendu (le DOM est prêt)
-            setTimeout(() => {
-                (_archiveMapsToInit || []).forEach(item => {
-                    _initArchiveMapInEl(item.id, item.addr);
-                });
-            }, 100);
         }
 
         // ==========================================
         // CARTE INTERACTIVE — Archives (Leaflet)
         // ==========================================
 
-        const _archiveGeoCache = {}; // Cache géocodage pour éviter des requêtes répétées
+        let myArchiveMap = null;
+        let currentMapMarker = null;
 
-        async function _initArchiveMapInEl(mapId, adresse) {
-            const el = document.getElementById(mapId);
-            if (!el) return;
+        function initArchiveMap(lat, lon) {
+            const mapDiv = document.getElementById('map');
+            if (!mapDiv) return;
 
-            // Affiche un placeholder pendant le chargement
-            el.innerHTML = `<div style="height:100%;display:flex;align-items:center;justify-content:center;background:#0a0a18;color:#374151;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;gap:8px;">
-                <svg style="animation:spin 1s linear infinite;width:16px;height:16px;" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2"><circle cx="12" cy="12" r="10" opacity="0.3"/><path d="M12 2a10 10 0 0 1 10 10"/></svg>
-                Localisation...
-            </div>`;
-
-            // Géocode l'adresse (avec cache)
-            let coords = _archiveGeoCache[adresse];
-            if (!coords) {
-                try {
-                    const res  = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(adresse)}`, { headers: { 'Accept-Language': 'fr' } });
-                    const data = await res.json();
-                    if (data && data.length > 0) {
-                        coords = { lat: parseFloat(data[0].lat), lon: parseFloat(data[0].lon) };
-                        _archiveGeoCache[adresse] = coords;
-                    }
-                } catch(e) {
-                    console.warn('[Carte Archives] Géocodage échoué:', adresse);
-                }
+            if (myArchiveMap !== null) {
+                myArchiveMap.setView([lat, lon], 14);
+            } else {
+                myArchiveMap = L.map('map').setView([lat, lon], 14);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '© OpenStreetMap'
+                }).addTo(myArchiveMap);
             }
 
-            if (!coords) {
-                el.innerHTML = `<div style="height:100%;display:flex;align-items:center;justify-content:center;background:#0a0a18;color:#6b7280;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;">
-                    <i class="fas fa-map-marker-alt" style="margin-right:6px;color:#374151;"></i> Adresse introuvable sur la carte
-                </div>`;
+            if (currentMapMarker !== null) {
+                myArchiveMap.removeLayer(currentMapMarker);
+            }
+
+            currentMapMarker = L.marker([lat, lon]).addTo(myArchiveMap);
+
+            setTimeout(() => { myArchiveMap.invalidateSize(); }, 300);
+        }
+
+        async function showAddressOnMap(adresseTextuelle, nomChantier) {
+            const mapContainer = document.getElementById('archiveMapContainer');
+            const mapLabel     = document.getElementById('archiveMapLabel');
+            if (!mapContainer) return;
+
+            if (!adresseTextuelle || adresseTextuelle.trim() === '') {
+                mapContainer.classList.add('hidden');
                 return;
             }
 
-            // Vide le placeholder et initialise Leaflet directement dans le div
-            el.innerHTML = '';
-            const map = L.map(el, {
-                center: [coords.lat, coords.lon],
-                zoom: 15,
-                zoomControl: true,
-                attributionControl: false,
-                scrollWheelZoom: false
-            });
+            // Affiche la carte avec un état de chargement
+            if (mapLabel) mapLabel.innerText = nomChantier ? `${nomChantier} — Localisation en cours...` : 'Localisation en cours...';
+            mapContainer.classList.remove('hidden');
+            mapContainer.style.display = 'block';
+            // Scroll vers la carte
+            mapContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '© OpenStreetMap'
-            }).addTo(map);
+            try {
+                const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(adresseTextuelle)}`);
+                const data = await response.json();
 
-            // Marqueur personnalisé
-            const icon = L.divIcon({
-                className: '',
-                html: `<svg width="28" height="36" viewBox="0 0 28 36" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M14 0C6.268 0 0 6.268 0 14c0 9.333 14 22 14 22S28 23.333 28 14C28 6.268 21.732 0 14 0z" fill="#3b82f6"/>
-                    <circle cx="14" cy="14" r="6" fill="white"/>
-                </svg>`,
-                iconSize: [28, 36],
-                iconAnchor: [14, 36],
-                popupAnchor: [0, -38]
-            });
-
-            L.marker([coords.lat, coords.lon], { icon })
-                .addTo(map)
-                .bindPopup(`<b style="font-size:12px;">${adresse}</b>`, { maxWidth: 200 })
-                .openPopup();
-
-            // ÉTAPE VITALE : force le recalcul des dimensions
-            setTimeout(() => map.invalidateSize(), 150);
+                if (data && data.length > 0) {
+                    const lat = parseFloat(data[0].lat);
+                    const lon = parseFloat(data[0].lon);
+                    if (mapLabel) mapLabel.innerText = nomChantier ? `${nomChantier} — ${adresseTextuelle}` : adresseTextuelle;
+                    initArchiveMap(lat, lon);
+                } else {
+                    if (mapLabel) mapLabel.innerText = 'Adresse introuvable';
+                    mapContainer.classList.add('hidden');
+                }
+            } catch (error) {
+                console.error('Erreur géocodage:', error);
+                mapContainer.classList.add('hidden');
+            }
         }
 
         // ==========================================
         // FIN CARTE INTERACTIVE
-        // ==========================================
-
         // --- Suppression d'Archives ---
         let archiveIdToDelete = null;
         
