@@ -1754,7 +1754,7 @@
     <div id="operationPanel" class="hidden fixed inset-0 bg-[#050505]/95 backdrop-blur-3xl z-[100] flex flex-col overflow-y-auto">
         <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80vw] h-[80vw] bg-cyan-900/10 blur-[150px] rounded-full pointer-events-none"></div>
         <div class="p-6 md:p-8 border-b border-white/10 flex justify-between items-center bg-black/40 backdrop-blur-xl relative z-10">
-            <div class="flex items-center gap-4">
+            <div onclick="nav('view-profile')" class="flex items-center gap-4 cursor-pointer hover:opacity-80 transition">
                 <button onclick="stopJob(false)" class="w-10 h-10 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-gray-400 hover:text-white transition-colors shrink-0">
                     <i class="fas fa-chevron-left"></i>
                 </button>
