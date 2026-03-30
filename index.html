@@ -5534,8 +5534,20 @@
             const raycaster = new THREE.Raycaster();
             const mouse     = new THREE.Vector2();
 
-            _3dRenderer.domElement.addEventListener('click', (e) => {
-                // Calcule la position de la souris en coordonnées normalisées (-1 à +1)
+            // Détecte si c'est un clic ou un drag (OrbitControls)
+            let _mouseDownPos = null;
+            _3dRenderer.domElement.addEventListener('mousedown', (e) => {
+                _mouseDownPos = { x: e.clientX, y: e.clientY };
+            });
+
+            _3dRenderer.domElement.addEventListener('mouseup', (e) => {
+                if (!_mouseDownPos) return;
+                const dx = Math.abs(e.clientX - _mouseDownPos.x);
+                const dy = Math.abs(e.clientY - _mouseDownPos.y);
+                _mouseDownPos = null;
+                // Si la souris a bougé de plus de 5px c'est un drag, pas un clic
+                if (dx > 5 || dy > 5) return;
+
                 const rect = _3dRenderer.domElement.getBoundingClientRect();
                 mouse.x =  ((e.clientX - rect.left)  / rect.width)  * 2 - 1;
                 mouse.y = -((e.clientY - rect.top)    / rect.height) * 2 + 1;
@@ -5551,35 +5563,38 @@
                     clickableSpheres.forEach(s => s.material.color.set(0xff2222));
                     hit.material.color.set(0xff8800);
 
-                    // Positionne et remplit la popup
-                    const popup     = document.getElementById('bz3DPopup');
-                    const popupImg  = document.getElementById('bz3DPopupImg');
-                    const popupObs  = document.getElementById('bz3DPopupObs');
-                    const popupTime = document.getElementById('bz3DPopupTime');
-                    const popupTitle= document.getElementById('bz3DPopupTitle');
+                    // Remplit la popup
+                    const popup      = document.getElementById('bz3DPopup');
+                    const popupImg   = document.getElementById('bz3DPopupImg');
+                    const popupObs   = document.getElementById('bz3DPopupObs');
+                    const popupTime  = document.getElementById('bz3DPopupTime');
+                    const popupTitle = document.getElementById('bz3DPopupTitle');
 
-                    popupTitle.innerText = `Anomalie #${data.index + 1} — ${data.dist.toFixed(2)}m`;
+                    popupTitle.innerText = `Anomalie #${data.index + 1} — ${data.dist.toFixed(2)} m`;
                     popupObs.innerText   = data.obs && data.obs.trim() ? data.obs : 'Aucune observation renseignée';
-                    popupTime.innerText  = data.time ? `Capturé à t = ${data.time}` : '';
+                    popupTime.innerText  = data.time ? `t = ${data.time}` : '';
 
                     if (data.dataUrl) {
                         popupImg.src = data.dataUrl;
                         popupImg.classList.remove('hidden');
                     } else {
+                        popupImg.src = '';
                         popupImg.classList.add('hidden');
                     }
 
-                    // Positionne la popup près du clic, en restant dans les bords
-                    const modalRect = document.getElementById('bzVision3DModal').getBoundingClientRect();
-                    let px = e.clientX - modalRect.left + 15;
-                    let py = e.clientY - modalRect.top  + 15;
-                    if (px + 310 > modalRect.width)  px = e.clientX - modalRect.left - 320;
-                    if (py + 260 > modalRect.height)  py = e.clientY - modalRect.top  - 260;
+                    // Positionne la popup en coordonnées fixes (viewport)
+                    // La popup est fixed dans le modal fixed → utilise clientX/Y directement
+                    popup.style.position = 'fixed';
+                    popup.style.zIndex   = '900';
+                    let px = e.clientX + 15;
+                    let py = e.clientY + 15;
+                    const pw = 310, ph = 280;
+                    if (px + pw > window.innerWidth)  px = e.clientX - pw - 10;
+                    if (py + ph > window.innerHeight) py = e.clientY - ph - 10;
                     popup.style.left = px + 'px';
                     popup.style.top  = py + 'px';
                     popup.classList.remove('hidden');
                 } else {
-                    // Clic dans le vide → ferme la popup et réinitialise les couleurs
                     document.getElementById('bz3DPopup').classList.add('hidden');
                     clickableSpheres.forEach(s => s.material.color.set(0xff2222));
                 }
@@ -5648,7 +5663,7 @@
 
     </script>
     <!-- Modal 3D — Visualisation tuyau BzVision -->
-    <div id="bzVision3DModal" class="fixed inset-0 bg-[#020208]/95 z-[700] hidden flex flex-col backdrop-blur-xl">
+    <div id="bzVision3DModal" class="fixed inset-0 bg-[#020208]/95 z-[700] hidden flex flex-col backdrop-blur-xl" style="position:fixed;">
         <!-- Header -->
         <div class="flex items-center justify-between px-5 py-4 border-b border-cyan-500/20 bg-black/40 shrink-0">
             <div class="flex items-center gap-3">
@@ -5674,7 +5689,7 @@
         <div id="canvas3D" class="flex-1 w-full" style="cursor:grab;"></div>
 
         <!-- Popup détail anomalie (s'affiche au clic sur une sphère) -->
-        <div id="bz3DPopup" class="hidden absolute z-[800] pointer-events-auto" style="max-width:300px;">
+        <div id="bz3DPopup" class="hidden pointer-events-auto" style="position:fixed;max-width:310px;z-index:900;">
             <div class="glass-panel rounded-2xl overflow-hidden border border-red-500/40 shadow-[0_8px_32px_rgba(255,0,0,0.3)]">
                 <div class="flex items-center justify-between px-3 py-2 bg-red-500/10 border-b border-red-500/20">
                     <span id="bz3DPopupTitle" class="text-[0.6rem] font-black text-red-400 uppercase tracking-widest"></span>
