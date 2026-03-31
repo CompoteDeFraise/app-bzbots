@@ -471,79 +471,75 @@
                 <div class="flex overflow-x-auto gap-4 md:gap-6 pb-6 snap-x hide-scrollbar">
                     
                     <!-- Carte Produit : BzLight -->
-                    <div onclick="nav('view-bzlight')" class="snap-center shrink-0 w-[280px] md:w-[300px] glass-panel rounded-2xl p-5 md:p-6 flex flex-col hover:border-yellow-500/50 group cursor-pointer">
-    
-    <div class="w-full h-40 md:h-44 bg-black/40 rounded-xl mb-6 flex items-center justify-center border border-white/5 relative overflow-hidden backdrop-blur-sm">
-        <img src="IMG_6062.png" alt="BzLight" class="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:opacity-100 group-hover:scale-110 transition-all duration-500">
-        <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent pointer-events-none"></div>
-    </div>
-    
-    <h4 class="text-xl md:text-2xl font-black text-white mb-1 tracking-tighter">BzLight</h4>
-    <p class="text-[0.65rem] text-yellow-400 mb-6 font-bold uppercase tracking-widest drop-shadow-md" data-i18n="bzLightDesc">Robot de fraisage UV</p>
-    
-    <div class="space-y-3 mb-8">
-        <div class="text-[0.7rem] text-gray-300 flex items-center gap-3 font-medium"><i class="fas fa-bolt text-yellow-500 w-4 drop-shadow-[0_0_8px_rgba(234,179,8,0.5)]"></i><span data-i18n="highPower">Haute Puissance</span></div>
-        <div class="text-[0.7rem] text-gray-300 flex items-center gap-3 font-medium"><i class="fas fa-video text-yellow-500 w-4 drop-shadow-[0_0_8px_rgba(234,179,8,0.5)]"></i><span data-i18n="hdCamera">Caméra HD 4K</span></div>
-        <div class="text-[0.7rem] text-gray-300 flex items-center gap-3 font-medium"><i class="fas fa-crosshairs text-yellow-500 w-4 drop-shadow-[0_0_8px_rgba(234,179,8,0.5)]"></i><span data-i18n="preciseControl">Pilotage Millimétrique</span></div>
-    </div>
-    
-    <div class="mt-auto flex gap-3">
-        <button onclick="event.stopPropagation(); openInfoModal('bzLightProduct')" class="flex-1 py-3 bg-white/5 border border-white/10 text-[0.65rem] font-bold uppercase text-gray-300 hover:bg-white/10 hover:text-white transition rounded-xl backdrop-blur-md" data-i18n="docBtn">Doc</button>
-        
-        <button onclick="event.stopPropagation(); nav('view-bzlight')" class="flex-1 py-3 bg-yellow-500 text-[0.65rem] font-black uppercase text-black hover:bg-yellow-400 transition rounded-xl shadow-[0_0_20px_rgba(234,179,8,0.3)]" data-i18n="details">Configurer</button>
-    </div>
-</div>
+                    <div onclick="openInfoModal('bzLightProduct')" class="snap-center shrink-0 w-[280px] md:w-[300px] glass-panel rounded-2xl p-5 md:p-6 flex flex-col hover:border-yellow-500/50 group cursor-pointer transition-all hover:scale-[1.02] hover:shadow-[0_0_30px_rgba(234,179,8,0.15)]">
+                        <div class="w-full h-40 md:h-44 bg-black/40 rounded-xl mb-6 flex items-center justify-center border border-white/5 relative overflow-hidden backdrop-blur-sm">
+                             <img src="IMG_6062.png" alt="BzLight" class="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:opacity-100 group-hover:scale-110 transition-all duration-500">
+                             <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent pointer-events-none"></div>
+                        </div>
+                        <h4 class="text-xl md:text-2xl font-black text-white mb-1 tracking-tighter">BzLight</h4>
+                        <p class="text-[0.65rem] text-yellow-400 mb-6 font-bold uppercase tracking-widest drop-shadow-md" data-i18n="bzLightDesc">Robot de fraisage UV</p>
+                        <div class="space-y-3 mb-4">
+                            <div class="text-[0.7rem] text-gray-300 flex items-center gap-3 font-medium"><i class="fas fa-bolt text-yellow-500 w-4 drop-shadow-[0_0_8px_rgba(234,179,8,0.5)]"></i><span data-i18n="highPower">Haute Puissance</span></div>
+                            <div class="text-[0.7rem] text-gray-300 flex items-center gap-3 font-medium"><i class="fas fa-video text-yellow-500 w-4 drop-shadow-[0_0_8px_rgba(234,179,8,0.5)]"></i><span data-i18n="hdCamera">Caméra HD 4K</span></div>
+                            <div class="text-[0.7rem] text-gray-300 flex items-center gap-3 font-medium"><i class="fas fa-crosshairs text-yellow-500 w-4 drop-shadow-[0_0_8px_rgba(234,179,8,0.5)]"></i><span data-i18n="preciseControl">Pilotage Millimétrique</span></div>
+                        </div>
+                        <div class="mt-auto pt-3 border-t border-white/5 flex items-center justify-between">
+                            <span class="text-[0.6rem] font-black text-yellow-400/70 uppercase tracking-widest">En savoir plus</span>
+                            <i class="fas fa-chevron-right text-yellow-400/50 text-xs group-hover:translate-x-1 transition-transform"></i>
+                        </div>
+                    </div>
                     
                     <!-- Carte Produit : Tracteur -->
-                    <div class="snap-center shrink-0 w-[280px] md:w-[300px] glass-panel rounded-2xl p-5 md:p-6 flex flex-col hover:border-blue-500/50 group">
+                    <div onclick="openInfoModal('tractorProduct')" class="snap-center shrink-0 w-[280px] md:w-[300px] glass-panel rounded-2xl p-5 md:p-6 flex flex-col hover:border-blue-500/50 group cursor-pointer transition-all hover:scale-[1.02] hover:shadow-[0_0_30px_rgba(59,130,246,0.15)]">
                         <div class="w-full h-40 md:h-44 bg-black/40 rounded-xl mb-6 flex items-center justify-center border border-white/5 relative overflow-hidden backdrop-blur-sm">
                              <img src="IMG_6059.png" alt="Tracteur" class="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:opacity-100 group-hover:scale-110 transition-all duration-500">
                              <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent pointer-events-none"></div>
                         </div>
                         <h4 class="text-xl md:text-2xl font-black text-white mb-1 tracking-tighter">Tracteur</h4>
                         <p class="text-[0.65rem] text-blue-400 mb-6 font-bold uppercase tracking-widest drop-shadow-md" data-i18n="tractorProduct">Fraisage & Inspection</p>
-                        <div class="space-y-3 mb-8">
+                        <div class="space-y-3 mb-4">
                             <div class="text-[0.7rem] text-gray-300 flex items-center gap-3 font-medium"><i class="fas fa-expand-arrows-alt text-blue-500 w-4 drop-shadow-[0_0_8px_rgba(59,130,246,0.5)]"></i><span data-i18n="portable">Modulable</span></div>
                             <div class="text-[0.7rem] text-gray-300 flex items-center gap-3 font-medium"><i class="fas fa-shield-alt text-blue-500 w-4 drop-shadow-[0_0_8px_rgba(59,130,246,0.5)]"></i><span data-i18n="antiTMS">Sécurité Opérateur</span></div>
                         </div>
-                        <div class="mt-auto flex gap-3">
-                            <button onclick="openInfoModal('tractorProduct')" class="flex-1 py-3 bg-white/5 border border-white/10 text-[0.65rem] font-bold uppercase text-gray-300 hover:bg-white/10 hover:text-white transition rounded-xl backdrop-blur-md" data-i18n="techSheet">Fiche</button>
-                            <button class="flex-1 py-3 bg-blue-500 text-[0.65rem] font-black uppercase text-white hover:bg-blue-400 transition rounded-xl shadow-[0_0_20px_rgba(59,130,246,0.4)]" onclick="openInfoModal('devInProgress')" data-i18n="configure">Ouvrir</button>
+                        <div class="mt-auto pt-3 border-t border-white/5 flex items-center justify-between">
+                            <span class="text-[0.6rem] font-black text-blue-400/70 uppercase tracking-widest">En savoir plus</span>
+                            <i class="fas fa-chevron-right text-blue-400/50 text-xs group-hover:translate-x-1 transition-transform"></i>
                         </div>
                     </div>
-                    <!-- Carte Produit : Tracteur -->
-                    <div class="snap-center shrink-0 w-[280px] md:w-[300px] glass-panel rounded-2xl p-5 md:p-6 flex flex-col hover:border-blue-500/50 group">
+
+                    <!-- Carte Produit : BzVision -->
+                    <div onclick="nav('view-bzvision')" class="snap-center shrink-0 w-[280px] md:w-[300px] glass-panel rounded-2xl p-5 md:p-6 flex flex-col hover:border-cyan-500/50 group cursor-pointer transition-all hover:scale-[1.02] hover:shadow-[0_0_30px_rgba(34,211,238,0.15)]">
                         <div class="w-full h-40 md:h-44 bg-black/40 rounded-xl mb-6 flex items-center justify-center border border-white/5 relative overflow-hidden backdrop-blur-sm">
-                            <i class="fas fa-video text-6xl md:text-7xl text-cyan-400/40 group-hover:scale-110 group-hover:text-cyan-300/60 transition-all duration-500 drop-shadow-[0_0_20px_rgba(34,211,238,0.3)]"></i>                             <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent pointer-events-none"></div>
+                            <i class="fas fa-video text-6xl md:text-7xl text-cyan-400/40 group-hover:scale-110 group-hover:text-cyan-300/60 transition-all duration-500 drop-shadow-[0_0_20px_rgba(34,211,238,0.3)]"></i>
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent pointer-events-none"></div>
                         </div>
                         <h4 class="text-xl md:text-2xl font-black text-white mb-1 tracking-tighter">BzVision</h4>
                         <p class="text-[0.65rem] text-cyan-400 mb-6 font-bold uppercase tracking-widest drop-shadow-md">Inspection vidéo</p>
-                        <div class="space-y-3 mb-8">
+                        <div class="space-y-3 mb-4">
                             <div class="text-[0.7rem] text-gray-300 flex items-center gap-3 font-medium"><i class="fas fa-video text-cyan-400 w-4 drop-shadow-[0_0_8px_rgba(34,211,238,0.5)]"></i><span>Flux caméra live</span></div>
                             <div class="text-[0.7rem] text-gray-300 flex items-center gap-3 font-medium"><i class="fas fa-folder-plus text-cyan-400 w-4 drop-shadow-[0_0_8px_rgba(34,211,238,0.5)]"></i><span>Gestion dossiers chantier</span></div>
                         </div>
-                        <div class="mt-auto flex gap-3">
-                            <button onclick="openInfoModal('tractorProduct')" class="flex-1 py-3 bg-white/5 border border-white/10 text-[0.65rem] font-bold uppercase text-gray-300 hover:bg-white/10 hover:text-white transition rounded-xl backdrop-blur-md" data-i18n="techSheet">Fiche</button>
-                            <button class="flex-1 py-3 bg-cyan-500 text-[0.65rem] font-black uppercase text-white hover:bg-cyan-400 transition rounded-xl shadow-[0_0_20px_rgba(34,211,238,0.4)]" onclick="nav('view-bzvision')">Ouvrir</button>
+                        <div class="mt-auto pt-3 border-t border-white/5 flex items-center justify-between">
+                            <span class="text-[0.6rem] font-black text-cyan-400/70 uppercase tracking-widest">Ouvrir l'appli</span>
+                            <i class="fas fa-chevron-right text-cyan-400/50 text-xs group-hover:translate-x-1 transition-transform"></i>
                         </div>
                     </div>
+
                     <!-- Carte Produit : Pompe -->
-                    <div class="snap-center shrink-0 w-[280px] md:w-[300px] glass-panel rounded-2xl p-5 md:p-6 flex flex-col hover:border-cyan-400/50 group">
-                         <div class="w-full h-40 md:h-44 bg-black/40 rounded-xl mb-6 flex items-center justify-center border border-white/5 relative overflow-hidden backdrop-blur-sm">
-                             <i class="fas fa-flask text-6xl md:text-7xl text-cyan-400/40 group-hover:scale-110 group-hover:text-cyan-300/60 transition-all duration-500 drop-shadow-[0_0_20px_rgba(34,211,238,0.3)]"></i>
-                             <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+                    <div onclick="nav('view-pump')" class="snap-center shrink-0 w-[280px] md:w-[300px] glass-panel rounded-2xl p-5 md:p-6 flex flex-col hover:border-cyan-400/50 group cursor-pointer transition-all hover:scale-[1.02] hover:shadow-[0_0_30px_rgba(34,211,238,0.15)]">
+                        <div class="w-full h-40 md:h-44 bg-black/40 rounded-xl mb-6 flex items-center justify-center border border-white/5 relative overflow-hidden backdrop-blur-sm">
+                            <i class="fas fa-flask text-6xl md:text-7xl text-cyan-400/40 group-hover:scale-110 group-hover:text-cyan-300/60 transition-all duration-500 drop-shadow-[0_0_20px_rgba(34,211,238,0.3)]"></i>
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
                         </div>
                         <h4 class="text-xl md:text-2xl font-black text-white mb-1 tracking-tighter">Pompe d'application résine</h4>
                         <p class="text-[0.65rem] text-cyan-400 mb-6 font-bold uppercase tracking-widest drop-shadow-md" data-i18n="pumpDesc">Système d'injection</p>
-                         <div class="space-y-3 mb-8">
+                        <div class="space-y-3 mb-4">
                             <div class="text-[0.7rem] text-gray-300 flex items-center gap-3 font-medium"><i class="fas fa-calculator text-cyan-400 w-4 drop-shadow-[0_0_8px_rgba(34,211,238,0.5)]"></i><span data-i18n="autoCalc">IA Predictor</span></div>
                             <div class="text-[0.7rem] text-gray-300 flex items-center gap-3 font-medium"><i class="fas fa-wifi text-cyan-400 w-4 drop-shadow-[0_0_8px_rgba(34,211,238,0.5)]"></i><span data-i18n="wifiConn">Wi-Fi AP Ready</span></div>
                         </div>
-                        <div class="mt-auto">
-                            <!-- Bouton lançant l'application Pompe -->
-                            <button onclick="nav('view-pump')" class="w-full py-4 bg-white/90 text-black text-[0.65rem] font-black uppercase hover:bg-white transition rounded-xl flex items-center justify-center gap-3 shadow-[0_10px_25px_rgba(255,255,255,0.2)]">
-                                <i class="fas fa-play"></i> <span data-i18n="launchApp">Accéder</span>
-                            </button>
+                        <div class="mt-auto pt-3 border-t border-white/5 flex items-center justify-between">
+                            <span class="text-[0.6rem] font-black text-cyan-400/70 uppercase tracking-widest">Ouvrir l'appli</span>
+                            <i class="fas fa-chevron-right text-cyan-400/50 text-xs group-hover:translate-x-1 transition-transform"></i>
                         </div>
                     </div>
                 </div>
@@ -559,7 +555,7 @@
                     </div>
                     <!-- Profil accessible via le bloc session en haut à gauche -->
                     <div onclick="nav('view-archives')" class="card-menu p-6 md:p-8 rounded-2xl flex flex-col items-center justify-center aspect-square md:aspect-video group">
-                        <i class="fas fa-file-pdf text-2xl md:text-3xl mb-3 md:mb-4 text-gray-300 group-hover:text-white group-hover:scale-110 transition-all"></i>
+                        <i class="fas fa-folder-open text-2xl md:text-3xl mb-3 md:mb-4 text-gray-300 group-hover:text-white group-hover:scale-110 transition-all"></i>
                         <span class="text-[0.65rem] md:text-[0.7rem] font-bold uppercase tracking-widest text-center text-gray-300 group-hover:text-white transition-colors" data-i18n="documents">Mes Chantiers</span>
                     </div>
                     <!-- Assistant IA (Masqué par défaut) -->
