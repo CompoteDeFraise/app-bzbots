@@ -313,8 +313,10 @@
             </button>
         </div>
         <div class="bg-black flex items-center justify-center relative" style="min-height: 300px;">
-            <!-- ICI : balise img pour le flux MJPEG (pas iframe) -->
+            <!-- Flux MJPEG caméra Pi -->
             <img id="videoModalIframe" src="" class="w-full rounded-b-3xl" alt="Flux caméra" style="display:none;">
+            <!-- Lecteur YouTube -->
+            <iframe id="videoModalYoutube" src="" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen class="w-full rounded-b-3xl" style="display:none;aspect-ratio:16/9;"></iframe>
             <div id="cameraLoadingMsg" class="absolute text-gray-500 text-xs font-bold uppercase tracking-widest flex flex-col items-center gap-3">
                 <i class="fas fa-spinner fa-spin text-2xl text-cyan-400"></i>
                 Connexion au flux...
@@ -2624,20 +2626,28 @@
         /** Gestion Modale Vidéo */
         function openVideoModal(videoId, title) {
             document.getElementById('videoModalTitle').innerHTML = `<i class="fas fa-play-circle text-blue-400"></i> ${title}`;
-            // On ajoute autoplay=1 pour que la vidéo se lance dès qu'on ouvre la modale
-            document.getElementById('videoModalIframe').src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+            // Cache le flux MJPEG et le spinner, affiche l'iframe YouTube
+            document.getElementById('videoModalIframe').style.display = 'none';
+            document.getElementById('cameraLoadingMsg').style.display = 'none';
+            const yt = document.getElementById('videoModalYoutube');
+            yt.src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+            yt.style.display = 'block';
             document.getElementById('videoModal').classList.remove('hidden');
         }
         function closeVideoModal() {
-    document.getElementById('videoModal').classList.add('hidden');
-    document.getElementById('videoModalIframe').src = "";
-    document.getElementById('videoModalIframe').style.display = 'none';
-    document.getElementById('cameraLoadingMsg').style.display = 'flex';
-
-    if (isCameraStreaming) {
-        toggleCameraStream();
-    }
-}
+            document.getElementById('videoModal').classList.add('hidden');
+            // Stoppe la vidéo YouTube
+            const yt = document.getElementById('videoModalYoutube');
+            yt.src = '';
+            yt.style.display = 'none';
+            // Réinitialise le flux MJPEG
+            document.getElementById('videoModalIframe').src = '';
+            document.getElementById('videoModalIframe').style.display = 'none';
+            document.getElementById('cameraLoadingMsg').style.display = 'flex';
+            if (isCameraStreaming) {
+                toggleCameraStream();
+            }
+        }
 
         /** Gestion Modale Nouveau Chantier */
         function openNewJobModal() {
