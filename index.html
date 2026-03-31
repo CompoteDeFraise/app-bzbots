@@ -871,54 +871,54 @@
             </div>
         </header>
         
-        <div class="flex-1 p-4 md:p-8 flex items-center justify-center overflow-y-auto">
-            <div class="w-full max-w-lg glass-panel p-8 md:p-12 rounded-[2rem] text-center border border-yellow-500/30 shadow-[0_0_50px_rgba(234,179,8,0.15)] relative overflow-hidden">
+        <div class="flex-1 p-4 md:p-6 overflow-y-auto">
+            <div class="w-full max-w-2xl mx-auto glass-panel p-6 md:p-10 rounded-[2rem] text-center border border-yellow-500/30 shadow-[0_0_50px_rgba(234,179,8,0.15)] relative">
                 <div class="absolute top-0 left-1/2 -translate-x-1/2 w-40 h-40 bg-yellow-500/20 blur-[60px] rounded-full pointer-events-none"></div>
                 
                 <!-- Image BZLight interactive — vue éclatée -->
-                <div class="w-full mx-auto mb-6 relative z-10" id="bzlightRobotWrap" style="max-width:640px;">
+                <div class="w-full mx-auto mb-6 relative z-10" id="bzlightRobotWrap" style="max-width:640px; padding-top:2.5rem;">
                     <img id="robot-image" src="bzlight_render.png" alt="Robot BZLight vue éclatée"
                         class="w-full h-auto object-contain"
                         style="filter:drop-shadow(0 0 20px rgba(255,255,255,0.08));">
 
-                    <!-- BZL1 — module gauche (pince / fraise) ~18% left, ~48% top -->
+                    <!-- BZL1 — pince/fraise gauche -->
                     <button onclick="openBzl1Modules()" title="BZL1"
                         class="absolute group" style="top:48%;left:18%;transform:translate(-50%,-50%);">
                         <span class="relative flex items-center justify-center w-8 h-8">
                             <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-400 opacity-35"></span>
                             <span class="relative inline-flex rounded-full w-4 h-4 bg-yellow-400 border-2 border-black shadow-[0_0_12px_rgba(234,179,8,0.9)]"></span>
                         </span>
-                        <span class="absolute left-1/2 -translate-x-1/2 -top-7 bg-black/90 text-yellow-400 text-[0.55rem] font-black uppercase px-2 py-1 rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none border border-yellow-500/30">BZL1</span>
+                        <span class="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 bg-black/90 text-yellow-400 text-[0.55rem] font-black uppercase px-2 py-1 rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none border border-yellow-500/30">BZL1</span>
                     </button>
 
-                    <!-- BZL2 — module centre-gauche (tête de fraisage) ~36% left, ~45% top -->
+                    <!-- BZL2 — tête de fraisage centre-gauche -->
                     <button onclick="openBzl2Modules()" title="BZL2"
                         class="absolute group" style="top:45%;left:37%;transform:translate(-50%,-50%);">
                         <span class="relative flex items-center justify-center w-8 h-8">
                             <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-400 opacity-35"></span>
                             <span class="relative inline-flex rounded-full w-4 h-4 bg-yellow-400 border-2 border-black shadow-[0_0_12px_rgba(234,179,8,0.9)]"></span>
                         </span>
-                        <span class="absolute left-1/2 -translate-x-1/2 -top-7 bg-black/90 text-yellow-400 text-[0.55rem] font-black uppercase px-2 py-1 rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none border border-yellow-500/30">BZL2</span>
+                        <span class="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 bg-black/90 text-yellow-400 text-[0.55rem] font-black uppercase px-2 py-1 rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none border border-yellow-500/30">BZL2</span>
                     </button>
 
-                    <!-- BZL3 — corps central (tube / motorisation) ~58% left, ~44% top -->
+                    <!-- BZL3 — corps central -->
                     <button onclick="openBzl3Modules()" title="BZL3"
                         class="absolute group" style="top:44%;left:58%;transform:translate(-50%,-50%);">
                         <span class="relative flex items-center justify-center w-8 h-8">
                             <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-400 opacity-35"></span>
                             <span class="relative inline-flex rounded-full w-4 h-4 bg-yellow-400 border-2 border-black shadow-[0_0_12px_rgba(234,179,8,0.9)]"></span>
                         </span>
-                        <span class="absolute left-1/2 -translate-x-1/2 -top-7 bg-black/90 text-yellow-400 text-[0.55rem] font-black uppercase px-2 py-1 rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none border border-yellow-500/30">BZL3</span>
+                        <span class="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 bg-black/90 text-yellow-400 text-[0.55rem] font-black uppercase px-2 py-1 rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none border border-yellow-500/30">BZL3</span>
                     </button>
 
-                    <!-- BZL4 — extrémité droite (connexion / tube) ~83% left, ~43% top -->
+                    <!-- BZL4 — extrémité droite -->
                     <button onclick="openBzl4Modules()" title="BZL4"
                         class="absolute group" style="top:43%;left:83%;transform:translate(-50%,-50%);">
                         <span class="relative flex items-center justify-center w-8 h-8">
                             <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-400 opacity-35"></span>
                             <span class="relative inline-flex rounded-full w-4 h-4 bg-yellow-400 border-2 border-black shadow-[0_0_12px_rgba(234,179,8,0.9)]"></span>
                         </span>
-                        <span class="absolute left-1/2 -translate-x-1/2 -top-7 bg-black/90 text-yellow-400 text-[0.55rem] font-black uppercase px-2 py-1 rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none border border-yellow-500/30">BZL4</span>
+                        <span class="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 bg-black/90 text-yellow-400 text-[0.55rem] font-black uppercase px-2 py-1 rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none border border-yellow-500/30 right-0 left-auto translate-x-0">BZL4</span>
                     </button>
                 </div>
                 
