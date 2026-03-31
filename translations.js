@@ -31,7 +31,7 @@ var translations = {
         loginTitle: "Login", accountName: "User ID", password: "Password", loginBtn: "LOG IN", createAccount: "Create account", 
         hello: "Active Session", discoverRange: "Discover our range", quickAccess: "Quick Navigation", catalog: "Catalog", 
         profile: "Profile", documents: "My Projects", aiAssistant: "BzIA Assistant", pumpProduct: "The Pump", pumpDesc: "Injection system", 
-        bzLightProduct: "BzLight", bzLightDesc: "UV Milling Robot", tractorProduct: "Tractor", tractorDesc: "Milling & Inspection", 
+        bzLightProduct: "BzLight", bzLightDesc: "Milling Robot", tractorProduct: "Tractor", tractorDesc: "Milling & Inspection", 
         techSheet: "Sheet", details: "Configure", launchApp: "Launch control", fluidParams: "Job data", jobName: "Job Name", 
         city: "City", street: "Street", buildingNum: "Building No.", nbCols: "Col Count", resinType: "Resin Type", 
         targetThickness: "Max thickness per pass (recommended)", recThickness: "Rec. Thickness (mm)", totalPasses: "Recommended pass cycle", 
